@@ -1,0 +1,1152 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Biblioteca de Componentes Flexbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .library-container {
+            max-width: 1600px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 30px 60px rgba(0,0,0,0.15);
+        }
+
+        /* === HEADER DE LA BIBLIOTECA === */
+        .library-header {
+            background: linear-gradient(135deg, #2d3748 0%, #4a5568 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .library-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="2" fill="rgba(255,255,255,0.1)"/></svg>') repeat;
+            animation: float 20s infinite linear;
+        }
+
+        @keyframes float {
+            0% { transform: translateY(0px); }
+            100% { transform: translateY(-100px); }
+        }
+
+        .library-title {
+            font-size: 3.5rem;
+            margin-bottom: 15px;
+            font-weight: bold;
+            position: relative;
+            z-index: 1;
+        }
+
+        .library-subtitle {
+            font-size: 1.2rem;
+            opacity: 0.9;
+            position: relative;
+            z-index: 1;
+        }
+
+        /* === NAVEGACIÓN DE LA BIBLIOTECA === */
+        .library-nav {
+            background: #f7fafc;
+            padding: 0;
+            border-bottom: 1px solid #e2e8f0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .nav-tabs {
+            display: flex;
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            background: white;
+        }
+
+        .nav-tab {
+            flex: 1;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            padding: 20px;
+            text-decoration: none;
+            color: #4a5568;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+            background: #f7fafc;
+        }
+
+        .nav-link:hover {
+            background: #edf2f7;
+            color: #2d3748;
+        }
+
+        .nav-link.active {
+            background: white;
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        /* === CONTENIDO PRINCIPAL === */
+        .library-content {
+            padding: 40px;
+        }
+
+        .component-section {
+            margin-bottom: 60px;
+        }
+
+        .section-title {
+            font-size: 2.5rem;
+            color: #2d3748;
+            margin-bottom: 20px;
+            border-left: 5px solid #667eea;
+            padding-left: 20px;
+        }
+
+        .section-description {
+            font-size: 1.1rem;
+            color: #4a5568;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 4px solid #48bb78;
+        }
+
+        /* === COMPONENTE 1: HERO SECTION === */
+        .hero-component {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 80px 40px;
+            border-radius: 15px;
+            margin: 30px 0;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 25px;
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 1;
+        }
+
+        .hero-title {
+            font-size: 3.5rem;
+            font-weight: bold;
+            line-height: 1.2;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            max-width: 600px;
+        }
+
+        .hero-actions {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        /* === COMPONENTE 2: FEATURE CARDS === */
+        .features-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin: 40px 0;
+        }
+
+        .feature-card {
+            flex: 1 1 300px;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .feature-icon {
+            width: 60px;
+            height: 60px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            color: white;
+        }
+
+        .feature-title {
+            font-size: 1.4rem;
+            color: #2d3748;
+            font-weight: bold;
+        }
+
+        .feature-description {
+            color: #4a5568;
+            line-height: 1.6;
+            flex-grow: 1;
+        }
+
+        .feature-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 15px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        /* === COMPONENTE 3: TESTIMONIAL SLIDER === */
+        .testimonial-container {
+            background: #f7fafc;
+            padding: 50px 30px;
+            border-radius: 15px;
+            margin: 40px 0;
+        }
+
+        .testimonial-slider {
+            display: flex;
+            align-items: center;
+            gap: 30px;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+
+        .testimonial-card {
+            background: white;
+            padding: 40px;
+            border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            text-align: center;
+            flex: 1;
+            min-width: 300px;
+        }
+
+        .testimonial-content {
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            align-items: center;
+        }
+
+        .testimonial-quote {
+            font-size: 1.2rem;
+            color: #4a5568;
+            line-height: 1.6;
+            font-style: italic;
+            position: relative;
+        }
+
+        .testimonial-quote::before,
+        .testimonial-quote::after {
+            content: '"';
+            font-size: 3rem;
+            color: #667eea;
+            opacity: 0.3;
+            position: absolute;
+        }
+
+        .testimonial-quote::before {
+            top: -10px;
+            left: -20px;
+        }
+
+        .testimonial-quote::after {
+            bottom: -40px;
+            right: -20px;
+        }
+
+        .testimonial-author {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .author-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #48bb78, #38a169);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.8rem;
+            font-weight: bold;
+        }
+
+        .author-name {
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .author-role {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        /* === COMPONENTE 4: PRICING CARDS === */
+        .pricing-section {
+            margin: 50px 0;
+        }
+
+        .pricing-grid {
+            display: flex;
+            gap: 30px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .pricing-card {
+            background: white;
+            border-radius: 20px;
+            padding: 40px 30px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            gap: 25px;
+            flex: 1;
+            min-width: 280px;
+            max-width: 320px;
+            text-align: center;
+            position: relative;
+        }
+
+        .pricing-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        .pricing-card.featured {
+            border-color: #667eea;
+            transform: scale(1.05);
+        }
+
+        .pricing-card.featured::before {
+            content: 'POPULAR';
+            position: absolute;
+            top: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #667eea;
+            color: white;
+            padding: 5px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        .pricing-header {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .pricing-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .pricing-price {
+            display: flex;
+            align-items: baseline;
+            justify-content: center;
+            gap: 5px;
+        }
+
+        .price-amount {
+            font-size: 3rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .price-period {
+            color: #718096;
+            font-size: 1rem;
+        }
+
+        .pricing-features {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            flex-grow: 1;
+        }
+
+        .pricing-feature {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #4a5568;
+        }
+
+        .feature-check {
+            color: #48bb78;
+            font-weight: bold;
+        }
+
+        /* === COMPONENTE 5: FOOTER COMPLETO === */
+        .footer-component {
+            background: #2d3748;
+            color: white;
+            padding: 60px 40px 30px;
+            margin-top: 60px;
+            border-radius: 15px 15px 0 0;
+        }
+
+        .footer-content {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 50px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .footer-section {
+            flex: 1;
+            min-width: 250px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .footer-title {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #f7fafc;
+        }
+
+        .footer-links {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .footer-link {
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: color 0.2s ease;
+        }
+
+        .footer-link:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid #4a5568;
+            margin-top: 40px;
+            padding-top: 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 15px;
+        }
+
+        .social-link {
+            width: 40px;
+            height: 40px;
+            background: rgba(255,255,255,0.1);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .social-link:hover {
+            background: #667eea;
+            transform: translateY(-2px);
+        }
+
+        /* === ESTILOS DE BOTONES REUTILIZABLES === */
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 1rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 25px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255,255,255,0.2);
+            color: white;
+            border: 2px solid rgba(255,255,255,0.3);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+            box-shadow: 0 4px 15px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        /* === RESPONSIVE DESIGN === */
+        @media (max-width: 768px) {
+            .library-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-actions {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .features-grid {
+                flex-direction: column;
+            }
+
+            .testimonial-slider {
+                flex-direction: column;
+            }
+
+            .pricing-grid {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .pricing-card.featured {
+                transform: none;
+            }
+
+            .footer-content {
+                flex-direction: column;
+                gap: 30px;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                text-align: center;
+            }
+
+            .nav-tabs {
+                flex-direction: column;
+            }
+        }
+
+        /* === ANIMACIONES Y EFECTOS === */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .component-section {
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        /* === CÓDIGO DE EJEMPLO === */
+        .code-showcase {
+            background: #2d3748;
+            color: #68d391;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 30px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            line-height: 1.6;
+            border-left: 5px solid #48bb78;
+        }
+
+        .code-title {
+            color: #ffd700;
+            font-weight: bold;
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+        }
+
+        .highlight-box {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 20px;
+            border-left: 4px solid #667eea;
+            border-radius: 0 10px 10px 0;
+            margin: 25px 0;
+        }
+
+        .highlight-title {
+            font-weight: bold;
+            color: #2d3748;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="library-container">
+        <!-- Header de la Biblioteca -->
+        <header class="library-header">
+            <h1 class="library-title">🧩 FlexBox Component Library</h1>
+            <p class="library-subtitle">Sistema completo de componentes responsive construido con Flexbox</p>
+        </header>
+
+        <!-- Navegación -->
+        <nav class="library-nav">
+            <ul class="nav-tabs">
+                <li class="nav-tab">
+                    <a href="#hero" class="nav-link active">
+                        🚀 Hero Sections
+                    </a>
+                </li>
+                <li class="nav-tab">
+                    <a href="#cards" class="nav-link">
+                        🎯 Feature Cards
+                    </a>
+                </li>
+                <li class="nav-tab">
+                    <a href="#testimonials" class="nav-link">
+                        💬 Testimonials
+                    </a>
+                </li>
+                <li class="nav-tab">
+                    <a href="#pricing" class="nav-link">
+                        💰 Pricing
+                    </a>
+                </li>
+                <li class="nav-tab">
+                    <a href="#footer" class="nav-link">
+                        📍 Footer
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Contenido Principal -->
+        <main class="library-content">
+            <!-- Sección Hero -->
+            <section id="hero" class="component-section">
+                <h2 class="section-title">Hero Section Component</h2>
+                <div class="section-description">
+                    <strong>Propósito:</strong> El Hero Section es el primer impacto visual de tu página. Utiliza Flexbox para centrar perfectamente el contenido y crear una distribución armoniosa de elementos. Este componente demuestra el poder de <code>flex-direction: column</code> combinado con centrado perfecto.
+                </div>
+
+                <div class="hero-component">
+                    <div class="hero-content">
+                        <h1 class="hero-title">Domina el Desarrollo Frontend</h1>
+                        <p class="hero-subtitle">
+                            Aprende a crear interfaces modernas y responsive con las mejores prácticas de la industria. 
+                            Nuestro enfoque práctico te convertirá en un desarrollador excepcional.
+                        </p>
+                        <div class="hero-actions">
+                            <a href="#" class="btn btn-primary">🚀 Comenzar Ahora</a>
+                            <a href="#" class="btn btn-secondary">📹 Ver Demo</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-showcase">
+                    <div class="code-title">🔧 Código del Hero Section:</div>
+/* Hero con Flexbox - Centrado Perfecto */
+.hero-content {
+    display: flex;
+    flex-direction: column;    /* Stack vertical */
+    align-items: center;       /* Centrado horizontal */
+    gap: 25px;                /* Espaciado consistente */
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.hero-actions {
+    display: flex;             /* Botones lado a lado */
+    gap: 20px;                /* Espacio entre botones */
+    flex-wrap: wrap;          /* Responsive wrapping */
+    justify-content: center;   /* Centrado horizontal */
+}
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎯 Concepto Clave - Hero Responsive:</div>
+                    <p>El Hero Section combina múltiples niveles de Flexbox. El contenedor principal usa <code>flex-direction: column</code> para apilar elementos verticalmente, mientras que <code>hero-actions</code> usa dirección horizontal para los botones. Esta técnica de "nested flexbox" es fundamental en el diseño moderno.</p>
+                </div>
+            </section>
+
+            <!-- Sección Feature Cards -->
+            <section id="cards" class="component-section">
+                <h2 class="section-title">Feature Cards Component</h2>
+                <div class="section-description">
+                    <strong>Propósito:</strong> Las Feature Cards demuestran cómo crear layouts de grid flexible usando solo Flexbox. Cada card utiliza <code>flex: 1 1 300px</code> para crear una distribución inteligente que se adapta a cualquier pantalla manteniendo proporciones legibles.
+                </div>
+
+                <div class="features-grid">
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon">⚡</div>
+                            <h3 class="feature-title">Performance</h3>
+                        </div>
+                        <p class="feature-description">
+                            Optimizamos cada línea de código para garantizar que tu aplicación funcione a la velocidad de la luz. 
+                            Techniques como lazy loading y tree shaking están incluidas por defecto.
+                        </p>
+                        <div class="feature-footer">
+                            <span style="color: #48bb78; font-weight: bold;">⚡ Ultra rápido</span>
+                            <a href="#" class="btn btn-outline">Explorar</a>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon">🎨</div>
+                            <h3 class="feature-title">Diseño Moderno</h3>
+                        </div>
+                        <p class="feature-description">
+                            Interfaces que siguen las últimas tendencias de diseño. Cada componente está pensado para 
+                            proporcionar la mejor experiencia de usuario posible en cualquier dispositivo.
+                        </p>
+                        <div class="feature-footer">
+                            <span style="color: #667eea; font-weight: bold;">🎨 Hermoso</span>
+                            <a href="#" class="btn btn-outline">Explorar</a>
+                        </div>
+                    </div>
+
+                    <div class="feature-card">
+                        <div class="feature-header">
+                            <div class="feature-icon">🔧</div>
+                            <h3 class="feature-title">Fácil de Usar</h3>
+                        </div>
+                        <p class="feature-description">
+                            No necesitas ser un experto para comenzar. Nuestra documentación clara y ejemplos prácticos 
+                            te permitirán estar productivo desde el primer día.
+                        </p>
+                        <div class="feature-footer">
+                            <span style="color: #f56565; font-weight: bold;">🔧 Simple</span>
+                            <a href="#" class="btn btn-outline">Explorar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-showcase">
+                    <div class="code-title">🔧 Código de Feature Cards:</div>
+/* Grid de Cards con Flexbox Responsive */
+.features-grid {
+    display: flex;
+    flex-wrap: wrap;          /* Permite salto de línea */
+    gap: 30px;               /* Espaciado entre cards */
+}
+
+.feature-card {
+    flex: 1 1 300px;         /* Grow, shrink, base de 300px */
+    display: flex;
+    flex-direction: column;   /* Contenido vertical */
+    gap: 20px;               /* Espaciado interno */
+}
+
+.feature-header {
+    display: flex;            /* Ícono + título horizontal */
+    align-items: center;     /* Centrado vertical */
+    gap: 15px;              /* Espacio ícono-texto */
+}
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎯 Concepto Clave - Cards Inteligentes:</div>
+                    <p>La magia está en <code>flex: 1 1 300px</code>. Esto significa: "crece para llenar el espacio (1), encógete si es necesario (1), pero nunca bajes de 300px de ancho". Esta técnica crea layouts que se ven profesionales en cualquier pantalla sin media queries complejas.</p>
+                </div>
+            </section>
+
+            <!-- Sección Testimonials -->
+            <section id="testimonials" class="component-section">
+                <h2 class="section-title">Testimonial Component</h2>
+                <div class="section-description">
+                    <strong>Propósito:</strong> Los testimoniales utilizan centrado perfecto con Flexbox para crear un diseño elegante y profesional. Este componente demuestra cómo combinar <code>text-align: center</code> con Flexbox para obtener el mejor resultado visual.
+                </div>
+
+                <div class="testimonial-container">
+                    <div class="testimonial-slider">
+                        <div class="testimonial-card">
+                            <div class="testimonial-content">
+                                <p class="testimonial-quote">
+                                    Este curso transformó completamente mi carrera. En solo 10 días pasé de conocimientos básicos 
+                                    a poder crear interfaces profesionales que realmente impresionan.
+                                </p>
+                                <div class="testimonial-author">
+                                    <div class="author-avatar">CL</div>
+                                    <div class="author-name">Carla López</div>
+                                    <div class="author-role">Frontend Developer - TechStartup</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-showcase">
+                    <div class="code-title">🔧 Código de Testimonial:</div>
+/* Testimonial con Centrado Perfecto */
+.testimonial-content {
+    display: flex;
+    flex-direction: column;   /* Stack vertical */
+    gap: 25px;               /* Espaciado consistente */
+    align-items: center;     /* Todo centrado horizontalmente */
+}
+
+.testimonial-author {
+    display: flex;
+    flex-direction: column;   /* Stack: avatar, nombre, rol */
+    align-items: center;     /* Centrado horizontal */
+    gap: 10px;              /* Espaciado entre elementos */
+}
+                </div>
+            </section>
+
+            <!-- Sección Pricing -->
+            <section id="pricing" class="component-section">
+                <h2 class="section-title">Pricing Cards Component</h2>
+                <div class="section-description">
+                    <strong>Propósito:</strong> Las tarjetas de precios muestran cómo crear layouts complejos donde cada card mantiene la misma altura automáticamente. Flexbox maneja la distribución del espacio y la alineación sin esfuerzo manual.
+                </div>
+
+                <div class="pricing-section">
+                    <div class="pricing-grid">
+                        <div class="pricing-card">
+                            <div class="pricing-header">
+                                <h3 class="pricing-title">Básico</h3>
+                                <div class="pricing-price">
+                                    <span class="price-amount">$29</span>
+                                    <span class="price-period">/mes</span>
+                                </div>
+                            </div>
+                            <ul class="pricing-features">
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    5 Proyectos
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Soporte Básico
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Templates Básicos
+                                </li>
+                            </ul>
+                            <a href="#" class="btn btn-outline">Comenzar</a>
+                        </div>
+
+                        <div class="pricing-card featured">
+                            <div class="pricing-header">
+                                <h3 class="pricing-title">Profesional</h3>
+                                <div class="pricing-price">
+                                    <span class="price-amount">$79</span>
+                                    <span class="price-period">/mes</span>
+                                </div>
+                            </div>
+                            <ul class="pricing-features">
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Proyectos Ilimitados
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Soporte Priority
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Templates Premium
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Analytics Avanzados
+                                </li>
+                            </ul>
+                            <a href="#" class="btn btn-primary">Elegir Plan</a>
+                        </div>
+
+                        <div class="pricing-card">
+                            <div class="pricing-header">
+                                <h3 class="pricing-title">Enterprise</h3>
+                                <div class="pricing-price">
+                                    <span class="price-amount">$199</span>
+                                    <span class="price-period">/mes</span>
+                                </div>
+                            </div>
+                            <ul class="pricing-features">
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Todo de Profesional
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Soporte 24/7
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Custom Integrations
+                                </li>
+                                <li class="pricing-feature">
+                                    <span class="feature-check">✅</span>
+                                    Dedicated Manager
+                                </li>
+                            </ul>
+                            <a href="#" class="btn btn-success">Contactar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-showcase">
+                    <div class="code-title">🔧 Código de Pricing Cards:</div>
+/* Pricing Cards con Altura Uniforme */
+.pricing-card {
+    display: flex;
+    flex-direction: column;   /* Stack vertical */
+    gap: 25px;               /* Espaciado consistente */
+}
+
+.pricing-features {
+    display: flex;
+    flex-direction: column;   /* Lista vertical */
+    gap: 15px;               /* Espacio entre features */
+    flex-grow: 1;            /* Toma todo el espacio disponible */
+}
+
+.pricing-feature {
+    display: flex;            /* Check + texto horizontal */
+    align-items: center;     /* Centrado vertical */
+    gap: 10px;              /* Espacio check-texto */
+}
+                </div>
+
+                <div class="highlight-box">
+                    <div class="highlight-title">🎯 Concepto Clave - Altura Uniforme:</div>
+                    <p>La clave del éxito en pricing cards está en <code>flex-grow: 1</code> aplicado a la lista de features. Esto hace que las listas se expandan para llenar el espacio disponible, manteniendo todos los botones de acción alineados en la parte inferior, sin importar cuánto contenido tenga cada card.</p>
+                </div>
+            </section>
+
+            <!-- Sección Footer -->
+            <section id="footer" class="component-section">
+                <div class="footer-component">
+                    <div class="footer-content">
+                        <div class="footer-section">
+                            <h3 class="footer-title">Productos</h3>
+                            <ul class="footer-links">
+                                <li><a href="#" class="footer-link">Courses</a></li>
+                                <li><a href="#" class="footer-link">Templates</a></li>
+                                <li><a href="#" class="footer-link">Components</a></li>
+                                <li><a href="#" class="footer-link">Tools</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h3 class="footer-title">Recursos</h3>
+                            <ul class="footer-links">
+                                <li><a href="#" class="footer-link">Documentación</a></li>
+                                <li><a href="#" class="footer-link">Tutoriales</a></li>
+                                <li><a href="#" class="footer-link">Blog</a></li>
+                                <li><a href="#" class="footer-link">Comunidad</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h3 class="footer-title">Soporte</h3>
+                            <ul class="footer-links">
+                                <li><a href="#" class="footer-link">Centro de Ayuda</a></li>
+                                <li><a href="#" class="footer-link">Contacto</a></li>
+                                <li><a href="#" class="footer-link">FAQ</a></li>
+                                <li><a href="#" class="footer-link">Status</a></li>
+                            </ul>
+                        </div>
+                        <div class="footer-section">
+                            <h3 class="footer-title">Newsletter</h3>
+                            <p style="color: #cbd5e0; line-height: 1.6; margin-bottom: 20px;">
+                                Mantente al día con las últimas tendencias en desarrollo web y diseño.
+                            </p>
+                            <div style="display: flex; gap: 10px;">
+                                <input type="email" placeholder="tu@email.com" style="flex: 1; padding: 10px; border: none; border-radius: 5px;">
+                                <button class="btn btn-primary">Suscribirse</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="footer-bottom">
+                        <div style="color: #cbd5e0;">
+                            © 2025 FlexBox Library. Todos los derechos reservados.
+                        </div>
+                        <div class="social-links">
+                            <a href="#" class="social-link">📘</a>
+                            <a href="#" class="social-link">🐦</a>
+                            <a href="#" class="social-link">💼</a>
+                            <a href="#" class="social-link">📷</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-showcase">
+                    <div class="code-title">🔧 Código del Footer:</div>
+/* Footer Responsive con Flexbox */
+.footer-content {
+    display: flex;
+    flex-wrap: wrap;          /* Responsive wrapping */
+    gap: 50px;               /* Espaciado entre secciones */
+}
+
+.footer-section {
+    flex: 1;                 /* Distribución equitativa */
+    min-width: 250px;        /* Ancho mínimo legible */
+    display: flex;
+    flex-direction: column;   /* Stack de título + links */
+    gap: 20px;
+}
+
+.footer-bottom {
+    display: flex;
+    justify-content: space-between;  /* Copyright | Social */
+    align-items: center;            /* Centrado vertical */
+    flex-wrap: wrap;               /* Responsive */
+}
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <script>
+        // Funcionalidad de navegación
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remover clase active de todos los links
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                
+                // Agregar clase active al link clickeado
+                link.classList.add('active');
+                
+                // Smooth scroll a la sección correspondiente
+                const targetId = link.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+                if (targetSection) {
+                    targetSection.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        });
+
+        // Intersection Observer para navegación automática
+        const sections = document.querySelectorAll('.component-section');
+        const navLinks = document.querySelectorAll('.nav-link');
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const sectionId = entry.target.getAttribute('id');
+                    
+                    // Actualizar navegación
+                    navLinks.forEach(link => {
+                        link.classList.remove('active');
+                        if (link.getAttribute('href') === `#${sectionId}`) {
+                            link.classList.add('active');
+                        }
+                    });
+                }
+            });
+        }, { threshold: 0.6 });
+
+        sections.forEach(section => observer.observe(section));
+    </script>
+</body>
+</html>

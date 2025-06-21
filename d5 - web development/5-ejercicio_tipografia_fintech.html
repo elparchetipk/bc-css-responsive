@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FinTech Pro - Sistema Tipográfico</title>
+    <style>
+        /* === TU RETO: COMPLETAR ESTE SISTEMA === */
+        :root {
+            /* Completa estos valores usando clamp() */
+            /* Recuerda: clamp(mínimo, ideal, máximo) */
+            
+            /* Tipografía para dispositivos 280px - 3440px */
+            --font-micro: /* Texto muy pequeño para metadatos */;
+            --font-small: /* Texto secundario */;
+            --font-base: /* Texto de párrafo principal */;
+            --font-large: /* Subtítulos */;
+            --font-xl: /* Títulos de sección */;
+            --font-hero: /* Título principal - debe ser impactante */;
+            
+            /* Espaciado fluido */
+            --space-xs: /* Espaciado mínimo */;
+            --space-sm: /* Espaciado pequeño */;
+            --space-md: /* Espaciado medio */;
+            --space-lg: /* Espaciado grande */;
+            --space-xl: /* Espaciado extra grande */;
+            
+            /* Line heights adaptativos */
+            --line-tight: /* Para títulos */;
+            --line-normal: /* Para texto base */;
+            --line-relaxed: /* Para lectura larga */;
+            
+            /* Colores fintech */
+            --primary: #0066ff;
+            --secondary: #00cc88;
+            --accent: #ff6b35;
+            --text-primary: #1a1a1a;
+            --text-secondary: #666666;
+            --background: #fafafa;
+        }
+
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: var(--line-normal);
+            padding: var(--space-md);
+        }
+
+        /* === CLASES TIPOGRÁFICAS - COMPLETA LOS VALORES === */
+        .text-micro {
+            font-size: var(--font-micro);
+            line-height: var(--line-normal);
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .text-small {
+            font-size: var(--font-small);
+            line-height: var(--line-normal);
+            color: var(--text-secondary);
+        }
+
+        .text-base {
+            font-size: var(--font-base);
+            line-height: var(--line-relaxed);
+        }
+
+        .text-large {
+            font-size: var(--font-large);
+            line-height: var(--line-normal);
+            font-weight: 500;
+        }
+
+        .text-xl {
+            font-size: var(--font-xl);
+            line-height: var(--line-tight);
+            font-weight: 600;
+        }
+
+        .text-hero {
+            font-size: var(--font-hero);
+            line-height: var(--line-tight);
+            font-weight: 700;
+            background: linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* === LAYOUT DEL EJERCICIO === */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            padding: var(--space-lg);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-xl);
+            padding-bottom: var(--space-lg);
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .section {
+            margin-bottom: var(--space-lg);
+            padding: var(--space-md);
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        .metric-card {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: var(--space-md);
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .metric-number {
+            font-size: var(--font-hero);
+            font-weight: 700;
+            line-height: 1;
+            margin-bottom: var(--space-xs);
+        }
+
+        /* === INSTRUCCIONES DEL EJERCICIO === */
+        .instructions {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: var(--space-md);
+            margin-bottom: var(--space-lg);
+        }
+
+        .challenge-box {
+            background: #f8f9fa;
+            border-left: 4px solid var(--accent);
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+
+        /* === INDICADOR DE VIEWPORT === */
+        .viewport-indicator {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--primary);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-family: monospace;
+            z-index: 1000;
+        }
+
+        .viewport-indicator::before {
+            content: attr(data-width) "px";
+        }
+    </style>
+</head>
+<body>
+    <div class="viewport-indicator" data-width=""></div>
+
+    <div class="container">
+        <div class="instructions">
+            <h2 class="text-xl" style="color: var(--accent); margin-bottom: var(--space-sm);">📝 Tu Desafío</h2>
+            <p class="text-base">
+                <strong>Objetivo:</strong> Completa las variables CSS en la sección :root para crear un sistema tipográfico que se adapte fluidamente desde 280px (smartwatch) hasta 3440px (ultrawide).
+            </p>
+            <div class="challenge-box">
+                <p class="text-small"><strong>Requisitos:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 8px;">
+                    <li class="text-small">Usar clamp() para todos los tamaños</li>
+                    <li class="text-small">Mantener jerarquía visual en todos los tamaños</li>
+                    <li class="text-small">El texto hero debe ser impactante pero legible</li>
+                    <li class="text-small">Espaciado proporcional al texto</li>
+                </ul>
+            </div>
+        </div>
+
+        <header class="header">
+            <h1 class="text-hero">FinTech Pro</h1>
+            <p class="text-large">Plataforma de inversión inteligente</p>
+            <p class="text-micro">Redimensiona tu ventana para probar la tipografía</p>
+        </header>
+
+        <section class="section">
+            <h2 class="text-xl">Rendimiento de tu Portfolio</h2>
+            <p class="text-base">
+                Nuestros algoritmos de IA analizan más de 10,000 puntos de datos en tiempo real para optimizar tu estrategia de inversión. Desde criptomonedas hasta acciones tradicionales, maximizamos tu retorno mientras minimizamos el riesgo.
+            </p>
+            
+            <div class="metrics">
+                <div class="metric-card">
+                    <div class="metric-number">+24.8%</div>
+                    <div class="text-small">Rendimiento anual</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">98.7%</div>
+                    <div class="text-small">Uptime plataforma</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-number">2.1M</div>
+                    <div class="text-small">Usuarios activos</div>
+                </div>
+            </div>
+        </section>
+
+        <section class="section">
+            <h2 class="text-xl">Características Principales</h2>
+            <p class="text-base">
+                Trading automatizado, análisis predictivo y gestión de riesgo en una plataforma unificada.
+            </p>
+            
+            <h3 class="text-large" style="margin-top: var(--space-md); color: var(--primary);">Trading Inteligente</h3>
+            <p class="text-base">
+                Algoritmos que ejecutan operaciones 24/7 basándose en análisis técnico avanzado y sentiment del mercado.
+            </p>
+            <p class="text-small" style="margin-top: var(--space-xs);">
+                Comisiones desde 0.05% • Ejecución en microsegundos • API REST disponible
+            </p>
+            
+            <h3 class="text-large" style="margin-top: var(--space-md); color: var(--secondary);">Portfolio Diversificado</h3>
+            <p class="text-base">
+                Acceso a más de 15,000 activos globales incluyendo acciones, ETFs, criptomonedas, commodities y forex.
+            </p>
+            <p class="text-micro" style="margin-top: var(--space-xs);">
+                Regulado por SEC • Seguros FDIC hasta $250,000 • Auditorías trimestrales
+            </p>
+        </section>
+
+        <section class="section">
+            <h2 class="text-xl">Resultados de Tu Ejercicio</h2>
+            <p class="text-base">
+                Una vez completadas las variables CSS, este contenido debería escalarse perfectamente. Observa especialmente:
+            </p>
+            <ul style="margin-left: 20px; margin-top: var(--space-sm);">
+                <li class="text-small">El título "FinTech Pro" debe ser legible pero impactante en móvil</li>
+                <li class="text-small">Los números en las métricas deben mantener su prominencia</li>
+                <li class="text-small">El texto base debe ser cómodo de leer en todos los tamaños</li>
+                <li class="text-small">El espaciado debe sentirse proporcionado, no amontonado ni disperso</li>
+            </ul>
+        </section>
+    </div>
+
+    <script>
+        // Actualizar indicador de viewport
+        function updateViewportIndicator() {
+            const indicator = document.querySelector('.viewport-indicator');
+            indicator.setAttribute('data-width', window.innerWidth);
+        }
+
+        updateViewportIndicator();
+        window.addEventListener('resize', updateViewportIndicator);
+
+        // Verificación automática del ejercicio
+        function checkExerciseCompletion() {
+            const rootStyles = getComputedStyle(document.documentElement);
+            const heroSize = rootStyles.getPropertyValue('--font-hero').trim();
+            
+            if (heroSize && heroSize !== 'initial' && heroSize.includes('clamp')) {
+                console.log('✅ ¡Excelente! Has empezado a usar clamp() en tu sistema tipográfico');
+                console.log('🎯 Continúa completando todas las variables para un sistema completo');
+            } else {
+                console.log('📝 Recuerda: Debes definir las variables CSS usando clamp() en la sección :root');
+            }
+        }
+
+        // Verificar después de 2 segundos
+        setTimeout(checkExerciseCompletion, 2000);
+
+        // Ejemplo de solución (mostrar en consola)
+        console.log(`
+🚀 PISTA PARA TU EJERCICIO:
+
+Ejemplo de variable bien definida:
+--font-hero: clamp(2rem, 8vw, 4rem);
+
+Esto significa:
+• Mínimo: 2rem (32px) - para smartwatch
+• Ideal: 8% del viewport width
+• Máximo: 4rem (64px) - para ultrawide
+
+¡Aplica este patrón a todas las variables!
+        `);
+    </script>
+</body>
+</html>

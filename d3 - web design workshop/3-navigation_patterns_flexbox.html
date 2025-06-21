@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Navegación y Botones con Flexbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 40px;
+            font-size: 3rem;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            margin-bottom: 25px;
+            border-left: 5px solid #667eea;
+            padding-left: 20px;
+            font-size: 1.8rem;
+        }
+
+        /* === PATRÓN 1: NAVBAR CLÁSICO === */
+        .navbar {
+            background: #2d3748;
+            padding: 15px 25px;
+            border-radius: 12px;
+            margin: 20px 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+
+        .navbar-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .navbar-brand {
+            color: white;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .navbar-nav {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+            align-items: center;
+        }
+
+        .nav-link {
+            color: #cbd5e0;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            color: white;
+            background: rgba(102, 126, 234, 0.3);
+        }
+
+        .navbar-actions {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+        }
+
+        /* === PATRÓN 2: NAVEGACIÓN VERTICAL (SIDEBAR) === */
+        .sidebar {
+            background: white;
+            width: 280px;
+            height: 500px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 25px 0;
+            border: 1px solid #e2e8f0;
+        }
+
+        .sidebar-header {
+            padding: 0 25px 20px 25px;
+            border-bottom: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .sidebar-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .sidebar-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #4a5568;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .sidebar-item:hover {
+            background: #f7fafc;
+            color: #2d3748;
+        }
+
+        .sidebar-item.active {
+            background: rgba(102, 126, 234, 0.1);
+            color: #667eea;
+            border-right-color: #667eea;
+            font-weight: 600;
+        }
+
+        .sidebar-icon {
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        /* === PATRÓN 3: BREADCRUMBS === */
+        .breadcrumb {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            padding: 15px 20px;
+            background: #f7fafc;
+            border-radius: 8px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .breadcrumb-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #718096;
+            text-decoration: none;
+            font-size: 0.9rem;
+        }
+
+        .breadcrumb-item:last-child {
+            color: #2d3748;
+            font-weight: 600;
+        }
+
+        .breadcrumb-separator {
+            color: #cbd5e0;
+            font-size: 0.8rem;
+        }
+
+        /* === PATRÓN 4: TABS === */
+        .tabs {
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.08);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .tab-list {
+            display: flex;
+            background: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .tab-button {
+            flex: 1;
+            padding: 15px 20px;
+            border: none;
+            background: none;
+            color: #718096;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border-bottom: 3px solid transparent;
+        }
+
+        .tab-button:hover {
+            color: #4a5568;
+            background: #edf2f7;
+        }
+
+        .tab-button.active {
+            color: #667eea;
+            background: white;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            padding: 25px;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* === PATRÓN 5: SISTEMA DE BOTONES === */
+        .button-showcase {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+            align-items: center;
+            padding: 25px;
+            background: #f7fafc;
+            border-radius: 12px;
+            margin: 20px 0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+            border: 1px solid #cbd5e0;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+            color: #2d3748;
+        }
+
+        .btn-success {
+            background: #48bb78;
+            color: white;
+            box-shadow: 0 4px 12px rgba(72, 187, 120, 0.3);
+        }
+
+        .btn-success:hover {
+            background: #38a169;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #f56565;
+            color: white;
+            box-shadow: 0 4px 12px rgba(245, 101, 101, 0.3);
+        }
+
+        .btn-danger:hover {
+            background: #e53e3e;
+            transform: translateY(-2px);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: #667eea;
+            border: 2px solid #667eea;
+        }
+
+        .btn-outline:hover {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-icon {
+            background: #f7fafc;
+            color: #4a5568;
+            border: 1px solid #e2e8f0;
+            padding: 12px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+        }
+
+        .btn-icon:hover {
+            background: #edf2f7;
+            color: #2d3748;
+        }
+
+        /* === PATRÓN 6: BUTTON GROUPS === */
+        .button-group {
+            display: flex;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 20px 0;
+        }
+
+        .button-group .btn {
+            border-radius: 0;
+            border-right: 1px solid #e2e8f0;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .button-group .btn:last-child {
+            border-right: none;
+        }
+
+        .button-group .btn:hover {
+            background: #f7fafc;
+        }
+
+        .button-group .btn.active {
+            background: #667eea;
+            color: white;
+        }
+
+        /* === PATRÓN 7: PAGINATION === */
+        .pagination {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .pagination-btn {
+            padding: 10px 15px;
+            border: 1px solid #e2e8f0;
+            background: white;
+            color: #4a5568;
+            text-decoration: none;
+            border-radius: 6px;
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+
+        .pagination-btn:hover {
+            background: #f7fafc;
+            border-color: #cbd5e0;
+        }
+
+        .pagination-btn.active {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .pagination-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            line-height: 1.6;
+        }
+
+        .highlight {
+            background: rgba(102, 126, 234, 0.1);
+            padding: 15px;
+            border-left: 4px solid #667eea;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+
+        .demo-container {
+            display: flex;
+            gap: 30px;
+            flex-wrap: wrap;
+            margin: 20px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .navbar-nav {
+                display: none;
+            }
+            
+            .demo-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+            }
+            
+            .button-showcase {
+                justify-content: center;
+            }
+            
+            .tab-list {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧭 Navegación y Botones con Flexbox</h1>
+
+        <!-- Sección 1: Navbar Horizontal -->
+        <div class="section">
+            <h2>1. Navbar Horizontal Profesional</h2>
+            <div class="highlight">
+                <strong>Flexbox Strategy:</strong> Usamos <code>justify-content: space-between</code> para separar logo, menú y acciones. <code>align-items: center</code> mantiene todo perfectamente alineado verticalmente.
+            </div>
+
+            <nav class="navbar">
+                <div class="navbar-container">
+                    <a href="#" class="navbar-brand">
+                        🚀 TechCorp
+                    </a>
+                    <ul class="navbar-nav">
+                        <li><a href="#" class="nav-link active">Inicio</a></li>
+                        <li><a href="#" class="nav-link">Productos</a></li>
+                        <li><a href="#" class="nav-link">Servicios</a></li>
+                        <li><a href="#" class="nav-link">Contacto</a></li>
+                    </ul>
+                    <div class="navbar-actions">
+                        <a href="#" class="btn btn-outline">Iniciar Sesión</a>
+                        <a href="#" class="btn btn-primary">Registrarse</a>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="code-example">
+/* Navbar con Flexbox - Estructura perfecta */
+.navbar-container {
+    display: flex;
+    justify-content: space-between;  /* Logo | Menu | Acciones */
+    align-items: center;            /* Centrado vertical perfecto */
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.navbar-nav {
+    display: flex;                  /* Elementos horizontales */
+    list-style: none;
+    gap: 30px;                     /* Espaciado consistente */
+    align-items: center;
+}
+
+.navbar-actions {
+    display: flex;                  /* Botones lado a lado */
+    gap: 15px;
+    align-items: center;
+}
+            </div>
+        </div>
+
+        <!-- Sección 2: Sidebar y Breadcrumbs -->
+        <div class="section">
+            <h2>2. Navegación Vertical y Breadcrumbs</h2>
+            <div class="highlight">
+                <strong>Patrón Vertical:</strong> <code>flex-direction: column</code> convierte una lista horizontal en un menú vertical elegante. Perfecto para sidebars y dashboards.
+            </div>
+
+            <div class="demo-container">
+                <nav class="sidebar">
+                    <div class="sidebar-header">
+                        <div style="width: 40px; height: 40px; background: linear-gradient(135deg, #667eea, #764ba2); border-radius: 8px; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold;">A</div>
+                        <div>
+                            <div style="font-weight: bold; color: #2d3748;">Admin Panel</div>
+                            <div style="font-size: 0.8rem; color: #718096;">Panel de Control</div>
+                        </div>
+                    </div>
+                    <nav class="sidebar-nav">
+                        <a href="#" class="sidebar-item active">
+                            <span class="sidebar-icon">📊</span>
+                            Dashboard
+                        </a>
+                        <a href="#" class="sidebar-item">
+                            <span class="sidebar-icon">👥</span>
+                            Usuarios
+                        </a>
+                        <a href="#" class="sidebar-item">
+                            <span class="sidebar-icon">📦</span>
+                            Productos
+                        </a>
+                        <a href="#" class="sidebar-item">
+                            <span class="sidebar-icon">📈</span>
+                            Reportes
+                        </a>
+                        <a href="#" class="sidebar-item">
+                            <span class="sidebar-icon">⚙️</span>
+                            Configuración
+                        </a>
+                    </nav>
+                </nav>
+
+                <div style="flex: 1;">
+                    <nav class="breadcrumb">
+                        <a href="#" class="breadcrumb-item">🏠 Inicio</a>
+                        <span class="breadcrumb-separator">›</span>
+                        <a href="#" class="breadcrumb-item">Dashboard</a>
+                        <span class="breadcrumb-separator">›</span>
+                        <span class="breadcrumb-item">Análisis</span>
+                    </nav>
+                    
+                    <div style="background: #f7fafc; padding: 30px; border-radius: 10px; text-align: center; color: #4a5568;">
+                        <h3 style="margin-bottom: 10px; color: #2d3748;">Área de Contenido Principal</h3>
+                        <p>Aquí va el contenido de la página seleccionada en el sidebar.</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+/* Sidebar Vertical con Flexbox */
+.sidebar-nav {
+    display: flex;
+    flex-direction: column;        /* Stack vertical */
+    gap: 5px;                     /* Espaciado entre items */
+}
+
+.sidebar-item {
+    display: flex;                 /* Icon + Text horizontal */
+    align-items: center;          /* Centrado vertical */
+    gap: 12px;                    /* Espacio icon-text */
+    padding: 12px 25px;
+    transition: all 0.2s ease;
+}
+
+/* Breadcrumb con Flexbox */
+.breadcrumb {
+    display: flex;
+    align-items: center;          /* Alineación perfecta */
+    gap: 8px;                     /* Espacio entre elementos */
+    flex-wrap: wrap;              /* Responsive wrapping */
+}
+            </div>
+        </div>
+
+        <!-- Sección 3: Tabs -->
+        <div class="section">
+            <h2>3. Sistema de Tabs Responsive</h2>
+            <div class="highlight">
+                <strong>Flex Magic:</strong> Los tabs usan <code>flex: 1</code> para distribuirse equitativamente, mientras que el contenido mantiene su estructura independiente.
+            </div>
+
+            <div class="tabs">
+                <div class="tab-list">
+                    <button class="tab-button active">📊 Dashboard</button>
+                    <button class="tab-button">👥 Usuarios</button>
+                    <button class="tab-button">💰 Ventas</button>
+                    <button class="tab-button">📈 Reportes</button>
+                </div>
+                <div class="tab-content">
+                    <h3 style="margin-bottom: 15px; color: #2d3748;">Dashboard Principal</h3>
+                    <p>Bienvenido al panel de control principal. Aquí puedes ver un resumen de todas las métricas importantes de tu aplicación. Los tabs permiten una navegación fluida entre diferentes secciones sin recargar la página.</p>
+                    <p style="margin-top: 15px;">Este sistema de tabs está construido completamente con Flexbox, lo que garantiza una distribución perfecta del espacio y una experiencia de usuario excepcional en todos los dispositivos.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Sistema de Botones -->
+        <div class="section">
+            <h2>4. Sistema Completo de Botones</h2>
+            <div class="highlight">
+                <strong>Button Flexibility:</strong> Los botones usan flexbox internamente para alinear íconos y texto perfectamente. <code>align-items: center</code> y <code>gap</code> son clave.
+            </div>
+
+            <div class="button-showcase">
+                <button class="btn btn-primary">
+                    ✨ Botón Principal
+                </button>
+                <button class="btn btn-secondary">
+                    Secundario
+                </button>
+                <button class="btn btn-success">
+                    ✅ Éxito
+                </button>
+                <button class="btn btn-danger">
+                    ❌ Peligro
+                </button>
+                <button class="btn btn-outline">
+                    🔗 Outline
+                </button>
+                <button class="btn btn-icon">
+                    ⚙️
+                </button>
+            </div>
+
+            <h3 style="color: #2d3748; margin: 30px 0 15px 0;">Button Group - Selección Múltiple</h3>
+            <div class="button-group">
+                <button class="btn active">📱 Móvil</button>
+                <button class="btn">💻 Desktop</button>
+                <button class="btn">📊 Tablet</button>
+                <button class="btn">⌚ Smartwatch</button>
+            </div>
+
+            <div class="code-example">
+/* Botón con Flexbox interno */
+.btn {
+    display: inline-flex;          /* Flexbox para contenido interno */
+    align-items: center;          /* Icon + Text centrados */
+    gap: 8px;                     /* Espacio entre icon y texto */
+    padding: 12px 24px;
+    transition: all 0.3s ease;
+}
+
+/* Button Group con distribución equitativa */
+.button-group {
+    display: flex;                 /* Botones lado a lado */
+    overflow: hidden;              /* Corners redondeados limpios */
+}
+
+.button-group .btn {
+    flex: 1;                      /* Distribución equitativa */
+    justify-content: center;      /* Contenido centrado */
+    border-radius: 0;             /* Sin bordes individuales */
+}
+            </div>
+        </div>
+
+        <!-- Sección 5: Pagination -->
+        <div class="section">
+            <h2>5. Paginación Responsive</h2>
+            <div class="highlight">
+                <strong>Smart Spacing:</strong> La paginación usa flexbox para mantener los elementos centrados y permite wrapping natural en pantallas pequeñas.
+            </div>
+
+            <nav class="pagination">
+                <a href="#" class="pagination-btn">‹ Anterior</a>
+                <a href="#" class="pagination-btn">1</a>
+                <a href="#" class="pagination-btn active">2</a>
+                <a href="#" class="pagination-btn">3</a>
+                <a href="#" class="pagination-btn">4</a>
+                <a href="#" class="pagination-btn">5</a>
+                <a href="#" class="pagination-btn">Siguiente ›</a>
+            </nav>
+
+            <div class="code-example">
+/* Paginación Centrada y Flexible */
+.pagination {
+    display: flex;
+    align-items: center;          /* Alineación vertical */
+    gap: 5px;                     /* Espaciado entre botones */
+    justify-content: center;      /* Centrado horizontal */
+    flex-wrap: wrap;              /* Responsive wrapping */
+}
+
+.pagination-btn {
+    padding: 10px 15px;
+    transition: all 0.2s ease;
+    /* Cada botón mantiene su tamaño individual */
+}
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Funcionalidad básica de tabs
+        document.querySelectorAll('.tab-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.querySelectorAll('.tab-button').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+
+        // Funcionalidad de button group
+        document.querySelectorAll('.button-group .btn').forEach(button => {
+            button.addEventListener('click', () => {
+                button.parentElement.querySelectorAll('.btn').forEach(b => b.classList.remove('active'));
+                button.classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

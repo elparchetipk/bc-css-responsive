@@ -1,0 +1,861 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Off-Canvas Inteligente</title>
+    <style>
+        /* =================================================================
+           SISTEMA BASE: TOKENS Y FUNDAMENTOS
+           ================================================================= */
+        
+        @layer reset, tokens, base, layout-components, offcanvas-behavior, responsive-states;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+        
+        @layer tokens {
+            :root {
+                /* Tokens específicos para sistemas off-canvas */
+                --offcanvas-width-sm: 280px;
+                --offcanvas-width-md: 320px;
+                --offcanvas-width-lg: 380px;
+                --offcanvas-width-xl: 420px;
+                
+                /* Tokens de timing para animaciones fluidas */
+                --offcanvas-transition-fast: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+                --offcanvas-transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                --offcanvas-transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                
+                /* Tokens de profundidad para overlays */
+                --offcanvas-backdrop: rgba(0, 0, 0, 0.5);
+                --offcanvas-backdrop-light: rgba(0, 0, 0, 0.2);
+                --offcanvas-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+                
+                /* Tokens de colores para off-canvas */
+                --offcanvas-bg: #ffffff;
+                --offcanvas-bg-secondary: #f8fafc;
+                --offcanvas-border: #e2e8f0;
+                --offcanvas-text: #1e293b;
+                --offcanvas-text-muted: #64748b;
+                --offcanvas-accent: #3b82f6;
+                
+                /* Tokens de z-index para layering correcto */
+                --offcanvas-z-backdrop: 1040;
+                --offcanvas-z-panel: 1050;
+                --offcanvas-z-overlay: 1060;
+                
+                /* Tokens de espaciado interno */
+                --offcanvas-padding-sm: 1rem;
+                --offcanvas-padding-md: 1.5rem;
+                --offcanvas-padding-lg: 2rem;
+                --offcanvas-padding-xl: 2.5rem;
+            }
+        }
+        
+        @layer base {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                background: #f1f5f9;
+                color: var(--offcanvas-text);
+                overflow-x: hidden; /* Prevenir scroll horizontal en demostraciones */
+            }
+        }
+        
+        /* =================================================================
+           LAYOUT PRINCIPAL: CONTENEDOR ADAPTATIVO
+           ================================================================= */
+        
+        @layer layout-components {
+            .app-layout {
+                /* El layout principal es un contexto de container query */
+                container-type: inline-size;
+                container-name: app-layout;
+                
+                min-height: 100vh;
+                display: flex;
+                background: white;
+                position: relative;
+                
+                /* Estado por defecto: layout móvil donde off-canvas está oculto */
+                & .main-content {
+                    flex: 1;
+                    padding: var(--offcanvas-padding-lg);
+                    transition: margin-left var(--offcanvas-transition-medium);
+                    
+                    & .content-header {
+                        background: var(--offcanvas-bg-secondary);
+                        padding: var(--offcanvas-padding-md);
+                        border-radius: 0.75rem;
+                        margin-bottom: var(--offcanvas-padding-lg);
+                        border: 1px solid var(--offcanvas-border);
+                        
+                        & .page-title {
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            color: var(--offcanvas-text);
+                            margin-bottom: 0.5rem;
+                        }
+                        
+                        & .page-subtitle {
+                            color: var(--offcanvas-text-muted);
+                            font-size: 0.875rem;
+                        }
+                        
+                        & .toggle-btn {
+                            background: var(--offcanvas-accent);
+                            color: white;
+                            border: none;
+                            padding: 0.75rem 1rem;
+                            border-radius: 0.5rem;
+                            font-size: 0.875rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: background-color var(--offcanvas-transition-fast);
+                            margin-top: 1rem;
+                            
+                            &:hover {
+                                background: #2563eb;
+                            }
+                        }
+                    }
+                    
+                    & .content-body {
+                        background: white;
+                        padding: var(--offcanvas-padding-xl);
+                        border-radius: 0.75rem;
+                        border: 1px solid var(--offcanvas-border);
+                        min-height: 500px;
+                        
+                        & .demo-section {
+                            margin-bottom: var(--offcanvas-padding-lg);
+                            
+                            & h3 {
+                                color: var(--offcanvas-text);
+                                margin-bottom: var(--offcanvas-padding-md);
+                                font-weight: 600;
+                            }
+                            
+                            & p {
+                                color: var(--offcanvas-text-muted);
+                                line-height: 1.6;
+                                margin-bottom: var(--offcanvas-padding-sm);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* =============================================================
+               COMPONENTE OFF-CANVAS ADAPTATIVO
+               ============================================================= */
+            
+            .offcanvas-nav {
+                /* El off-canvas también es un contexto de container query */
+                container-type: inline-size;
+                container-name: offcanvas-nav;
+                
+                background: var(--offcanvas-bg);
+                border-right: 1px solid var(--offcanvas-border);
+                width: var(--offcanvas-width-md);
+                flex-shrink: 0;
+                
+                /* Por defecto, está oculto fuera de pantalla (mobile-first) */
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                transform: translateX(-100%);
+                transition: transform var(--offcanvas-transition-medium);
+                z-index: var(--offcanvas-z-panel);
+                box-shadow: var(--offcanvas-shadow);
+                
+                /* Estado activo: desliza hacia adentro */
+                &.active {
+                    transform: translateX(0);
+                }
+                
+                & .offcanvas-header {
+                    padding: var(--offcanvas-padding-lg);
+                    border-bottom: 1px solid var(--offcanvas-border);
+                    background: var(--offcanvas-bg-secondary);
+                    
+                    & .offcanvas-title {
+                        font-size: 1.25rem;
+                        font-weight: 700;
+                        color: var(--offcanvas-text);
+                        margin-bottom: 0.5rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        
+                        & .title-icon {
+                            width: 32px;
+                            height: 32px;
+                            background: var(--offcanvas-accent);
+                            color: white;
+                            border-radius: 0.5rem;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: 1rem;
+                        }
+                    }
+                    
+                    & .offcanvas-subtitle {
+                        color: var(--offcanvas-text-muted);
+                        font-size: 0.875rem;
+                    }
+                    
+                    & .close-btn {
+                        position: absolute;
+                        top: var(--offcanvas-padding-md);
+                        right: var(--offcanvas-padding-md);
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        color: var(--offcanvas-text-muted);
+                        cursor: pointer;
+                        width: 32px;
+                        height: 32px;
+                        border-radius: 0.375rem;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        transition: background-color var(--offcanvas-transition-fast);
+                        
+                        &:hover {
+                            background: rgba(0,0,0,0.05);
+                        }
+                    }
+                }
+                
+                & .offcanvas-body {
+                    padding: var(--offcanvas-padding-lg);
+                    height: calc(100vh - 120px); /* Altura dinámica restando header */
+                    overflow-y: auto;
+                    
+                    & .nav-section {
+                        margin-bottom: var(--offcanvas-padding-xl);
+                        
+                        & .section-title {
+                            font-size: 0.75rem;
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.05em;
+                            color: var(--offcanvas-text-muted);
+                            margin-bottom: var(--offcanvas-padding-md);
+                        }
+                        
+                        & .nav-list {
+                            list-style: none;
+                            
+                            & .nav-item {
+                                margin-bottom: 0.25rem;
+                                
+                                & .nav-link {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.75rem;
+                                    padding: 0.75rem;
+                                    border-radius: 0.5rem;
+                                    color: var(--offcanvas-text);
+                                    text-decoration: none;
+                                    font-size: 0.875rem;
+                                    font-weight: 500;
+                                    transition: all var(--offcanvas-transition-fast);
+                                    
+                                    & .nav-icon {
+                                        width: 20px;
+                                        height: 20px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: 1rem;
+                                        opacity: 0.7;
+                                    }
+                                    
+                                    & .nav-text {
+                                        flex: 1;
+                                    }
+                                    
+                                    & .nav-badge {
+                                        background: var(--offcanvas-accent);
+                                        color: white;
+                                        font-size: 0.75rem;
+                                        font-weight: 600;
+                                        padding: 0.125rem 0.5rem;
+                                        border-radius: 1rem;
+                                        min-width: 20px;
+                                        text-align: center;
+                                    }
+                                    
+                                    & .nav-arrow {
+                                        color: var(--offcanvas-text-muted);
+                                        font-size: 0.75rem;
+                                        transition: transform var(--offcanvas-transition-fast);
+                                    }
+                                    
+                                    &:hover {
+                                        background: var(--offcanvas-bg-secondary);
+                                        color: var(--offcanvas-accent);
+                                        
+                                        & .nav-icon {
+                                            opacity: 1;
+                                        }
+                                        
+                                        & .nav-arrow {
+                                            transform: translateX(4px);
+                                        }
+                                    }
+                                    
+                                    &.active {
+                                        background: var(--offcanvas-accent);
+                                        color: white;
+                                        
+                                        & .nav-icon {
+                                            opacity: 1;
+                                        }
+                                        
+                                        & .nav-badge {
+                                            background: rgba(255,255,255,0.2);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Backdrop para estados overlay */
+            .offcanvas-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: var(--offcanvas-backdrop);
+                z-index: var(--offcanvas-z-backdrop);
+                opacity: 0;
+                visibility: hidden;
+                transition: all var(--offcanvas-transition-medium);
+                
+                &.active {
+                    opacity: 1;
+                    visibility: visible;
+                }
+            }
+        }
+        
+        /* =================================================================
+           COMPORTAMIENTO ADAPTATIVO CON CONTAINER QUERIES
+           ================================================================= */
+        
+        @layer offcanvas-behavior {
+            /* Estado Móvil: < 768px - Overlay completo con backdrop */
+            @container app-layout (max-width: 767px) {
+                .app-layout {
+                    & .offcanvas-nav {
+                        width: min(var(--offcanvas-width-sm), 85vw); /* Nunca más del 85% del viewport */
+                        box-shadow: var(--offcanvas-shadow);
+                        
+                        & .offcanvas-header {
+                            & .close-btn {
+                                display: block; /* Mostramos botón de cerrar en móvil */
+                            }
+                        }
+                        
+                        & .offcanvas-body {
+                            & .nav-section {
+                                & .nav-list {
+                                    & .nav-item {
+                                        & .nav-link {
+                                            padding: 1rem 0.75rem; /* Más padding para touch targets */
+                                            font-size: 1rem;
+                                            
+                                            & .nav-icon {
+                                                width: 24px;
+                                                height: 24px;
+                                                font-size: 1.125rem;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Tablet: 768px - 1023px - Overlay con menos backdrop */
+            @container app-layout (min-width: 768px) and (max-width: 1023px) {
+                .app-layout {
+                    & .offcanvas-nav {
+                        width: var(--offcanvas-width-md);
+                        
+                        & .offcanvas-header {
+                            & .close-btn {
+                                display: block;
+                            }
+                        }
+                    }
+                    
+                    /* En tablet, el backdrop es más sutil */
+                    & .offcanvas-backdrop {
+                        background: var(--offcanvas-backdrop-light);
+                    }
+                }
+            }
+            
+            /* Estado Desktop Pequeño: 1024px - 1279px - Push content */
+            @container app-layout (min-width: 1024px) and (max-width: 1279px) {
+                .app-layout {
+                    & .offcanvas-nav {
+                        position: static; /* No más fixed positioning */
+                        transform: none;
+                        height: 100vh;
+                        width: var(--offcanvas-width-md);
+                        box-shadow: none;
+                        border-right: 1px solid var(--offcanvas-border);
+                        
+                        &.active {
+                            /* En desktop, siempre visible cuando activo */
+                        }
+                        
+                        & .offcanvas-header {
+                            & .close-btn {
+                                display: none; /* No necesitamos cerrar en desktop */
+                            }
+                        }
+                    }
+                    
+                    /* El contenido principal se ajusta al espacio disponible */
+                    &:has(.offcanvas-nav.active) .main-content {
+                        margin-left: 0; /* Sin margin porque el nav ya ocupa espacio */
+                    }
+                    
+                    /* No necesitamos backdrop en desktop */
+                    & .offcanvas-backdrop {
+                        display: none;
+                    }
+                }
+            }
+            
+            /* Estado Desktop Grande: 1280px+ - Sidebar integrado */
+            @container app-layout (min-width: 1280px) {
+                .app-layout {
+                    & .offcanvas-nav {
+                        position: static;
+                        transform: none;
+                        height: 100vh;
+                        width: var(--offcanvas-width-lg);
+                        box-shadow: none;
+                        
+                        /* En desktop grande, navegación siempre visible */
+                        display: block !important;
+                        
+                        & .offcanvas-header {
+                            padding: var(--offcanvas-padding-xl);
+                            
+                            & .offcanvas-title {
+                                font-size: 1.5rem;
+                                
+                                & .title-icon {
+                                    width: 40px;
+                                    height: 40px;
+                                    font-size: 1.25rem;
+                                }
+                            }
+                            
+                            & .close-btn {
+                                display: none;
+                            }
+                        }
+                        
+                        & .offcanvas-body {
+                            padding: var(--offcanvas-padding-xl);
+                            
+                            & .nav-section {
+                                & .section-title {
+                                    font-size: 0.875rem;
+                                }
+                                
+                                & .nav-list {
+                                    & .nav-item {
+                                        & .nav-link {
+                                            padding: 1rem;
+                                            border-radius: 0.75rem;
+                                            
+                                            & .nav-icon {
+                                                width: 24px;
+                                                height: 24px;
+                                                font-size: 1.125rem;
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    & .offcanvas-backdrop {
+                        display: none;
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           UTILIDADES Y ESTADOS ESPECIALES
+           ================================================================= */
+        
+        @layer responsive-states {
+            .demo-controls {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: white;
+                padding: 1rem;
+                border-radius: 0.75rem;
+                box-shadow: var(--offcanvas-shadow);
+                border: 1px solid var(--offcanvas-border);
+                z-index: var(--offcanvas-z-overlay);
+                
+                & .control-group {
+                    margin-bottom: 1rem;
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    & label {
+                        display: block;
+                        font-size: 0.875rem;
+                        font-weight: 600;
+                        color: var(--offcanvas-text);
+                        margin-bottom: 0.5rem;
+                    }
+                    
+                    & input[type="range"] {
+                        width: 200px;
+                        margin-bottom: 0.5rem;
+                    }
+                    
+                    & .current-value {
+                        font-family: 'Courier New', monospace;
+                        background: var(--offcanvas-bg-secondary);
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 0.25rem;
+                        font-size: 0.75rem;
+                        color: var(--offcanvas-text-muted);
+                    }
+                }
+            }
+            
+            .info-panel {
+                background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+                border: 1px solid var(--offcanvas-accent);
+                border-radius: 0.75rem;
+                padding: var(--offcanvas-padding-xl);
+                margin: var(--offcanvas-padding-xl);
+                position: relative;
+                z-index: 10;
+                
+                & h3 {
+                    color: #1e40af;
+                    margin-bottom: var(--offcanvas-padding-md);
+                    font-weight: 600;
+                }
+                
+                & p {
+                    margin-bottom: var(--offcanvas-padding-sm);
+                    line-height: 1.6;
+                }
+                
+                & code {
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    font-family: 'Courier New', monospace;
+                    font-size: 0.875rem;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="info-panel">
+        <h3>🧭 Sistema Off-Canvas Inteligente: Cuatro Comportamientos, Una Experiencia</h3>
+        <p>Este sistema off-canvas demuestra adaptabilidad contextual avanzada. No es solo una barra lateral que se desliza, sino un componente que entiende su entorno y se comporta apropiadamente según el espacio disponible y el tipo de dispositivo.</p>
+        
+        <p><strong>Los cuatro modos adaptativos del off-canvas:</strong></p>
+        <p>📱 <strong>Móvil (&lt; 768px):</strong> Overlay completo con backdrop oscuro y controles touch-optimized</p>
+        <p>💻 <strong>Tablet (768px-1023px):</strong> Overlay con backdrop sutil y dimensiones optimizadas</p>
+        <p>🖥️ <strong>Desktop Pequeño (1024px-1279px):</strong> Push content mode, el nav empuja el contenido</p>
+        <p>🎯 <strong>Desktop Grande (1280px+):</strong> Sidebar integrado, siempre visible, parte del layout</p>
+    </div>
+    
+    <!-- Controles de demostración -->
+    <div class="demo-controls">
+        <div class="control-group">
+            <label for="layout-width">Ancho del Layout:</label>
+            <input type="range" id="layout-width" min="320" max="1600" value="1024" step="20">
+            <div class="current-value" id="width-display">1024px</div>
+        </div>
+        
+        <div class="control-group">
+            <button id="toggle-nav" style="background: #3b82f6; color: white; border: none; padding: 0.5rem 1rem; border-radius: 0.375rem; cursor: pointer;">
+                Toggle Navigation
+            </button>
+        </div>
+    </div>
+    
+    <!-- Layout principal -->
+    <div class="app-layout" id="app-layout">
+        <!-- Off-canvas Navigation -->
+        <nav class="offcanvas-nav" id="offcanvas-nav">
+            <div class="offcanvas-header">
+                <div class="offcanvas-title">
+                    <div class="title-icon">🚀</div>
+                    <div>
+                        <div>Dashboard Pro</div>
+                    </div>
+                </div>
+                <div class="offcanvas-subtitle">Navegación inteligente</div>
+                <button class="close-btn" onclick="closeOffcanvas()">×</button>
+            </div>
+            
+            <div class="offcanvas-body">
+                <div class="nav-section">
+                    <div class="section-title">Principal</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <span class="nav-icon">🏠</span>
+                                <span class="nav-text">Dashboard</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📊</span>
+                                <span class="nav-text">Analíticas</span>
+                                <span class="nav-badge">3</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">👥</span>
+                                <span class="nav-text">Usuarios</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📈</span>
+                                <span class="nav-text">Reportes</span>
+                                <span class="nav-badge">12</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="section-title">Gestión</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">🛍️</span>
+                                <span class="nav-text">Productos</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📦</span>
+                                <span class="nav-text">Inventario</span>
+                                <span class="nav-badge">5</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">💰</span>
+                                <span class="nav-text">Facturación</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">🚚</span>
+                                <span class="nav-text">Envíos</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="section-title">Configuración</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">⚙️</span>
+                                <span class="nav-text">Preferencias</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">🔒</span>
+                                <span class="nav-text">Seguridad</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📧</span>
+                                <span class="nav-text">Notificaciones</span>
+                                <span class="nav-badge">7</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">❓</span>
+                                <span class="nav-text">Ayuda</span>
+                                <span class="nav-arrow">→</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Backdrop para estados overlay -->
+        <div class="offcanvas-backdrop" id="offcanvas-backdrop" onclick="closeOffcanvas()"></div>
+        
+        <!-- Contenido principal -->
+        <main class="main-content">
+            <div class="content-header">
+                <h1 class="page-title">Dashboard Principal</h1>
+                <p class="page-subtitle">Bienvenido a tu panel de control adaptativo</p>
+                <button class="toggle-btn" onclick="toggleOffcanvas()">
+                    Mostrar/Ocultar Navegación
+                </button>
+            </div>
+            
+            <div class="content-body">
+                <div class="demo-section">
+                    <h3>🎯 Demostración del Comportamiento Adaptativo</h3>
+                    <p>Usa el control deslizante en la esquina superior derecha para cambiar el ancho del layout y observa cómo el sistema off-canvas se adapta automáticamente.</p>
+                    
+                    <p>En anchos pequeños (móviles), el off-canvas funciona como un overlay completo con backdrop. En anchos medianos (tablets), mantiene el comportamiento overlay pero con ajustes visuales. En anchos grandes (desktop), se convierte en una barra lateral integrada que empuja el contenido.</p>
+                </div>
+                
+                <div class="demo-section">
+                    <h3>🔧 Técnicas Implementadas</h3>
+                    <p>Este sistema utiliza container queries para detectar el contexto del layout principal y aplicar diferentes comportamientos al off-canvas. Cada estado tiene optimizaciones específicas para el tipo de dispositivo y patrón de uso esperado.</p>
+                    
+                    <p>En dispositivos móviles, los controles touch están optimizados con áreas de toque más grandes. En desktop, se eliminan elementos innecesarios como el botón de cerrar y se integra la navegación como parte natural del layout.</p>
+                </div>
+                
+                <div class="demo-section">
+                    <h3>⚡ Beneficios del Enfoque</h3>
+                    <p>Un solo componente off-canvas que funciona perfectamente en todos los contextos, desde móvil hasta desktop ultrawide. Sin JavaScript complejo para detectar dispositivos, sin múltiples versiones del mismo componente, y sin lógica condicional intrincada.</p>
+                    
+                    <p>El sistema respeta las expectativas del usuario en cada plataforma: overlays en móvil donde el espacio es limitado, y sidebars integrados en desktop donde hay espacio abundante.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        // Control del ancho del layout
+        const layoutWidthSlider = document.getElementById('layout-width');
+        const appLayout = document.getElementById('app-layout');
+        const widthDisplay = document.getElementById('width-display');
+        const offcanvasNav = document.getElementById('offcanvas-nav');
+        const offcanvasBackdrop = document.getElementById('offcanvas-backdrop');
+        
+        // Función para actualizar el ancho del layout
+        function updateLayoutWidth() {
+            const width = layoutWidthSlider.value + 'px';
+            appLayout.style.width = width;
+            appLayout.style.margin = '0 auto';
+            widthDisplay.textContent = width;
+        }
+        
+        // Event listener para el slider
+        layoutWidthSlider.addEventListener('input', updateLayoutWidth);
+        
+        // Configuración inicial
+        updateLayoutWidth();
+        
+        // Funciones para toggle del off-canvas
+        function toggleOffcanvas() {
+            offcanvasNav.classList.toggle('active');
+            offcanvasBackdrop.classList.toggle('active');
+        }
+        
+        function closeOffcanvas() {
+            offcanvasNav.classList.remove('active');
+            offcanvasBackdrop.classList.remove('active');
+        }
+        
+        // Event listener para el botón toggle
+        document.getElementById('toggle-nav').addEventListener('click', toggleOffcanvas);
+        
+        // Observador para debugging y feedback
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const width = Math.round(entry.contentRect.width);
+                
+                // Determinar qué modo está activo
+                let modo;
+                if (width < 768) {
+                    modo = '📱 Móvil - Overlay completo';
+                } else if (width < 1024) {
+                    modo = '💻 Tablet - Overlay optimizado';
+                } else if (width < 1280) {
+                    modo = '🖥️ Desktop Pequeño - Push content';
+                } else {
+                    modo = '🎯 Desktop Grande - Sidebar integrado';
+                }
+                
+                console.log(`Ancho: ${width}px - Modo: ${modo}`);
+            }
+        });
+        
+        observer.observe(appLayout);
+        
+        // Cerrar off-canvas con tecla Escape
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeOffcanvas();
+            }
+        });
+        
+        // Activar estado inicial en layouts grandes
+        function checkInitialState() {
+            const width = parseInt(layoutWidthSlider.value);
+            if (width >= 1280) {
+                offcanvasNav.classList.add('active');
+            }
+        }
+        
+        // Llamar al cargar la página
+        checkInitialState();
+        
+        // También verificar cuando cambie el ancho
+        layoutWidthSlider.addEventListener('input', function() {
+            setTimeout(checkInitialState, 100); // Pequeño delay para permitir que se actualice el CSS
+        });
+    </script>
+</body>
+</html>

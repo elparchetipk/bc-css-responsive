@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Media Queries Avanzadas - Día 4</title>
+    <style>
+        /* ================================================
+           SISTEMA BASE Y VARIABLES
+           ================================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --color-primary: #3b82f6;
+            --color-secondary: #64748b;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            --color-background: #f8fafc;
+            --color-surface: #ffffff;
+            --color-text: #1e293b;
+            
+            /* Variables que cambiarán según el contexto */
+            --touch-target-size: 44px;
+            --border-radius: 8px;
+            --shadow-level: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --animation-speed: 0.3s;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background: var(--color-background);
+            /* Comenzamos con configuración touch-friendly */
+            font-size: 16px;
+        }
+        
+        /* ================================================
+           CONTENEDOR PRINCIPAL CON DETECCIÓN DE CONTEXTO
+           ================================================ */
+        
+        .context-aware-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 1rem;
+            min-height: 100vh;
+        }
+        
+        /* ================================================
+           HEADER ADAPTATIVO MULTIDIMENSIONAL
+           ================================================ */
+        
+        .adaptive-header {
+            background: var(--color-surface);
+            padding: 1rem;
+            margin-bottom: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow-level);
+            
+            /* Base: Layout vertical para touch */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            text-align: center;
+        }
+        
+        .device-indicator {
+            background: var(--color-primary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.875rem;
+            font-weight: 600;
+            display: inline-block;
+        }
+        
+        /* ================================================
+           NAVEGACIÓN CONTEXTUAL INTELIGENTE
+           ================================================ */
+        
+        .context-nav {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .nav-item {
+            background: var(--color-background);
+            border: 2px solid transparent;
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            text-decoration: none;
+            color: var(--color-text);
+            font-weight: 500;
+            text-align: center;
+            transition: all var(--animation-speed) ease;
+            
+            /* Touch-first: Área generosa para dedos */
+            min-height: var(--touch-target-size);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        /* ================================================
+           EXPERIENCIA TOUCH: Móviles y tablets
+           ================================================ */
+        
+        @media (pointer: coarse) {
+            :root {
+                --touch-target-size: 48px;
+                --border-radius: 12px;
+                --shadow-level: 0 2px 4px rgba(0, 0, 0, 0.1);
+            }
+            
+            .device-indicator::before {
+                content: "📱 Touch Device - ";
+            }
+            
+            /* Navegación optimizada para touch */
+            .nav-item {
+                margin-bottom: 4px; /* Espaciado entre elementos touch */
+            }
+            
+            .nav-item:active {
+                transform: scale(0.98);
+                background: var(--color-primary);
+                color: white;
+            }
+            
+            /* Elementos interactivos más grandes */
+            .interactive-demo {
+                padding: 1.5rem;
+                margin: 1rem 0;
+            }
+        }
+        
+        /* ================================================
+           EXPERIENCIA MOUSE: Laptops y desktops
+           ================================================ */
+        
+        @media (pointer: fine) {
+            :root {
+                --touch-target-size: 36px;
+                --border-radius: 6px;
+                --shadow-level: 0 8px 25px rgba(0, 0, 0, 0.15);
+                --animation-speed: 0.2s;
+            }
+            
+            body {
+                font-size: 15px; /* Texto más compacto con mouse */
+            }
+            
+            .device-indicator::before {
+                content: "🖱️ Mouse Device - ";
+            }
+            
+            .adaptive-header {
+                /* Layout horizontal con mouse */
+                flex-direction: row;
+                justify-content: space-between;
+                align-items: center;
+                text-align: left;
+            }
+            
+            .context-nav {
+                flex-direction: row;
+                gap: 1rem;
+            }
+            
+            .nav-item {
+                padding: 8px 16px;
+                min-height: auto;
+                
+                /* Efectos hover sofisticados */
+                position: relative;
+                overflow: hidden;
+            }
+            
+            .nav-item::before {
+                content: '';
+                position: absolute;
+                top: 0;
+                left: -100%;
+                width: 100%;
+                height: 100%;
+                background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                transition: left 0.5s ease;
+            }
+            
+            .nav-item:hover {
+                background: var(--color-primary);
+                color: white;
+                transform: translateY(-2px);
+                box-shadow: 0 12px 20px rgba(59, 130, 246, 0.3);
+            }
+            
+            .nav-item:hover::before {
+                left: 100%;
+            }
+        }
+        
+        /* ================================================
+           EXPERIENCIA ORIENTACIÓN: Portrait vs Landscape
+           ================================================ */
+        
+        .orientation-demo {
+            background: var(--color-surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            text-align: center;
+        }
+        
+        .orientation-indicator {
+            background: var(--color-secondary);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        .orientation-content {
+            /* Portrait: Layout vertical */
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .demo-card {
+            background: var(--color-background);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--color-primary);
+        }
+        
+        /* Landscape: Aprovechamos el espacio horizontal */
+        @media (orientation: landscape) {
+            .orientation-indicator::before {
+                content: "🔄 Landscape - ";
+            }
+            
+            .orientation-content {
+                flex-direction: row;
+                align-items: stretch;
+            }
+            
+            .demo-card {
+                flex: 1;
+            }
+            
+            /* Móviles en landscape: Experiencia especial */
+            @media (max-height: 500px) {
+                .orientation-demo {
+                    padding: 1rem;
+                }
+                
+                .demo-card {
+                    padding: 1rem;
+                    font-size: 0.875rem;
+                }
+                
+                .orientation-indicator::before {
+                    content: "📱 Mobile Landscape - ";
+                }
+            }
+        }
+        
+        @media (orientation: portrait) {
+            .orientation-indicator::before {
+                content: "📱 Portrait - ";
+            }
+        }
+        
+        /* ================================================
+           RESOLUCIÓN ADAPTATIVA
+           ================================================ */
+        
+        .resolution-demo {
+            background: var(--color-surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .resolution-indicator {
+            background: var(--color-success);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+        }
+        
+        /* Resolución estándar */
+        .resolution-demo::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, transparent 40%, rgba(59, 130, 246, 0.1) 50%, transparent 60%);
+            z-index: -1;
+        }
+        
+        /* Pantallas de alta resolución */
+        @media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+            .resolution-indicator::before {
+                content: "✨ High-DPI - ";
+            }
+            
+            .resolution-demo {
+                /* Efectos más sofisticados en pantallas de calidad */
+                box-shadow: 
+                    0 20px 25px rgba(0, 0, 0, 0.1),
+                    0 8px 10px rgba(0, 0, 0, 0.04);
+                backdrop-filter: blur(10px);
+                -webkit-backdrop-filter: blur(10px);
+            }
+            
+            .resolution-demo::before {
+                background: linear-gradient(45deg, 
+                    rgba(59, 130, 246, 0.1) 0%,
+                    rgba(16, 185, 129, 0.1) 25%,
+                    rgba(245, 158, 11, 0.1) 50%,
+                    rgba(239, 68, 68, 0.1) 75%,
+                    rgba(59, 130, 246, 0.1) 100%);
+                animation: shimmer 3s ease-in-out infinite;
+            }
+        }
+        
+        @media (-webkit-min-device-pixel-ratio: 1), (max-resolution: 191dpi) {
+            .resolution-indicator::before {
+                content: "🖥️ Standard-DPI - ";
+            }
+        }
+        
+        /* ================================================
+           COMBINACIONES COMPLEJAS DE MEDIA QUERIES
+           ================================================ */
+        
+        .complex-demo {
+            background: var(--color-surface);
+            border-radius: var(--border-radius);
+            padding: 2rem;
+            margin: 2rem 0;
+            border: 2px solid var(--color-background);
+        }
+        
+        .scenario-indicator {
+            background: var(--color-warning);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            display: inline-block;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+        
+        /* Escenario 1: Mobile + Portrait + Touch */
+        @media (max-width: 767px) and (orientation: portrait) and (pointer: coarse) {
+            .scenario-indicator::before {
+                content: "📱 Mobile Portrait Touch - ";
+            }
+            
+            .complex-demo {
+                border-color: var(--color-success);
+                background: linear-gradient(135deg, var(--color-surface) 0%, rgba(16, 185, 129, 0.05) 100%);
+            }
+        }
+        
+        /* Escenario 2: Tablet + Landscape + Touch */
+        @media (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) and (pointer: coarse) {
+            .scenario-indicator::before {
+                content: "📟 Tablet Landscape Touch - ";
+            }
+            
+            .complex-demo {
+                border-color: var(--color-primary);
+                background: linear-gradient(135deg, var(--color-surface) 0%, rgba(59, 130, 246, 0.05) 100%);
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 1rem;
+            }
+        }
+        
+        /* Escenario 3: Desktop + Mouse + High-DPI */
+        @media (min-width: 1025px) and (pointer: fine) and (-webkit-min-device-pixel-ratio: 2) {
+            .scenario-indicator::before {
+                content: "💻 Desktop Mouse Retina - ";
+            }
+            
+            .complex-demo {
+                border-color: var(--color-error);
+                background: 
+                    linear-gradient(135deg, var(--color-surface) 0%, rgba(239, 68, 68, 0.05) 100%),
+                    radial-gradient(circle at 20% 50%, rgba(59, 130, 246, 0.1) 0%, transparent 50%),
+                    radial-gradient(circle at 80% 20%, rgba(16, 185, 129, 0.1) 0%, transparent 50%);
+            }
+        }
+        
+        /* ================================================
+           ANIMACIONES KEYNOTE
+           ================================================ */
+        
+        @keyframes shimmer {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 1; }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* Animaciones solo en dispositivos capaces */
+        @media (prefers-reduced-motion: no-preference) and (pointer: fine) {
+            .nav-item {
+                animation: pulse 4s ease-in-out infinite;
+            }
+            
+            .nav-item:nth-child(2) {
+                animation-delay: 0.5s;
+            }
+            
+            .nav-item:nth-child(3) {
+                animation-delay: 1s;
+            }
+        }
+        
+        /* ================================================
+           UTILIDADES DE DEBUGGING VISUAL
+           ================================================ */
+        
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 0.75rem;
+            z-index: 1000;
+            max-width: 200px;
+        }
+        
+        /* Mostramos información de debugging solo en desarrollo */
+        @media (min-width: 1200px) {
+            .debug-info {
+                display: block;
+            }
+        }
+        
+        @media (max-width: 1199px) {
+            .debug-info {
+                display: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="context-aware-container">
+        <!-- Header adaptativo -->
+        <header class="adaptive-header">
+            <div>
+                <span class="device-indicator">Detectando contexto...</span>
+                <h1>Media Queries Avanzadas</h1>
+            </div>
+            
+            <nav class="context-nav">
+                <a href="#" class="nav-item">Inicio</a>
+                <a href="#" class="nav-item">Proyectos</a>
+                <a href="#" class="nav-item">Contacto</a>
+            </nav>
+        </header>
+        
+        <!-- Demo de orientación -->
+        <section class="orientation-demo">
+            <span class="orientation-indicator">Detección de orientación</span>
+            <h2>Adaptación por Orientación</h2>
+            <div class="orientation-content">
+                <div class="demo-card">
+                    <h3>Contenido A</h3>
+                    <p>Este layout cambia automáticamente según la orientación de tu dispositivo. En portrait se apila verticalmente, en landscape se extiende horizontalmente.</p>
+                </div>
+                <div class="demo-card">
+                    <h3>Contenido B</h3>
+                    <p>Rota tu dispositivo para ver cómo se adapta la experiencia. En móviles en landscape, todo se compacta para una experiencia inmersiva.</p>
+                </div>
+                <div class="demo-card">
+                    <h3>Contenido C</h3>
+                    <p>La orientación no es solo layout, es intención del usuario. Respondemos apropiadamente a cada contexto.</p>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Demo de resolución -->
+        <section class="resolution-demo">
+            <span class="resolution-indicator">Detección de DPI</span>
+            <h2>Adaptación por Resolución</h2>
+            <p>Esta sección detecta la densidad de píxeles de tu pantalla y ajusta los efectos visuales en consecuencia. Las pantallas de alta resolución (Retina, AMOLED) reciben efectos más sofisticados, mientras que las pantallas estándar priorizan el performance.</p>
+            
+            <div style="margin-top: 1rem; padding: 1rem; background: rgba(255,255,255,0.5); border-radius: 8px;">
+                <strong>¿Por qué esto importa?</strong><br>
+                Los dispositivos con pantallas de alta resolución usualmente tienen más potencia de procesamiento, mejor GPU, y conexiones más rápidas. Podemos aprovechar estas capacidades para ofrecer experiencias más ricas.
+            </div>
+        </section>
+        
+        <!-- Demo de combinaciones complejas -->
+        <section class="complex-demo">
+            <span class="scenario-indicator">Escenario detectado</span>
+            <h2>Combinaciones Complejas</h2>
+            <div>
+                <p>Esta sección combina múltiples media queries para detectar escenarios específicos:</p>
+                <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                    <li><strong>Mobile + Portrait + Touch:</strong> Interfaz optimizada para uso con una mano</li>
+                    <li><strong>Tablet + Landscape + Touch:</strong> Layout de dos columnas para aprovechar el espacio</li>
+                    <li><strong>Desktop + Mouse + Retina:</strong> Experiencia premium con efectos avanzados</li>
+                </ul>
+                <p>Cada combinación recibe un tratamiento visual específico que puedes ver en el color del borde y fondo de esta sección.</p>
+            </div>
+        </section>
+        
+        <!-- Información de debugging -->
+        <div class="debug-info">
+            <div>Viewport: <span id="viewport-size">-</span></div>
+            <div>Orientación: <span id="orientation">-</span></div>
+            <div>Pointer: <span id="pointer-type">-</span></div>
+            <div>DPR: <span id="device-pixel-ratio">-</span></div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de debugging en tiempo real
+        function updateDebugInfo() {
+            // Información básica del viewport
+            const viewportSize = `${window.innerWidth}x${window.innerHeight}`;
+            const orientation = window.innerWidth > window.innerHeight ? 'Landscape' : 'Portrait';
+            const devicePixelRatio = window.devicePixelRatio || 1;
+            
+            // Detección de tipo de pointer
+            let pointerType = 'Unknown';
+            if (window.matchMedia('(pointer: fine)').matches) {
+                pointerType = 'Fine (Mouse/Trackpad)';
+            } else if (window.matchMedia('(pointer: coarse)').matches) {
+                pointerType = 'Coarse (Touch)';
+            } else if (window.matchMedia('(pointer: none)').matches) {
+                pointerType = 'None (Keyboard)';
+            }
+            
+            // Actualizamos el debug panel
+            document.getElementById('viewport-size').textContent = viewportSize;
+            document.getElementById('orientation').textContent = orientation;
+            document.getElementById('pointer-type').textContent = pointerType;
+            document.getElementById('device-pixel-ratio').textContent = devicePixelRatio;
+            
+            // Log para consola (útil para desarrollo)
+            console.log(`Debug Info - Viewport: ${viewportSize}, Orientation: ${orientation}, Pointer: ${pointerType}, DPR: ${devicePixelRatio}`);
+        }
+        
+        // Actualizamos información en load y resize
+        window.addEventListener('load', updateDebugInfo);
+        window.addEventListener('resize', updateDebugInfo);
+        window.addEventListener('orientationchange', () => {
+            // Pequeño delay para que el navegador procese el cambio
+            setTimeout(updateDebugInfo, 100);
+        });
+        
+        // Sistema de detección de media queries en JavaScript
+        function setupMediaQueryListeners() {
+            const mediaQueries = {
+                'mobile': '(max-width: 767px)',
+                'tablet': '(min-width: 768px) and (max-width: 1024px)',
+                'desktop': '(min-width: 1025px)',
+                'touch': '(pointer: coarse)',
+                'mouse': '(pointer: fine)',
+                'retina': '(-webkit-min-device-pixel-ratio: 2)',
+                'landscape': '(orientation: landscape)',
+                'portrait': '(orientation: portrait)'
+            };
+            
+            Object.entries(mediaQueries).forEach(([name, query]) => {
+                const mql = window.matchMedia(query);
+                
+                // Listener para cambios
+                mql.addEventListener('change', (e) => {
+                    console.log(`Media Query "${name}" ${e.matches ? 'activated' : 'deactivated'}`);
+                    
+                    // Ejemplo: Podrías disparar eventos personalizados aquí
+                    document.dispatchEvent(new CustomEvent('mediaQueryChange', {
+                        detail: { name, matches: e.matches, query }
+                    }));
+                });
+                
+                // Estado inicial
+                if (mql.matches) {
+                    console.log(`Media Query "${name}" is active on load`);
+                }
+            });
+        }
+        
+        // Inicializamos los listeners
+        setupMediaQueryListeners();
+        
+        // Ejemplo de uso de eventos personalizados
+        document.addEventListener('mediaQueryChange', (e) => {
+            const { name, matches } = e.detail;
+            
+            // Ejemplo: Cambiar clases en el body según el contexto
+            if (name === 'touch' && matches) {
+                document.body.classList.add('touch-device');
+            } else if (name === 'touch' && !matches) {
+                document.body.classList.remove('touch-device');
+            }
+        });
+    </script>
+</body>
+</html>

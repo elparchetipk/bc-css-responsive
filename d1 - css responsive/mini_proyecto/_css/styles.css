@@ -1,0 +1,388 @@
+/* ==========================================
+   Variables CSS para consistencia de diseño
+   ========================================== */
+:root {
+  /* Colores principales */
+  --color-primary: #2563eb;
+  --color-primary-dark: #1d4ed8;
+  --color-secondary: #64748b;
+  --color-accent: #f59e0b;
+
+  /* Colores de texto */
+  --color-text: #1e293b;
+  --color-text-light: #64748b;
+  --color-text-white: #ffffff;
+
+  /* Colores de fondo */
+  --color-bg: #ffffff;
+  --color-bg-light: #f8fafc;
+  --color-bg-dark: #0f172a;
+
+  /* Tipografía */
+  --font-primary: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-bold: 700;
+
+  /* Espaciado consistente */
+  --space-xs: 0.5rem;
+  --space-sm: 1rem;
+  --space-md: 1.5rem;
+  --space-lg: 2rem;
+  --space-xl: 3rem;
+  --space-2xl: 4rem;
+
+  /* Breakpoints */
+  --breakpoint-sm: 640px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+}
+
+/* ==========================================
+     Reset y Estilos Base
+     ========================================== */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  font-size: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: var(--font-primary);
+  font-weight: var(--font-weight-normal);
+  line-height: 1.6;
+  color: var(--color-text);
+  background-color: var(--color-bg);
+}
+
+/* ==========================================
+     Utilidades de Layout
+     ========================================== */
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 var(--space-sm);
+}
+
+/* En tablets y desktop, aumentamos el padding lateral */
+@media (min-width: 768px) {
+  .container {
+    padding: 0 var(--space-lg);
+  }
+}
+
+/* ==========================================
+     Tipografía Responsive
+     ========================================== */
+.section__title {
+  font-size: clamp(1.75rem, 4vw, 2.5rem);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text);
+  text-align: center;
+  margin-bottom: var(--space-xl);
+}
+
+/* ==========================================
+     Header y Navegación
+     ========================================== */
+.header {
+  background-color: var(--color-bg);
+  border-bottom: 1px solid #e2e8f0;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.header__content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--space-sm) 0;
+}
+
+.logo__text {
+  font-size: 1.5rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+}
+
+.nav__list {
+  display: flex;
+  list-style: none;
+  gap: var(--space-md);
+}
+
+.nav__link {
+  text-decoration: none;
+  color: var(--color-text);
+  font-weight: var(--font-weight-medium);
+  transition: color 0.3s ease;
+}
+
+.nav__link:hover {
+  color: var(--color-primary);
+}
+
+/* Navegación responsive - en móvil ocultamos algunos elementos */
+@media (max-width: 767px) {
+  .nav__list {
+    gap: var(--space-sm);
+  }
+
+  .nav__link {
+    font-size: 0.9rem;
+  }
+}
+
+/* ==========================================
+     Sección Hero
+     ========================================== */
+.hero {
+  background: linear-gradient(135deg, var(--color-bg-light) 0%, #e2e8f0 100%);
+  padding: var(--space-2xl) 0;
+  text-align: center;
+}
+
+.hero__title {
+  font-size: clamp(2rem, 6vw, 3.5rem);
+  font-weight: var(--font-weight-bold);
+  line-height: 1.2;
+  margin-bottom: var(--space-md);
+}
+
+.hero__highlight {
+  color: var(--color-primary);
+  display: block;
+}
+
+.hero__description {
+  font-size: clamp(1rem, 2.5vw, 1.25rem);
+  color: var(--color-text-light);
+  max-width: 600px;
+  margin: 0 auto var(--space-xl);
+}
+
+.hero__actions {
+  display: flex;
+  gap: var(--space-sm);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ==========================================
+     Botones Responsive
+     ========================================== */
+.btn {
+  display: inline-block;
+  padding: var(--space-sm) var(--space-lg);
+  border-radius: 8px;
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  text-align: center;
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.btn--primary {
+  background-color: var(--color-primary);
+  color: var(--color-text-white);
+  border-color: var(--color-primary);
+}
+
+.btn--primary:hover {
+  background-color: var(--color-primary-dark);
+  border-color: var(--color-primary-dark);
+  transform: translateY(-2px);
+}
+
+.btn--secondary {
+  background-color: transparent;
+  color: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.btn--secondary:hover {
+  background-color: var(--color-primary);
+  color: var(--color-text-white);
+}
+
+/* En móvil, los botones ocupan todo el ancho disponible */
+@media (max-width: 640px) {
+  .hero__actions {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .btn {
+    width: 100%;
+    max-width: 280px;
+  }
+}
+
+/* ==========================================
+     Sección About
+     ========================================== */
+.about {
+  padding: var(--space-2xl) 0;
+}
+
+.about__content {
+  display: grid;
+  gap: var(--space-xl);
+  align-items: center;
+}
+
+.about__text p {
+  margin-bottom: var(--space-md);
+  font-size: 1.1rem;
+  line-height: 1.7;
+}
+
+.about__text p:last-child {
+  margin-bottom: 0;
+}
+
+.placeholder-image {
+  background-color: var(--color-bg-light);
+  border: 2px dashed var(--color-secondary);
+  border-radius: 12px;
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-text-light);
+  font-weight: var(--font-weight-medium);
+}
+
+/* En tablets y desktop, usamos layout de dos columnas */
+@media (min-width: 768px) {
+  .about__content {
+    grid-template-columns: 2fr 1fr;
+  }
+
+  .placeholder-image {
+    max-width: 300px;
+    justify-self: center;
+  }
+}
+
+/* ==========================================
+     Sección Skills con Grid Responsive
+     ========================================== */
+.skills {
+  background-color: var(--color-bg-light);
+  padding: var(--space-2xl) 0;
+}
+
+.skills__grid {
+  display: grid;
+  gap: var(--space-lg);
+  grid-template-columns: 1fr;
+}
+
+/* Grid responsive que se adapta automáticamente */
+@media (min-width: 640px) {
+  .skills__grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .skills__grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+.skill-card {
+  background-color: var(--color-bg);
+  border-radius: 12px;
+  padding: var(--space-lg);
+  text-align: center;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.skill-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+}
+
+.skill-card__title {
+  font-size: 1.25rem;
+  font-weight: var(--font-weight-bold);
+  color: var(--color-primary);
+  margin-bottom: var(--space-sm);
+}
+
+.skill-card__description {
+  color: var(--color-text-light);
+  line-height: 1.6;
+}
+
+/* ==========================================
+     Footer
+     ========================================== */
+.footer {
+  background-color: var(--color-bg-dark);
+  color: var(--color-text-white);
+  padding: var(--space-2xl) 0;
+  text-align: center;
+}
+
+.footer__title {
+  font-size: clamp(1.75rem, 4vw, 2.25rem);
+  font-weight: var(--font-weight-bold);
+  margin-bottom: var(--space-sm);
+}
+
+.footer__description {
+  font-size: 1.1rem;
+  color: #94a3b8;
+  margin-bottom: var(--space-xl);
+  max-width: 500px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.footer__contact {
+  display: flex;
+  gap: var(--space-lg);
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.contact-link {
+  color: var(--color-text-white);
+  text-decoration: none;
+  font-weight: var(--font-weight-medium);
+  padding: var(--space-sm) var(--space-md);
+  border: 1px solid #374151;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.contact-link:hover {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary);
+}
+
+/* En móvil, los enlaces de contacto se apilan verticalmente */
+@media (max-width: 640px) {
+  .footer__contact {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .contact-link {
+    width: 100%;
+    max-width: 250px;
+  } }

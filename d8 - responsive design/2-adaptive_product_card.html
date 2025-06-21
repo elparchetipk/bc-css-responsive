@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarjeta de Producto Adaptativa</title>
+    <style>
+        /* =================================================================
+           SISTEMA BASE Y TOKENS DE DISEÑO
+           ================================================================= */
+        
+        @layer reset, tokens, layout, components, utilities;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+        
+        @layer tokens {
+            :root {
+                /* Tokens de color - Inspirados en sistemas modernos */
+                --color-primary: #3b82f6;
+                --color-primary-hover: #2563eb;
+                --color-success: #10b981;
+                --color-warning: #f59e0b;
+                --color-danger: #ef4444;
+                
+                --color-neutral-50: #f9fafb;
+                --color-neutral-100: #f3f4f6;
+                --color-neutral-200: #e5e7eb;
+                --color-neutral-300: #d1d5db;
+                --color-neutral-600: #4b5563;
+                --color-neutral-700: #374151;
+                --color-neutral-800: #1f2937;
+                --color-neutral-900: #111827;
+                
+                /* Tokens de espaciado */
+                --space-xs: 0.25rem;    /* 4px */
+                --space-sm: 0.5rem;     /* 8px */
+                --space-md: 1rem;       /* 16px */
+                --space-lg: 1.5rem;     /* 24px */
+                --space-xl: 2rem;       /* 32px */
+                --space-2xl: 3rem;      /* 48px */
+                
+                /* Tokens de tipografía */
+                --font-xs: 0.75rem;     /* 12px */
+                --font-sm: 0.875rem;    /* 14px */
+                --font-base: 1rem;      /* 16px */
+                --font-lg: 1.125rem;    /* 18px */
+                --font-xl: 1.25rem;     /* 20px */
+                --font-2xl: 1.5rem;     /* 24px */
+                
+                /* Tokens de sombra */
+                --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+                --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+                --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+                
+                /* Tokens de radio de borde */
+                --radius-sm: 0.25rem;   /* 4px */
+                --radius-md: 0.5rem;    /* 8px */
+                --radius-lg: 0.75rem;   /* 12px */
+                --radius-xl: 1rem;      /* 16px */
+            }
+        }
+        
+        @layer layout {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                color: var(--color-neutral-800);
+                background: var(--color-neutral-50);
+                padding: var(--space-xl);
+            }
+            
+            .demo-grid {
+                display: grid;
+                gap: var(--space-xl);
+                margin-bottom: var(--space-2xl);
+                
+                /* Grid responsivo que usa media queries tradicionales */
+                grid-template-columns: 1fr;
+                
+                @media (min-width: 768px) {
+                    grid-template-columns: 1fr 1fr;
+                }
+                
+                @media (min-width: 1200px) {
+                    grid-template-columns: 1fr 1fr 1fr;
+                }
+            }
+            
+            .container-demo {
+                background: white;
+                border: 2px dashed var(--color-neutral-300);
+                border-radius: var(--radius-lg);
+                padding: var(--space-lg);
+                min-height: 400px;
+                
+                /* Cada contenedor es un contexto de container query */
+                container-type: inline-size;
+                container-name: product-container;
+            }
+        }
+        
+        /* =================================================================
+           COMPONENTE ADAPTATIVO: TARJETA DE PRODUCTO
+           ================================================================= */
+        
+        @layer components {
+            .product-card {
+                background: white;
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-md);
+                overflow: hidden;
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                height: fit-content;
+                
+                /* Layout por defecto: móvil/estrecho (stack vertical) */
+                display: flex;
+                flex-direction: column;
+                
+                /* Hover effect que funciona en todos los layouts */
+                &:hover {
+                    box-shadow: var(--shadow-lg);
+                    transform: translateY(-2px);
+                }
+                
+                /* =============================================================
+                   ELEMENTOS INTERNOS DEL COMPONENTE
+                   ============================================================= */
+                
+                & .product-image {
+                    position: relative;
+                    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                    aspect-ratio: 16 / 9;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    color: white;
+                    font-size: var(--font-2xl);
+                    font-weight: 600;
+                    
+                    /* Badge de descuento */
+                    & .discount-badge {
+                        position: absolute;
+                        top: var(--space-sm);
+                        left: var(--space-sm);
+                        background: var(--color-danger);
+                        color: white;
+                        padding: var(--space-xs) var(--space-sm);
+                        border-radius: var(--radius-md);
+                        font-size: var(--font-xs);
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                    }
+                    
+                    /* Indicador de stock bajo */
+                    & .stock-indicator {
+                        position: absolute;
+                        top: var(--space-sm);
+                        right: var(--space-sm);
+                        width: 12px;
+                        height: 12px;
+                        border-radius: 50%;
+                        background: var(--color-success);
+                        
+                        &.low-stock {
+                            background: var(--color-warning);
+                            animation: pulse-warning 2s infinite;
+                        }
+                        
+                        &.out-of-stock {
+                            background: var(--color-danger);
+                        }
+                    }
+                }
+                
+                & .product-content {
+                    padding: var(--space-lg);
+                    flex: 1;
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--space-sm);
+                    
+                    & .product-category {
+                        color: var(--color-neutral-600);
+                        font-size: var(--font-sm);
+                        text-transform: uppercase;
+                        letter-spacing: 0.05em;
+                        font-weight: 500;
+                    }
+                    
+                    & .product-title {
+                        font-size: var(--font-lg);
+                        font-weight: 600;
+                        color: var(--color-neutral-900);
+                        line-height: 1.4;
+                        margin: 0;
+                    }
+                    
+                    & .product-description {
+                        color: var(--color-neutral-600);
+                        font-size: var(--font-sm);
+                        line-height: 1.5;
+                        flex: 1;
+                        margin: 0;
+                    }
+                    
+                    & .product-rating {
+                        display: flex;
+                        align-items: center;
+                        gap: var(--space-xs);
+                        font-size: var(--font-sm);
+                        
+                        & .stars {
+                            color: var(--color-warning);
+                            font-weight: 600;
+                        }
+                        
+                        & .rating-count {
+                            color: var(--color-neutral-600);
+                        }
+                    }
+                    
+                    & .product-price {
+                        display: flex;
+                        align-items: baseline;
+                        gap: var(--space-sm);
+                        margin-top: var(--space-sm);
+                        
+                        & .current-price {
+                            font-size: var(--font-xl);
+                            font-weight: 700;
+                            color: var(--color-neutral-900);
+                        }
+                        
+                        & .original-price {
+                            font-size: var(--font-base);
+                            color: var(--color-neutral-600);
+                            text-decoration: line-through;
+                        }
+                        
+                        & .savings {
+                            font-size: var(--font-sm);
+                            color: var(--color-success);
+                            font-weight: 600;
+                        }
+                    }
+                }
+                
+                & .product-actions {
+                    padding: 0 var(--space-lg) var(--space-lg);
+                    display: flex;
+                    gap: var(--space-sm);
+                    
+                    & .btn {
+                        flex: 1;
+                        padding: var(--space-sm) var(--space-md);
+                        border-radius: var(--radius-md);
+                        font-size: var(--font-sm);
+                        font-weight: 600;
+                        text-decoration: none;
+                        text-align: center;
+                        transition: all 0.2s ease;
+                        border: 1px solid transparent;
+                        cursor: pointer;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        
+                        &.btn-primary {
+                            background: var(--color-primary);
+                            color: white;
+                            
+                            &:hover {
+                                background: var(--color-primary-hover);
+                                transform: translateY(-1px);
+                            }
+                        }
+                        
+                        &.btn-secondary {
+                            background: white;
+                            color: var(--color-neutral-700);
+                            border-color: var(--color-neutral-300);
+                            
+                            &:hover {
+                                background: var(--color-neutral-50);
+                                border-color: var(--color-neutral-400);
+                            }
+                        }
+                        
+                        &.btn-icon {
+                            flex: 0 0 auto;
+                            width: 40px;
+                            padding: var(--space-sm);
+                        }
+                    }
+                }
+            }
+            
+            /* =============================================================
+               CONTAINER QUERIES: AQUÍ ES DONDE OCURRE LA MAGIA
+               ============================================================= */
+            
+            /* Layout compacto horizontal (400px+) */
+            @container product-container (min-width: 400px) {
+                .product-card {
+                    flex-direction: row;
+                    max-height: 200px;
+                    
+                    & .product-image {
+                        width: 160px;
+                        flex-shrink: 0;
+                        aspect-ratio: 1;
+                        
+                        /* En layout horizontal, ocultamos algunos elementos para ahorrar espacio */
+                        & .discount-badge {
+                            font-size: 10px;
+                            padding: 2px var(--space-xs);
+                        }
+                    }
+                    
+                    & .product-content {
+                        & .product-description {
+                            /* Limitamos la descripción en vista horizontal */
+                            display: -webkit-box;
+                            -webkit-line-clamp: 2;
+                            -webkit-box-orient: vertical;
+                            overflow: hidden;
+                        }
+                    }
+                    
+                    & .product-actions {
+                        flex-direction: column;
+                        padding: var(--space-md);
+                        justify-content: center;
+                        width: 120px;
+                        flex-shrink: 0;
+                        
+                        & .btn {
+                            flex: 0 0 auto;
+                            font-size: var(--font-xs);
+                            padding: var(--space-xs) var(--space-sm);
+                        }
+                    }
+                }
+            }
+            
+            /* Layout expandido (600px+) */
+            @container product-container (min-width: 600px) {
+                .product-card {
+                    max-height: none;
+                    
+                    & .product-image {
+                        width: 200px;
+                        
+                        & .discount-badge {
+                            font-size: var(--font-xs);
+                            padding: var(--space-xs) var(--space-sm);
+                        }
+                    }
+                    
+                    & .product-content {
+                        & .product-title {
+                            font-size: var(--font-xl);
+                        }
+                        
+                        & .product-description {
+                            -webkit-line-clamp: 3;
+                            font-size: var(--font-base);
+                        }
+                    }
+                    
+                    & .product-actions {
+                        width: 140px;
+                        
+                        & .btn {
+                            font-size: var(--font-sm);
+                            padding: var(--space-sm) var(--space-md);
+                        }
+                    }
+                }
+            }
+            
+            /* Layout premium/destacado (800px+) */
+            @container product-container (min-width: 800px) {
+                .product-card {
+                    flex-direction: column;
+                    
+                    & .product-image {
+                        width: 100%;
+                        aspect-ratio: 16 / 10;
+                        position: relative;
+                        
+                        /* En el layout premium, mostramos más información visual */
+                        &::after {
+                            content: '';
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            right: 0;
+                            height: 60px;
+                            background: linear-gradient(transparent, rgba(0,0,0,0.3));
+                            pointer-events: none;
+                        }
+                    }
+                    
+                    & .product-content {
+                        & .product-title {
+                            font-size: var(--font-2xl);
+                        }
+                        
+                        & .product-description {
+                            -webkit-line-clamp: 4;
+                            font-size: var(--font-base);
+                        }
+                        
+                        /* En layout premium, agregamos metadatos adicionales */
+                        & .product-meta {
+                            display: flex;
+                            gap: var(--space-md);
+                            margin-top: var(--space-sm);
+                            padding: var(--space-sm);
+                            background: var(--color-neutral-50);
+                            border-radius: var(--radius-md);
+                            font-size: var(--font-sm);
+                            color: var(--color-neutral-600);
+                            
+                            & .meta-item {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--space-xs);
+                                
+                                & .meta-icon {
+                                    width: 16px;
+                                    height: 16px;
+                                    opacity: 0.7;
+                                }
+                            }
+                        }
+                    }
+                    
+                    & .product-actions {
+                        flex-direction: row;
+                        width: 100%;
+                        padding: var(--space-lg);
+                        
+                        & .btn {
+                            font-size: var(--font-base);
+                            padding: var(--space-md) var(--space-lg);
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =============================================================
+           UTILIDADES Y ANIMACIONES
+           ============================================================= */
+        
+        @layer utilities {
+            .demo-label {
+                background: var(--color-neutral-100);
+                padding: var(--space-sm) var(--space-md);
+                border-radius: var(--radius-md);
+                font-size: var(--font-sm);
+                font-weight: 600;
+                color: var(--color-neutral-700);
+                margin-bottom: var(--space-md);
+                text-align: center;
+                border: 1px solid var(--color-neutral-200);
+            }
+            
+            .info-panel {
+                background: #eff6ff;
+                border: 1px solid #3b82f6;
+                border-radius: var(--radius-lg);
+                padding: var(--space-lg);
+                margin-bottom: var(--space-xl);
+                
+                & h3 {
+                    color: #1e40af;
+                    margin-bottom: var(--space-md);
+                    font-size: var(--font-lg);
+                }
+                
+                & code {
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: var(--space-xs) var(--space-sm);
+                    border-radius: var(--radius-sm);
+                    font-family: 'Courier New', monospace;
+                    font-size: var(--font-sm);
+                }
+            }
+            
+            @keyframes pulse-warning {
+                0%, 100% {
+                    opacity: 1;
+                    transform: scale(1);
+                }
+                50% {
+                    opacity: 0.7;
+                    transform: scale(1.1);
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <h1>🎯 Componente Adaptativo: Tarjeta de Producto</h1>
+    
+    <div class="info-panel">
+        <h3>🧠 Concepto Clave: Un Componente, Múltiples Layouts</h3>
+        <p>Esta tarjeta de producto se transforma automáticamente según el espacio disponible en su contenedor. Observa cómo el mismo componente se comporta de manera diferente en cada columna del grid, sin necesidad de código JavaScript o clases condicionales.</p>
+        
+        <p><strong>Breakpoints del componente:</strong></p>
+        <p>📱 <code>&lt; 400px</code>: Layout vertical compacto (móvil)</p>
+        <p>💻 <code>400px - 599px</code>: Layout horizontal compacto</p>
+        <p>🖥️ <code>600px - 799px</code>: Layout horizontal expandido</p>
+        <p>🎯 <code>800px+</code>: Layout premium/destacado</p>
+    </div>
+    
+    <div class="demo-grid">
+        <!-- Contenedor estrecho: Simula barra lateral -->
+        <div class="container-demo" style="max-width: 300px;">
+            <div class="demo-label">📱 Contenedor Estrecho (300px)</div>
+            <div class="product-card">
+                <div class="product-image">
+                    📱
+                    <div class="discount-badge">-20%</div>
+                    <div class="stock-indicator low-stock"></div>
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Smartphones</div>
+                    <h3 class="product-title">iPhone 15 Pro Max</h3>
+                    <p class="product-description">El iPhone más avanzado hasta la fecha, con chip A17 Pro y cámaras profesionales para capturar cada momento con calidad excepcional.</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="rating-count">(2,847 reseñas)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">$1,199</span>
+                        <span class="original-price">$1,499</span>
+                        <span class="savings">Ahorras $300</span>
+                    </div>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-icon">🚚</span>
+                            <span>Envío gratis</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">🔒</span>
+                            <span>Garantía 2 años</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Comprar</button>
+                    <button class="btn btn-secondary">Al carrito</button>
+                    <button class="btn btn-icon btn-secondary">❤️</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contenedor mediano: Simula tarjeta en grid -->
+        <div class="container-demo" style="max-width: 500px;">
+            <div class="demo-label">💻 Contenedor Mediano (500px)</div>
+            <div class="product-card">
+                <div class="product-image">
+                    💻
+                    <div class="discount-badge">-15%</div>
+                    <div class="stock-indicator"></div>
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Laptops</div>
+                    <h3 class="product-title">MacBook Air M3</h3>
+                    <p class="product-description">Ultraliviana y potente, con el chip M3 que ofrece un rendimiento excepcional y hasta 18 horas de duración de batería.</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★☆</span>
+                        <span class="rating-count">(1,203 reseñas)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">$1,099</span>
+                        <span class="original-price">$1,299</span>
+                        <span class="savings">Ahorras $200</span>
+                    </div>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-icon">🚚</span>
+                            <span>Envío gratis</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">🔒</span>
+                            <span>Garantía 1 año</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Comprar</button>
+                    <button class="btn btn-secondary">Al carrito</button>
+                    <button class="btn btn-icon btn-secondary">❤️</button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Contenedor amplio: Simula página de producto destacado -->
+        <div class="container-demo" style="min-width: 800px;">
+            <div class="demo-label">🎯 Contenedor Amplio (800px+)</div>
+            <div class="product-card">
+                <div class="product-image">
+                    🎧
+                    <div class="discount-badge">-25%</div>
+                    <div class="stock-indicator"></div>
+                </div>
+                <div class="product-content">
+                    <div class="product-category">Audio Premium</div>
+                    <h3 class="product-title">AirPods Pro (3ra generación)</h3>
+                    <p class="product-description">Experimenta el audio espacial personalizado con cancelación de ruido adaptativa. Los AirPods Pro más avanzados hasta la fecha, con calidad de sonido excepcional y comodidad todo el día.</p>
+                    <div class="product-rating">
+                        <span class="stars">★★★★★</span>
+                        <span class="rating-count">(4,526 reseñas)</span>
+                    </div>
+                    <div class="product-price">
+                        <span class="current-price">$179</span>
+                        <span class="original-price">$249</span>
+                        <span class="savings">Ahorras $70</span>
+                    </div>
+                    <div class="product-meta">
+                        <div class="meta-item">
+                            <span class="meta-icon">🚚</span>
+                            <span>Envío gratis</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">🔒</span>
+                            <span>Garantía 1 año</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">🔄</span>
+                            <span>Devolución 30 días</span>
+                        </div>
+                        <div class="meta-item">
+                            <span class="meta-icon">⚡</span>
+                            <span>Carga rápida</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="product-actions">
+                    <button class="btn btn-primary">Comprar Ahora</button>
+                    <button class="btn btn-secondary">Agregar al Carrito</button>
+                    <button class="btn btn-icon btn-secondary">❤️</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="info-panel">
+        <h3>🔍 Análisis Técnico: Cómo Funciona</h3>
+        <p>Cada contenedor tiene <code>container-type: inline-size</code> y <code>container-name: product-container</code>. Esto le dice al navegador que observe el ancho de este contenedor.</p>
+        
+        <p>Las reglas <code>@container product-container (min-width: XXXpx)</code> se activan cuando el contenedor (no la ventana) alcanza esos tamaños, permitiendo que el mismo componente se comporte de manera completamente diferente según su contexto.</p>
+        
+        <p><strong>Beneficios vs Media Queries tradicionales:</strong></p>
+        <p>✅ Un solo componente sirve para múltiples contextos</p>
+        <p>✅ No necesita conocer dónde se va a usar</p>
+        <p>✅ Perfectamente reutilizable</p>
+        <p>✅ Mantenimiento simplificado</p>
+    </div>
+    
+    <script>
+        // Agregar información de debugging en tiempo real
+        const containers = document.querySelectorAll('.container-demo');
+        
+        containers.forEach((container, index) => {
+            const observer = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    const width = Math.round(entry.contentRect.width);
+                    console.log(`Contenedor ${index + 1}: ${width}px`);
+                    
+                    // Determinar qué layout está activo
+                    let layout;
+                    if (width >= 800) {
+                        layout = '🎯 Premium/Destacado';
+                    } else if (width >= 600) {
+                        layout = '🖥️ Horizontal Expandido';
+                    } else if (width >= 400) {
+                        layout = '💻 Horizontal Compacto';
+                    } else {
+                        layout = '📱 Vertical Móvil';
+                    }
+                    
+                    console.log(`Layout activo: ${layout}`);
+                }
+            });
+            
+            observer.observe(container);
+        });
+    </script>
+</body>
+</html>

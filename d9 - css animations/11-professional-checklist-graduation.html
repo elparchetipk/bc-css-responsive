@@ -1,0 +1,1240 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Graduación Professional CSS Developer - Día 9</title>
+    <style>
+        /*
+        =============================================================================
+        DESIGN SYSTEM - GRADUATION THEME
+        =============================================================================
+        */
+        :root {
+            /* Graduation Color Palette */
+            --color-gold: #fbbf24;
+            --color-gold-dark: #d97706;
+            --color-success: #10b981;
+            --color-primary: #3b82f6;
+            --color-secondary: #8b5cf6;
+            --color-accent: #06d6a0;
+            
+            /* Background System */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-surface: rgba(255, 255, 255, 0.05);
+            --bg-card: rgba(255, 255, 255, 0.08);
+            --bg-overlay: rgba(0, 0, 0, 0.8);
+            
+            /* Text Colors */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --text-accent: #06d6a0;
+            
+            /* Spacing */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            --space-16: 4rem;
+            
+            /* Typography */
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            --text-4xl: 2.25rem;
+            
+            /* Animation System */
+            --duration-instant: 100ms;
+            --duration-fast: 200ms;
+            --duration-normal: 300ms;
+            --duration-slow: 500ms;
+            --duration-celebration: 800ms;
+            
+            /* Easing */
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --ease-celebration: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            --shadow-glow: 0 0 20px rgba(6, 214, 160, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /*
+        =============================================================================
+        CELEBRATION ANIMATIONS
+        =============================================================================
+        */
+        @keyframes celebrate {
+            0% {
+                transform: scale(1) rotate(0deg);
+                filter: hue-rotate(0deg);
+            }
+            25% {
+                transform: scale(1.05) rotate(5deg);
+                filter: hue-rotate(90deg);
+            }
+            50% {
+                transform: scale(1.1) rotate(-5deg);
+                filter: hue-rotate(180deg);
+            }
+            75% {
+                transform: scale(1.05) rotate(3deg);
+                filter: hue-rotate(270deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+                filter: hue-rotate(360deg);
+            }
+        }
+
+        @keyframes sparkle {
+            0%, 100% {
+                opacity: 0;
+                transform: scale(0) rotate(0deg);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1) rotate(180deg);
+            }
+        }
+
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes countUp {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        /*
+        =============================================================================
+        GRADUATION LAYOUT
+        =============================================================================
+        */
+        .graduation-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .graduation-header {
+            text-align: center;
+            margin-bottom: var(--space-16);
+            position: relative;
+        }
+
+        .graduation-badge {
+            width: 120px;
+            height: 120px;
+            margin: 0 auto var(--space-6);
+            background: linear-gradient(135deg, var(--color-gold), var(--color-gold-dark));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            box-shadow: var(--shadow-glow);
+            
+            /* Celebration animation */
+            animation: celebrate var(--duration-celebration) var(--ease-celebration) infinite;
+        }
+
+        .graduation-title {
+            font-size: var(--text-4xl);
+            font-weight: 900;
+            margin-bottom: var(--space-4);
+            background: linear-gradient(135deg, var(--color-gold), var(--color-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: slideInUp var(--duration-slow) var(--ease-out);
+        }
+
+        .graduation-subtitle {
+            font-size: var(--text-lg);
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            animation: slideInUp var(--duration-slow) var(--ease-out) 0.2s both;
+        }
+
+        /*
+        =============================================================================
+        PROGRESS TRACKING SYSTEM
+        =============================================================================
+        */
+        .progress-overview {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: var(--space-8);
+            margin-bottom: var(--space-12);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-overview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--color-gold), var(--color-accent));
+        }
+
+        .progress-title {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: var(--space-8);
+            color: var(--color-gold);
+        }
+
+        .progress-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .stat-card {
+            text-align: center;
+            padding: var(--space-4);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            
+            /* Hover effect */
+            will-change: transform;
+            transition: transform var(--duration-normal) var(--ease-out);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-4px);
+        }
+
+        .stat-number {
+            font-size: var(--text-3xl);
+            font-weight: 900;
+            margin-bottom: var(--space-2);
+            background: linear-gradient(135deg, var(--color-gold), var(--color-accent));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            
+            /* Count up animation */
+            animation: countUp var(--duration-normal) var(--ease-bounce);
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        /*
+        =============================================================================
+        PROFESSIONAL CHECKLIST
+        =============================================================================
+        */
+        .checklist-section {
+            margin-bottom: var(--space-12);
+        }
+
+        .checklist-title {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            margin-bottom: var(--space-8);
+            text-align: center;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .checklist-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: var(--space-6);
+        }
+
+        .checklist-category {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: var(--space-6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            
+            /* Staggered animation */
+            animation: slideInUp var(--duration-slow) var(--ease-out);
+        }
+
+        .category-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+        }
+
+        .category-icon {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .checklist {
+            list-style: none;
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            padding: var(--space-3) 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+            cursor: pointer;
+            
+            /* Hover effect */
+            will-change: background-color;
+            transition: background-color var(--duration-fast) ease;
+        }
+
+        .checklist-item:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+        }
+
+        .checklist-item:last-child {
+            border-bottom: none;
+        }
+
+        .checkbox {
+            width: 24px;
+            height: 24px;
+            border: 2px solid var(--text-muted);
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            
+            /* Transition for check state */
+            will-change: background-color, border-color;
+            transition: all var(--duration-fast) var(--ease-bounce);
+        }
+
+        .checkbox.checked {
+            background: var(--color-success);
+            border-color: var(--color-success);
+            animation: celebrate var(--duration-normal) var(--ease-bounce);
+        }
+
+        .checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: var(--text-sm);
+        }
+
+        .checklist-text {
+            flex: 1;
+            color: var(--text-secondary);
+            line-height: 1.5;
+            
+            /* Transition for completed state */
+            transition: color var(--duration-normal) ease;
+        }
+
+        .checklist-item.completed .checklist-text {
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+
+        .checklist-details {
+            font-size: var(--text-sm);
+            color: var(--text-muted);
+            margin-top: var(--space-1);
+            font-style: italic;
+        }
+
+        /*
+        =============================================================================
+        SKILLS MATRIX
+        =============================================================================
+        */
+        .skills-matrix {
+            background: var(--bg-card);
+            border-radius: 16px;
+            padding: var(--space-8);
+            margin-bottom: var(--space-12);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skills-title {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: var(--space-8);
+            color: var(--color-accent);
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-6);
+        }
+
+        .skill-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: var(--space-4);
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .skill-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .skill-level {
+            display: flex;
+            gap: var(--space-1);
+        }
+
+        .skill-star {
+            width: 20px;
+            height: 20px;
+            background: var(--text-muted);
+            border-radius: 50%;
+            position: relative;
+            
+            /* Animation for filled stars */
+            transition: background var(--duration-fast) ease;
+        }
+
+        .skill-star.filled {
+            background: var(--color-gold);
+            animation: sparkle var(--duration-celebration) ease infinite;
+        }
+
+        .skill-star.filled::after {
+            content: '★';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-size: 12px;
+        }
+
+        /*
+        =============================================================================
+        GRADUATION CERTIFICATE
+        =============================================================================
+        */
+        .certificate {
+            background: linear-gradient(135deg, var(--bg-card), rgba(251, 191, 36, 0.1));
+            border: 2px solid var(--color-gold);
+            border-radius: 16px;
+            padding: var(--space-8);
+            text-align: center;
+            margin-bottom: var(--space-12);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .certificate::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(251, 191, 36, 0.1), transparent);
+            animation: shimmer 3s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .certificate-title {
+            font-size: var(--text-3xl);
+            font-weight: 900;
+            margin-bottom: var(--space-4);
+            color: var(--color-gold);
+        }
+
+        .certificate-subtitle {
+            font-size: var(--text-xl);
+            margin-bottom: var(--space-6);
+            color: var(--text-primary);
+        }
+
+        .certificate-skills {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+            flex-wrap: wrap;
+            margin-bottom: var(--space-6);
+        }
+
+        .skill-badge {
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-2) var(--space-4);
+            border-radius: 20px;
+            font-size: var(--text-sm);
+            font-weight: 600;
+        }
+
+        .certificate-date {
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /*
+        =============================================================================
+        ACTION BUTTONS
+        =============================================================================
+        */
+        .action-buttons {
+            display: flex;
+            justify-content: center;
+            gap: var(--space-4);
+            margin-top: var(--space-8);
+            flex-wrap: wrap;
+        }
+
+        .action-button {
+            background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+            color: white;
+            border: none;
+            padding: var(--space-4) var(--space-8);
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: var(--text-base);
+            cursor: pointer;
+            font-family: inherit;
+            
+            /* Interaction states */
+            will-change: transform, box-shadow;
+            transition: all var(--duration-normal) var(--ease-out);
+        }
+
+        .action-button:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-xl);
+        }
+
+        .action-button:active {
+            transform: translateY(-1px);
+        }
+
+        .action-button.secondary {
+            background: transparent;
+            border: 2px solid var(--color-primary);
+            color: var(--color-primary);
+        }
+
+        /*
+        =============================================================================
+        RESPONSIVE DESIGN
+        =============================================================================
+        */
+        @media (max-width: 768px) {
+            .graduation-container {
+                padding: var(--space-4);
+            }
+            
+            .checklist-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .skills-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .progress-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .action-buttons {
+                flex-direction: column;
+            }
+            
+            .action-button {
+                width: 100%;
+            }
+        }
+
+        /*
+        =============================================================================
+        ACCESSIBILITY
+        =============================================================================
+        */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .action-button:focus-visible,
+        .checkbox:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="graduation-container">
+        <!-- Graduation Header -->
+        <header class="graduation-header">
+            <div class="graduation-badge">🎓</div>
+            <h1 class="graduation-title">¡Felicitaciones!</h1>
+            <p class="graduation-subtitle">
+                Has completado el Día 9 del Bootcamp CSS Responsive y ahora posees las habilidades 
+                de optimización de performance que utilizan desarrolladores senior en empresas tecnológicas líder.
+            </p>
+        </header>
+
+        <!-- Progress Overview -->
+        <section class="progress-overview">
+            <h2 class="progress-title">📊 Tu Progreso en el Día 9</h2>
+            <div class="progress-stats">
+                <div class="stat-card">
+                    <div class="stat-number" data-target="8">0</div>
+                    <div class="stat-label">Horas de Entrenamiento Intensivo</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="15">0</div>
+                    <div class="stat-label">Técnicas Profesionales Aprendidas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="5">0</div>
+                    <div class="stat-label">Herramientas de Testing Dominadas</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" data-target="95">0</div>
+                    <div class="stat-label">% Performance Improvement</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Professional Checklist -->
+        <section class="checklist-section">
+            <h2 class="checklist-title">✅ Checklist del Senior CSS Developer</h2>
+            <div class="checklist-grid">
+                <!-- Performance Optimization -->
+                <div class="checklist-category">
+                    <h3 class="category-title">
+                        <div class="category-icon">⚡</div>
+                        Performance Optimization
+                    </h3>
+                    <ul class="checklist">
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Usar solo propiedades GPU-friendly en animaciones</div>
+                                <div class="checklist-details">transform, opacity, filter - nunca width, height, top, left</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Implementar will-change strategy correctamente</div>
+                                <div class="checklist-details">Preparar capas GPU antes de animaciones, remover después</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Optimizar critical rendering path</div>
+                                <div class="checklist-details">Critical CSS inline, defer non-critical styles</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Monitoring de performance en tiempo real</div>
+                                <div class="checklist-details">FPS tracking, frame time analysis, reflow detection</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Cross-Device Compatibility -->
+                <div class="checklist-category">
+                    <h3 class="category-title">
+                        <div class="category-icon">📱</div>
+                        Cross-Device Compatibility
+                    </h3>
+                    <ul class="checklist">
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Testing en dispositivos de gama baja</div>
+                                <div class="checklist-details">Validar performance en hardware limitado (2-4 cores, 2-4GB RAM)</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Adaptive performance basado en device capabilities</div>
+                                <div class="checklist-details">navigator.hardwareConcurrency, navigator.deviceMemory</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Network-aware optimizations</div>
+                                <div class="checklist-details">Ajustar assets y animaciones según connection speed</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Cross-browser compatibility testing</div>
+                                <div class="checklist-details">Safari, Chrome, Firefox, Edge - mobile y desktop</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Accessibility Standards -->
+                <div class="checklist-category">
+                    <h3 class="category-title">
+                        <div class="category-icon">♿</div>
+                        Accessibility Standards
+                    </h3>
+                    <ul class="checklist">
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Respect prefers-reduced-motion</div>
+                                <div class="checklist-details">Mandatory compliance - reduce/eliminate animations for sensitive users</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Keyboard navigation support</div>
+                                <div class="checklist-details">Focus states, tab order, keyboard shortcuts</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Screen reader compatibility</div>
+                                <div class="checklist-details">Semantic HTML, ARIA labels, meaningful focus management</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Color contrast and visual accessibility</div>
+                                <div class="checklist-details">WCAG AA compliance, color-blind friendly palettes</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Code Quality Standards -->
+                <div class="checklist-category">
+                    <h3 class="category-title">
+                        <div class="category-icon">🔧</div>
+                        Code Quality Standards
+                    </h3>
+                    <ul class="checklist">
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Design tokens system implementation</div>
+                                <div class="checklist-details">CSS custom properties, consistent spacing/color/typography scales</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Maintainable architecture patterns</div>
+                                <div class="checklist-details">Component-based CSS, clear naming conventions, documentation</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Performance budgets and monitoring</div>
+                                <div class="checklist-details">Bundle size limits, performance regression detection</div>
+                            </div>
+                        </li>
+                        <li class="checklist-item" onclick="toggleCheck(this)">
+                            <div class="checkbox"></div>
+                            <div>
+                                <div class="checklist-text">Production-ready optimization pipeline</div>
+                                <div class="checklist-details">CSS minification, tree-shaking, critical CSS extraction</div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Skills Matrix -->
+        <section class="skills-matrix">
+            <h2 class="skills-title">🌟 Tu Nivel de Habilidades Senior</h2>
+            <div class="skills-grid">
+                <div class="skill-item">
+                    <span class="skill-name">Performance Debugging</span>
+                    <div class="skill-level">
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Animation Optimization</span>
+                    <div class="skill-level">
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Cross-Device Testing</span>
+                    <div class="skill-level">
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Accessibility Implementation</span>
+                    <div class="skill-level">
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Production Deployment</span>
+                    <div class="skill-level">
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                    </div>
+                </div>
+                <div class="skill-item">
+                    <span class="skill-name">Enterprise-Grade Optimization</span>
+                    <div class="skill-level">
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                        <div class="skill-star filled"></div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Graduation Certificate -->
+        <section class="certificate">
+            <h2 class="certificate-title">🏆 Certificado de Competencia</h2>
+            <h3 class="certificate-subtitle">Senior CSS Performance Specialist</h3>
+            <div class="certificate-skills">
+                <span class="skill-badge">Performance Optimization</span>
+                <span class="skill-badge">Cross-Device Testing</span>
+                <span class="skill-badge">Accessibility Compliance</span>
+                <span class="skill-badge">Production Deployment</span>
+                <span class="skill-badge">Enterprise Development</span>
+            </div>
+            <p class="certificate-date">Completado el <span id="completion-date"></span></p>
+        </section>
+
+        <!-- Action Buttons -->
+        <div class="action-buttons">
+            <button class="action-button" onclick="downloadPortfolio()">
+                📁 Descargar Portfolio
+            </button>
+            <button class="action-button secondary" onclick="shareAchievement()">
+                🌟 Compartir Logro
+            </button>
+            <button class="action-button" onclick="proceedToDay10()">
+                🚀 Continuar al Día 10
+            </button>
+        </div>
+    </div>
+
+    <script>
+        /*
+        =============================================================================
+        GRADUATION CELEBRATION SYSTEM
+        =============================================================================
+        */
+
+        class GraduationCelebration {
+            constructor() {
+                this.completedItems = 0;
+                this.totalItems = 16; // Total checklist items
+                this.initializeCelebration();
+            }
+
+            initializeCelebration() {
+                this.setCompletionDate();
+                this.animateCounters();
+                this.createSparkleEffect();
+                this.playGraduationMusic();
+            }
+
+            setCompletionDate() {
+                const today = new Date();
+                const dateString = today.toLocaleDateString('es-ES', {
+                    year: 'numeric',
+                    month: 'long',
+                    day: 'numeric'
+                });
+                document.getElementById('completion-date').textContent = dateString;
+            }
+
+            animateCounters() {
+                /*
+                Animar contadores con efecto de count-up realista.
+                */
+                const counters = document.querySelectorAll('[data-target]');
+                
+                counters.forEach((counter, index) => {
+                    const target = parseInt(counter.getAttribute('data-target'));
+                    const duration = 2000; // 2 segundos
+                    const steps = 60; // 60 FPS
+                    const increment = target / steps;
+                    let current = 0;
+                    
+                    setTimeout(() => {
+                        const timer = setInterval(() => {
+                            current += increment;
+                            if (current >= target) {
+                                current = target;
+                                clearInterval(timer);
+                                
+                                // Celebration effect al completar
+                                counter.style.animation = 'celebrate 0.5s ease';
+                            }
+                            counter.textContent = Math.round(current);
+                        }, duration / steps);
+                    }, index * 200); // Stagger animation
+                });
+            }
+
+            createSparkleEffect() {
+                /*
+                Crear efecto de sparkles aleatorios para celebración.
+                */
+                const createSparkle = () => {
+                    const sparkle = document.createElement('div');
+                    sparkle.innerHTML = '✨';
+                    sparkle.style.position = 'fixed';
+                    sparkle.style.left = Math.random() * window.innerWidth + 'px';
+                    sparkle.style.top = Math.random() * window.innerHeight + 'px';
+                    sparkle.style.fontSize = (Math.random() * 20 + 10) + 'px';
+                    sparkle.style.pointerEvents = 'none';
+                    sparkle.style.zIndex = '9999';
+                    sparkle.style.animation = 'sparkle 3s ease-out forwards';
+                    
+                    document.body.appendChild(sparkle);
+                    
+                    setTimeout(() => {
+                        sparkle.remove();
+                    }, 3000);
+                };
+
+                // Crear sparkles iniciales
+                for (let i = 0; i < 10; i++) {
+                    setTimeout(createSparkle, i * 200);
+                }
+
+                // Continuar creando sparkles periódicamente
+                setInterval(createSparkle, 2000);
+            }
+
+            playGraduationMusic() {
+                /*
+                Reproducir sonido de celebración si está disponible.
+                */
+                if (window.AudioContext || window.webkitAudioContext) {
+                    this.createCelebrationSound();
+                }
+            }
+
+            createCelebrationSound() {
+                /*
+                Crear sonido de celebración programáticamente.
+                */
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                // Secuencia de notas para fanfare
+                const notes = [262, 330, 392, 523]; // C, E, G, C
+                
+                notes.forEach((frequency, index) => {
+                    setTimeout(() => {
+                        const oscillator = audioCtx.createOscillator();
+                        const gainNode = audioCtx.createGain();
+                        
+                        oscillator.connect(gainNode);
+                        gainNode.connect(audioCtx.destination);
+                        
+                        oscillator.frequency.setValueAtTime(frequency, audioCtx.currentTime);
+                        oscillator.type = 'triangle';
+                        
+                        gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                        gainNode.gain.setValueAtTime(0.3, audioCtx.currentTime + 0.01);
+                        gainNode.gain.setValueAtTime(0, audioCtx.currentTime + 0.5);
+                        
+                        oscillator.start(audioCtx.currentTime);
+                        oscillator.stop(audioCtx.currentTime + 0.5);
+                    }, index * 150);
+                });
+            }
+
+            updateProgress() {
+                /*
+                Actualizar progreso de checklist.
+                */
+                const completionPercentage = (this.completedItems / this.totalItems) * 100;
+                
+                if (completionPercentage === 100) {
+                    this.triggerFullCompletion();
+                }
+            }
+
+            triggerFullCompletion() {
+                /*
+                Celebración especial al completar todo el checklist.
+                */
+                console.log('🎉 ¡FELICITACIONES! Has completado todos los requisitos del Senior Developer');
+                
+                // Crear celebración más intensa
+                for (let i = 0; i < 50; i++) {
+                    setTimeout(() => {
+                        this.createConfetti();
+                    }, i * 50);
+                }
+            }
+
+            createConfetti() {
+                /*
+                Crear efecto de confetti para celebración máxima.
+                */
+                const confetti = document.createElement('div');
+                const colors = ['#fbbf24', '#10b981', '#3b82f6', '#8b5cf6', '#ef4444'];
+                
+                confetti.style.position = 'fixed';
+                confetti.style.left = Math.random() * window.innerWidth + 'px';
+                confetti.style.top = '-10px';
+                confetti.style.width = '10px';
+                confetti.style.height = '10px';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.pointerEvents = 'none';
+                confetti.style.zIndex = '9999';
+                confetti.style.borderRadius = '50%';
+                
+                // Animación de caída
+                confetti.style.animation = `
+                    fall ${2 + Math.random() * 3}s linear forwards,
+                    spin ${0.5 + Math.random()}s linear infinite
+                `;
+                
+                document.body.appendChild(confetti);
+                
+                setTimeout(() => {
+                    confetti.remove();
+                }, 5000);
+            }
+        }
+
+        /*
+        =============================================================================
+        FUNCIONES GLOBALES
+        =============================================================================
+        */
+        let celebration;
+
+        function toggleCheck(item) {
+            /*
+            Toggle estado de checklist item con celebración.
+            */
+            const checkbox = item.querySelector('.checkbox');
+            const isChecked = checkbox.classList.toggle('checked');
+            
+            if (isChecked) {
+                item.classList.add('completed');
+                celebration.completedItems++;
+                
+                // Micro-celebración por item completado
+                createMiniCelebration(checkbox);
+            } else {
+                item.classList.remove('completed');
+                celebration.completedItems--;
+            }
+            
+            celebration.updateProgress();
+        }
+
+        function createMiniCelebration(element) {
+            /*
+            Micro-celebración para items individuales.
+            */
+            const rect = element.getBoundingClientRect();
+            
+            for (let i = 0; i < 3; i++) {
+                setTimeout(() => {
+                    const sparkle = document.createElement('div');
+                    sparkle.innerHTML = '✨';
+                    sparkle.style.position = 'fixed';
+                    sparkle.style.left = (rect.left + rect.width/2) + 'px';
+                    sparkle.style.top = (rect.top + rect.height/2) + 'px';
+                    sparkle.style.fontSize = '12px';
+                    sparkle.style.pointerEvents = 'none';
+                    sparkle.style.zIndex = '9999';
+                    sparkle.style.animation = 'sparkle 1s ease-out forwards';
+                    
+                    document.body.appendChild(sparkle);
+                    
+                    setTimeout(() => sparkle.remove(), 1000);
+                }, i * 100);
+            }
+        }
+
+        function downloadPortfolio() {
+            /*
+            Simular descarga de portfolio.
+            */
+            console.log('📁 Generando portfolio con todos los proyectos del bootcamp...');
+            alert('🎉 ¡Portfolio generado exitosamente!\n\nIncluye:\n• Proyectos CSS Grid optimizados\n• Dashboards Bootstrap performantes\n• Interfaces TailwindCSS responsive\n• Documentación de optimizaciones\n• Certificado de competencias');
+        }
+
+        function shareAchievement() {
+            /*
+            Compartir logro en redes sociales.
+            */
+            const message = '🎓 ¡Acabo de completar el entrenamiento avanzado de Performance CSS!\n\n✅ Optimización GPU-accelerated\n✅ Testing cross-device\n✅ Debugging enterprise-level\n✅ Accessibility compliance\n\n#CSS #Performance #WebDev #SeniorDeveloper';
+            
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Senior CSS Performance Specialist',
+                    text: message,
+                    url: window.location.href
+                });
+            } else {
+                navigator.clipboard.writeText(message);
+                alert('🌟 ¡Mensaje copiado al clipboard!\nCompártelo en tus redes sociales.');
+            }
+        }
+
+        function proceedToDay10() {
+            /*
+            Proceder al día 10 - Proyecto Capstone.
+            */
+            console.log('🚀 Preparándose para el Día 10: Proyecto Capstone');
+            alert('🎯 ¡Listo para el desafío final!\n\nDía 10: Proyecto Capstone\n• Portfolio profesional completo\n• Integración de todas las técnicas\n• Presentación a nivel industria\n• Preparación para entrevistas técnicas');
+        }
+
+        /*
+        =============================================================================
+        AÑADIR ESTILOS DE ANIMACIÓN DINÁMICOS
+        =============================================================================
+        */
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes fall {
+                to {
+                    transform: translateY(${window.innerHeight + 100}px);
+                }
+            }
+            
+            @keyframes spin {
+                to {
+                    transform: rotate(360deg);
+                }
+            }
+        `;
+        document.head.appendChild(style);
+
+        /*
+        =============================================================================
+        INICIALIZACIÓN
+        =============================================================================
+        */
+        document.addEventListener('DOMContentLoaded', () => {
+            celebration = new GraduationCelebration();
+            
+            console.log('🎓 Sistema de Graduación iniciado');
+            console.log('🌟 ¡Felicitaciones por completar el Día 9!');
+            console.log('📈 Ahora tienes habilidades de nivel Senior Developer');
+        });
+    </script>
+</body>
+</html>

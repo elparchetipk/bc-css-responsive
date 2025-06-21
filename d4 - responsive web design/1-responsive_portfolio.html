@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portfolio Responsive - Día 4</title>
+    <style>
+        /* ================================================
+           RESET Y CONFIGURACIÓN BASE
+           ================================================ */
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        /* Variables CSS para control sistemático */
+        :root {
+            /* Breakpoints como custom properties para referencia */
+            --mobile: 320px;
+            --mobile-large: 480px;
+            --tablet: 768px;
+            --desktop: 1024px;
+            --desktop-large: 1440px;
+            
+            /* Sistema de espaciado escalable */
+            --spacing-xs: 0.5rem;
+            --spacing-sm: 1rem;
+            --spacing-md: 1.5rem;
+            --spacing-lg: 2rem;
+            --spacing-xl: 3rem;
+            --spacing-xxl: 4rem;
+            
+            /* Sistema tipográfico responsive */
+            --font-size-sm: 0.875rem;
+            --font-size-base: 1rem;
+            --font-size-lg: 1.125rem;
+            --font-size-xl: 1.25rem;
+            --font-size-2xl: 1.5rem;
+            --font-size-3xl: 1.875rem;
+            
+            /* Colores del sistema */
+            --color-primary: #3b82f6;
+            --color-secondary: #64748b;
+            --color-background: #f8fafc;
+            --color-surface: #ffffff;
+            --color-text: #1e293b;
+            --color-text-light: #64748b;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            line-height: 1.6;
+            color: var(--color-text);
+            background-color: var(--color-background);
+        }
+        
+        /* ================================================
+           SISTEMA DE CONTENEDORES RESPONSIVE
+           ================================================ */
+        
+        .container {
+            /* MÓVIL PRIMERO: Máxima simplicidad */
+            width: 100%;
+            padding-left: var(--spacing-sm);
+            padding-right: var(--spacing-sm);
+            margin: 0 auto;
+        }
+        
+        /* Tablets: Incrementamos el espaciado */
+        @media (min-width: 768px) {
+            .container {
+                padding-left: var(--spacing-lg);
+                padding-right: var(--spacing-lg);
+                max-width: 750px;
+            }
+        }
+        
+        /* Desktop: Contenedor más ancho con máximo control */
+        @media (min-width: 1024px) {
+            .container {
+                padding-left: var(--spacing-xl);
+                padding-right: var(--spacing-xl);
+                max-width: 1140px;
+            }
+        }
+        
+        /* Desktop grande: Limitamos el crecimiento infinito */
+        @media (min-width: 1440px) {
+            .container {
+                max-width: 1320px;
+                padding-left: var(--spacing-xxl);
+                padding-right: var(--spacing-xxl);
+            }
+        }
+        
+        /* ================================================
+           HEADER RESPONSIVE CON NAVEGACIÓN ADAPTATIVA
+           ================================================ */
+        
+        .header {
+            background: var(--color-surface);
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            /* Separación adecuada en móvil */
+            padding: var(--spacing-sm) 0;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            font-size: var(--font-size-xl);
+            font-weight: 700;
+            color: var(--color-primary);
+        }
+        
+        /* Navegación móvil: Oculta por defecto */
+        .nav {
+            display: none;
+        }
+        
+        .nav-toggle {
+            display: block;
+            background: none;
+            border: none;
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            padding: var(--spacing-xs);
+        }
+        
+        /* Tablets y superior: Navegación horizontal */
+        @media (min-width: 768px) {
+            .header {
+                padding: var(--spacing-md) 0;
+            }
+            
+            .nav {
+                display: flex;
+                gap: var(--spacing-lg);
+            }
+            
+            .nav-toggle {
+                display: none;
+            }
+            
+            .nav a {
+                text-decoration: none;
+                color: var(--color-text);
+                font-weight: 500;
+                transition: color 0.3s ease;
+            }
+            
+            .nav a:hover {
+                color: var(--color-primary);
+            }
+        }
+        
+        /* ================================================
+           HERO SECTION COMPLETAMENTE ADAPTATIVA
+           ================================================ */
+        
+        .hero {
+            text-align: center;
+            /* Móvil: Espaciado conservativo */
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .hero-title {
+            /* Móvil: Título moderado */
+            font-size: var(--font-size-2xl);
+            font-weight: 800;
+            margin-bottom: var(--spacing-md);
+            line-height: 1.2;
+        }
+        
+        .hero-subtitle {
+            font-size: var(--font-size-base);
+            color: var(--color-text-light);
+            margin-bottom: var(--spacing-lg);
+            /* Móvil: Líneas más cortas para mejor lectura */
+            max-width: 300px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Tablets: Escalamos proporcionalmente */
+        @media (min-width: 768px) {
+            .hero {
+                padding: var(--spacing-xxl) 0;
+            }
+            
+            .hero-title {
+                font-size: var(--font-size-3xl);
+            }
+            
+            .hero-subtitle {
+                font-size: var(--font-size-lg);
+                max-width: 500px;
+            }
+        }
+        
+        /* Desktop: Máxima expresión */
+        @media (min-width: 1024px) {
+            .hero {
+                padding: 5rem 0;
+            }
+            
+            .hero-title {
+                font-size: 3rem;
+            }
+            
+            .hero-subtitle {
+                font-size: 1.25rem;
+                max-width: 600px;
+            }
+        }
+        
+        /* ================================================
+           PORTFOLIO GRID: LA TRANSFORMACIÓN PRINCIPAL
+           ================================================ */
+        
+        .portfolio {
+            padding: var(--spacing-xl) 0;
+        }
+        
+        .section-title {
+            text-align: center;
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-xl);
+            color: var(--color-text);
+        }
+        
+        .portfolio-grid {
+            /* MÓVIL PRIMERO: Una sola columna */
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: var(--spacing-lg);
+            
+            /* Mejora progresiva automática */
+            /* Esta es la magia: auto-fit responde automáticamente */
+            /* grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); */
+        }
+        
+        /* Móviles grandes: Podemos permitir 2 columnas si hay espacio */
+        @media (min-width: 480px) {
+            .portfolio-grid {
+                /* Solo si el contenedor puede acomodar mínimo 300px por columna */
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            }
+        }
+        
+        /* Tablets: Definitivamente 2 columnas */
+        @media (min-width: 768px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(2, 1fr);
+                gap: var(--spacing-xl);
+            }
+        }
+        
+        /* Desktop: 3 columnas con espaciado óptimo */
+        @media (min-width: 1024px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(3, 1fr);
+                gap: var(--spacing-xl);
+            }
+        }
+        
+        /* Desktop ultra-wide: Máximo 4 columnas */
+        @media (min-width: 1440px) {
+            .portfolio-grid {
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+                max-width: 1200px;
+                margin: 0 auto;
+            }
+        }
+        
+        /* ================================================
+           PORTFOLIO ITEMS: DISEÑO ADAPTATIVO COMPLETO
+           ================================================ */
+        
+        .portfolio-item {
+            background: var(--color-surface);
+            border-radius: 12px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            
+            /* Móvil: Sin efectos hover para evitar problemas touch */
+        }
+        
+        .portfolio-item-image {
+            position: relative;
+            overflow: hidden;
+            /* Proporción 16:9 responsive */
+            aspect-ratio: 16 / 9;
+        }
+        
+        .portfolio-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            /* Móvil: Sin transiciones para mejor performance */
+        }
+        
+        .portfolio-item-content {
+            padding: var(--spacing-md);
+        }
+        
+        .portfolio-item-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            margin-bottom: var(--spacing-xs);
+            color: var(--color-text);
+        }
+        
+        .portfolio-item-description {
+            font-size: var(--font-size-sm);
+            color: var(--color-text-light);
+            line-height: 1.5;
+        }
+        
+        .portfolio-item-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--spacing-xs);
+            margin-top: var(--spacing-md);
+        }
+        
+        .tag {
+            background: var(--color-background);
+            color: var(--color-primary);
+            padding: 0.25rem 0.75rem;
+            border-radius: 1rem;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        /* Desktop: Agregamos interactividad */
+        @media (min-width: 1024px) {
+            .portfolio-item:hover {
+                transform: translateY(-8px);
+                box-shadow: 0 20px 25px rgba(0, 0, 0, 0.1);
+            }
+            
+            .portfolio-item img {
+                transition: transform 0.3s ease;
+            }
+            
+            .portfolio-item:hover img {
+                transform: scale(1.05);
+            }
+        }
+        
+        /* ================================================
+           UTILIDADES RESPONSIVE
+           ================================================ */
+        
+        /* Texto responsive que se adapta automáticamente */
+        .responsive-text {
+            /* Fórmula mágica: tamaño mínimo + crecimiento basado en viewport */
+            font-size: clamp(1rem, 2.5vw, 1.5rem);
+        }
+        
+        /* Espaciado responsive automático */
+        .responsive-spacing {
+            padding: clamp(1rem, 4vw, 3rem);
+        }
+        
+        /* Visibilidad condicional por breakpoint */
+        .mobile-only {
+            display: block;
+        }
+        
+        .desktop-only {
+            display: none;
+        }
+        
+        @media (min-width: 768px) {
+            .mobile-only {
+                display: none;
+            }
+            
+            .desktop-only {
+                display: block;
+            }
+        }
+        
+        /* ================================================
+           FOOTER RESPONSIVE
+           ================================================ */
+        
+        .footer {
+            background: var(--color-text);
+            color: white;
+            text-align: center;
+            padding: var(--spacing-xl) 0;
+            margin-top: var(--spacing-xxl);
+        }
+        
+        .footer p {
+            margin-bottom: var(--spacing-sm);
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: var(--spacing-md);
+            margin-top: var(--spacing-md);
+        }
+        
+        .social-links a {
+            color: white;
+            text-decoration: none;
+            padding: var(--spacing-xs);
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background 0.3s ease;
+        }
+        
+        @media (min-width: 768px) {
+            .social-links a:hover {
+                background: rgba(255, 255, 255, 0.2);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header con navegación responsive -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">Mi Portfolio</div>
+                <nav class="nav">
+                    <a href="#inicio">Inicio</a>
+                    <a href="#portfolio">Portfolio</a>
+                    <a href="#sobre-mi">Sobre Mí</a>
+                    <a href="#contacto">Contacto</a>
+                </nav>
+                <button class="nav-toggle">☰</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero section adaptativo -->
+    <section class="hero">
+        <div class="container">
+            <h1 class="hero-title">Desarrollador Frontend</h1>
+            <p class="hero-subtitle">Creando experiencias web responsive y accesibles que funcionan en todos los dispositivos</p>
+        </div>
+    </section>
+
+    <!-- Portfolio grid completamente responsive -->
+    <section class="portfolio" id="portfolio">
+        <div class="container">
+            <h2 class="section-title">Mis Proyectos</h2>
+            <div class="portfolio-grid">
+                <!-- Proyecto 1 -->
+                <article class="portfolio-item">
+                    <div class="portfolio-item-image">
+                        <img src="https://picsum.photos/400/225?random=1" alt="Proyecto E-commerce">
+                    </div>
+                    <div class="portfolio-item-content">
+                        <h3 class="portfolio-item-title">Tienda Online Responsive</h3>
+                        <p class="portfolio-item-description">E-commerce completo con carrito de compras, filtros de productos y checkout integrado. Optimizado para mobile-first.</p>
+                        <div class="portfolio-item-tags">
+                            <span class="tag">HTML5</span>
+                            <span class="tag">CSS Grid</span>
+                            <span class="tag">JavaScript</span>
+                            <span class="tag">Responsive</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Proyecto 2 -->
+                <article class="portfolio-item">
+                    <div class="portfolio-item-image">
+                        <img src="https://picsum.photos/400/225?random=2" alt="Dashboard Analytics">
+                    </div>
+                    <div class="portfolio-item-content">
+                        <h3 class="portfolio-item-title">Dashboard de Analytics</h3>
+                        <p class="portfolio-item-description">Panel de control con gráficos interactivos y métricas en tiempo real. Adaptado para tablets y dispositivos móviles.</p>
+                        <div class="portfolio-item-tags">
+                            <span class="tag">CSS Flexbox</span>
+                            <span class="tag">Chart.js</span>
+                            <span class="tag">API REST</span>
+                            <span class="tag">PWA</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Proyecto 3 -->
+                <article class="portfolio-item">
+                    <div class="portfolio-item-image">
+                        <img src="https://picsum.photos/400/225?random=3" alt="App de Tareas">
+                    </div>
+                    <div class="portfolio-item-content">
+                        <h3 class="portfolio-item-title">Gestor de Tareas</h3>
+                        <p class="portfolio-item-description">Aplicación de productividad con drag & drop, categorías personalizables y sincronización en la nube.</p>
+                        <div class="portfolio-item-tags">
+                            <span class="tag">CSS Grid</span>
+                            <span class="tag">LocalStorage</span>
+                            <span class="tag">Touch Events</span>
+                            <span class="tag">Dark Mode</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Proyecto 4 -->
+                <article class="portfolio-item">
+                    <div class="portfolio-item-image">
+                        <img src="https://picsum.photos/400/225?random=4" alt="Landing Page">
+                    </div>
+                    <div class="portfolio-item-content">
+                        <h3 class="portfolio-item-title">Landing Page Corporativa</h3>
+                        <p class="portfolio-item-description">Sitio web corporativo con animaciones CSS, formularios de contacto y optimización SEO completa.</p>
+                        <div class="portfolio-item-tags">
+                            <span class="tag">CSS Animations</span>
+                            <span class="tag">SEO</span>
+                            <span class="tag">Performance</span>
+                            <span class="tag">A11y</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Proyecto 5 -->
+                <article class="portfolio-item">
+                    <div class="portfolio-item-image">
+                        <img src="https://picsum.photos/400/225?random=5" alt="Blog Personal">
+                    </div>
+                    <div class="portfolio-item-content">
+                        <h3 class="portfolio-item-title">Blog Minimalista</h3>
+                        <p class="portfolio-item-description">Blog personal con sistema de comentarios, búsqueda avanzada y modo lectura optimizado para móviles.</p>
+                        <div class="portfolio-item-tags">
+                            <span class="tag">Typography</span>
+                            <span class="tag">Reading Mode</span>
+                            <span class="tag">Search</span>
+                            <span class="tag">Comments</span>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Proyecto 6 -->
+                <article class="portfolio-item">
+                    <div class="portfolio-item-image">
+                        <img src="https://picsum.photos/400/225?random=6" alt="Portfolio Fotográfico">
+                    </div>
+                    <div class="portfolio-item-content">
+                        <h3 class="portfolio-item-title">Galería Fotográfica</h3>
+                        <p class="portfolio-item-description">Portfolio fotográfico con lazy loading, lightbox responsive y optimización automática de imágenes.</p>
+                        <div class="portfolio-item-tags">
+                            <span class="tag">Image Optimization</span>
+                            <span class="tag">Lazy Loading</span>
+                            <span class="tag">Lightbox</span>
+                            <span class="tag">WebP</span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer responsive -->
+    <footer class="footer">
+        <div class="container">
+            <p>&copy; 2024 Mi Portfolio. Desarrollado con CSS Responsive.</p>
+            <p class="mobile-only">Optimizado para móviles</p>
+            <p class="desktop-only">Experiencia completa en desktop</p>
+            <div class="social-links">
+                <a href="#">📧</a>
+                <a href="#">💼</a>
+                <a href="#">🐦</a>
+                <a href="#">📷</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // JavaScript mínimo para funcionalidad responsive
+        document.addEventListener('DOMContentLoaded', function() {
+            // Detectar cambios de orientación para reflow
+            window.addEventListener('orientationchange', function() {
+                setTimeout(function() {
+                    window.location.reload();
+                }, 100);
+            });
+            
+            // Log de breakpoint actual para debugging
+            function logCurrentBreakpoint() {
+                const width = window.innerWidth;
+                let breakpoint;
+                
+                if (width < 480) breakpoint = 'Mobile';
+                else if (width < 768) breakpoint = 'Mobile Large';
+                else if (width < 1024) breakpoint = 'Tablet';
+                else if (width < 1440) breakpoint = 'Desktop';
+                else breakpoint = 'Desktop Large';
+                
+                console.log(`Breakpoint actual: ${breakpoint} (${width}px)`);
+            }
+            
+            // Log inicial y en resize
+            logCurrentBreakpoint();
+            window.addEventListener('resize', logCurrentBreakpoint);
+        });
+    </script>
+</body>
+</html>

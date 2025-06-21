@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Container Queries y 3D Transforms - TailwindCSS v4.0</title>
+    
+    <!-- TailwindCSS v4.0 con configuración extendida -->
+    <script src="https://cdn.tailwindcss.com/4.0.0-alpha.1"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    // Container query breakpoints
+                    containers: {
+                        'xs': '20rem',
+                        'sm': '24rem', 
+                        'md': '28rem',
+                        'lg': '32rem',
+                        'xl': '36rem',
+                        '2xl': '42rem',
+                    },
+                    // 3D Transform utilities
+                    transformOrigin: {
+                        'center-3d': '50% 50% 0',
+                    },
+                    rotate: {
+                        'x-45': '45deg',
+                        'x-90': '90deg',
+                        'y-45': '45deg', 
+                        'y-90': '90deg',
+                        'z-45': '45deg',
+                    },
+                    scale: {
+                        'z-50': '0.5',
+                        'z-75': '0.75',
+                        'z-125': '1.25',
+                        'z-150': '1.5',
+                    },
+                    translate: {
+                        'z-10': '10px',
+                        'z-20': '20px',
+                        'z-50': '50px',
+                    },
+                    animation: {
+                        'rotate-3d': 'rotate3d 3s ease-in-out infinite',
+                        'float-3d': 'float3d 4s ease-in-out infinite',
+                        'card-flip': 'cardFlip 0.6s ease-in-out',
+                    },
+                    keyframes: {
+                        rotate3d: {
+                            '0%': { transform: 'rotateX(0deg) rotateY(0deg)' },
+                            '25%': { transform: 'rotateX(15deg) rotateY(15deg)' },
+                            '50%': { transform: 'rotateX(0deg) rotateY(30deg)' },
+                            '75%': { transform: 'rotateX(-15deg) rotateY(15deg)' },
+                            '100%': { transform: 'rotateX(0deg) rotateY(0deg)' },
+                        },
+                        float3d: {
+                            '0%, 100%': { transform: 'translateY(0px) rotateX(0deg)' },
+                            '50%': { transform: 'translateY(-20px) rotateX(10deg)' },
+                        },
+                        cardFlip: {
+                            '0%': { transform: 'rotateY(0deg)' },
+                            '100%': { transform: 'rotateY(180deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Container Query Setup */
+        .container-query {
+            container-type: inline-size;
+        }
+        
+        .sidebar-container {
+            container-name: sidebar;
+            container-type: inline-size;
+        }
+        
+        .main-container {
+            container-name: main;
+            container-type: inline-size;
+        }
+        
+        /* Container Query Classes - Simulando v4.0 syntax */
+        @container sidebar (min-width: 300px) {
+            .cq-sidebar-md .card-content {
+                @apply grid grid-cols-2 gap-4;
+            }
+            .cq-sidebar-md .card-title {
+                @apply text-lg;
+            }
+        }
+        
+        @container sidebar (min-width: 400px) {
+            .cq-sidebar-lg .card-content {
+                @apply grid-cols-3;
+            }
+            .cq-sidebar-lg .card-title {
+                @apply text-xl;
+            }
+        }
+        
+        @container main (min-width: 500px) {
+            .cq-main-md .product-card {
+                @apply flex-row;
+            }
+            .cq-main-md .product-image {
+                @apply w-48 h-48;
+            }
+        }
+        
+        @container main (min-width: 700px) {
+            .cq-main-lg .product-grid {
+                @apply grid-cols-2;
+            }
+        }
+        
+        @container main (min-width: 900px) {
+            .cq-main-xl .product-grid {
+                @apply grid-cols-3;
+            }
+        }
+        
+        /* 3D Transform utilities */
+        .preserve-3d {
+            transform-style: preserve-3d;
+        }
+        
+        .backface-hidden {
+            backface-visibility: hidden;
+        }
+        
+        .perspective-1000 {
+            perspective: 1000px;
+        }
+        
+        .rotate-x-45 {
+            transform: rotateX(45deg);
+        }
+        
+        .rotate-y-45 {
+            transform: rotateY(45deg);
+        }
+        
+        .rotate-z-45 {
+            transform: rotateZ(45deg);
+        }
+        
+        .translate-z-10 {
+            transform: translateZ(10px);
+        }
+        
+        .scale-z-75 {
+            transform: scaleZ(0.75);
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 min-h-screen font-sans">
+    
+    <!-- Header con controls interactivos -->
+    <header class="bg-white dark:bg-gray-800 shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex justify-between items-center">
+                <h1 class="text-2xl font-bold text-gray-900 dark:text-white">
+                    Container Queries & 3D Transforms
+                </h1>
+                
+                <!-- Layout Controls -->
+                <div class="flex space-x-2">
+                    <button id="layoutToggle" class="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors">
+                        Cambiar Layout
+                    </button>
+                    <button id="3dToggle" class="px-4 py-2 bg-purple-500 text-white rounded-lg hover:bg-purple-600 transition-colors">
+                        Toggle 3D
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Introducción explicativa -->
+        <section class="mb-12 text-center">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white mb-4">
+                Experimenta el Poder de Container Queries
+            </h2>
+            <p class="text-lg text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-6">
+                Cambia el tamaño de los contenedores usando los controles y observa cómo los componentes se adaptan a SU espacio disponible, no al viewport completo.
+            </p>
+            <div class="bg-yellow-100 dark:bg-yellow-900/20 border border-yellow-300 dark:border-yellow-700 rounded-lg p-4 max-w-2xl mx-auto">
+                <p class="text-sm text-yellow-800 dark:text-yellow-200">
+                    💡 <strong>Concepto Clave:</strong> Los container queries permiten que los componentes respondan a su contenedor padre, creando verdaderos componentes modulares y reutilizables.
+                </p>
+            </div>
+        </section>
+
+        <!-- Layout dinámico con container queries -->
+        <div id="mainLayout" class="grid gap-8 transition-all duration-500 ease-in-out grid-cols-1 lg:grid-cols-3">
+            
+            <!-- Sidebar con container queries -->
+            <aside class="sidebar-container cq-sidebar-md cq-sidebar-lg lg:col-span-1">
+                <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 h-fit">
+                    <h3 class="card-title font-semibold text-gray-900 dark:text-white mb-4 transition-all duration-300">
+                        Panel Adaptativo
+                    </h3>
+                    
+                    <div class="card-content space-y-4 transition-all duration-300">
+                        <!-- Elementos que se reorganizan según container size -->
+                        <div class="bg-blue-100 dark:bg-blue-900/30 p-4 rounded-lg">
+                            <h4 class="font-medium text-blue-900 dark:text-blue-100 mb-2">Estadística 1</h4>
+                            <p class="text-2xl font-bold text-blue-600 dark:text-blue-400">45%</p>
+                        </div>
+                        
+                        <div class="bg-green-100 dark:bg-green-900/30 p-4 rounded-lg">
+                            <h4 class="font-medium text-green-900 dark:text-green-100 mb-2">Estadística 2</h4>
+                            <p class="text-2xl font-bold text-green-600 dark:text-green-400">78%</p>
+                        </div>
+                        
+                        <div class="bg-purple-100 dark:bg-purple-900/30 p-4 rounded-lg">
+                            <h4 class="font-medium text-purple-900 dark:text-purple-100 mb-2">Estadística 3</h4>
+                            <p class="text-2xl font-bold text-purple-600 dark:text-purple-400">92%</p>
+                        </div>
+                        
+                        <div class="bg-red-100 dark:bg-red-900/30 p-4 rounded-lg">
+                            <h4 class="font-medium text-red-900 dark:text-red-100 mb-2">Estadística 4</h4>
+                            <p class="text-2xl font-bold text-red-600 dark:text-red-400">63%</p>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Main content con container queries -->
+            <section class="main-container cq-main-md cq-main-lg cq-main-xl lg:col-span-2">
+                <div class="space-y-8">
+                    
+                    <!-- Product grid que se adapta al contenedor -->
+                    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6">
+                        <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-6">
+                            Grid de Productos Adaptativo
+                        </h3>
+                        
+                        <div class="product-grid grid gap-6 grid-cols-1 transition-all duration-300">
+                            <!-- Producto 1 -->
+                            <div class="product-card flex flex-col bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden transition-all duration-300">
+                                <div class="product-image bg-gradient-to-br from-blue-400 to-purple-500 w-full h-32 transition-all duration-300"></div>
+                                <div class="p-4 flex-1">
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Producto Alpha</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">Descripción que se adapta al espacio disponible del contenedor.</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-lg font-bold text-blue-600 dark:text-blue-400">$299</span>
+                                        <button class="px-3 py-1 bg-blue-500 text-white rounded hover:bg-blue-600 transition-colors text-sm">
+                                            Comprar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Producto 2 -->
+                            <div class="product-card flex flex-col bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden transition-all duration-300">
+                                <div class="product-image bg-gradient-to-br from-green-400 to-teal-500 w-full h-32 transition-all duration-300"></div>
+                                <div class="p-4 flex-1">
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Producto Beta</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">Otro producto que demuestra la adaptabilidad.</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-lg font-bold text-green-600 dark:text-green-400">$199</span>
+                                        <button class="px-3 py-1 bg-green-500 text-white rounded hover:bg-green-600 transition-colors text-sm">
+                                            Comprar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Producto 3 -->
+                            <div class="product-card flex flex-col bg-gray-50 dark:bg-gray-700 rounded-lg overflow-hidden transition-all duration-300">
+                                <div class="product-image bg-gradient-to-br from-red-400 to-pink-500 w-full h-32 transition-all duration-300"></div>
+                                <div class="p-4 flex-1">
+                                    <h4 class="font-semibold text-gray-900 dark:text-white mb-2">Producto Gamma</h4>
+                                    <p class="text-gray-600 dark:text-gray-300 text-sm mb-4">Tercer ejemplo de adaptabilidad.</p>
+                                    <div class="flex justify-between items-center">
+                                        <span class="text-lg font-bold text-red-600 dark:text-red-400">$399</span>
+                                        <button class="px-3 py-1 bg-red-500 text-white rounded hover:bg-red-600 transition-colors text-sm">
+                                            Comprar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Sección 3D Transforms -->
+        <section class="mt-16">
+            <h2 class="text-3xl font-bold text-gray-900 dark:text-white text-center mb-8">
+                Utilidades 3D Transforms
+            </h2>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 mb-8">
+                
+                <!-- Card 3D básica -->
+                <div class="perspective-1000">
+                    <div id="card1" class="preserve-3d transition-transform duration-500 hover:rotate-y-45 cursor-pointer">
+                        <div class="bg-gradient-to-br from-blue-500 to-purple-600 text-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-semibold mb-2">Rotate Y</h3>
+                            <p class="text-sm opacity-90">Hover para rotar</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card con animación flotante 3D -->
+                <div class="perspective-1000">
+                    <div class="preserve-3d animate-float-3d">
+                        <div class="bg-gradient-to-br from-green-500 to-teal-600 text-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-semibold mb-2">Float 3D</h3>
+                            <p class="text-sm opacity-90">Animación automática</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card con múltiples transformaciones -->
+                <div class="perspective-1000">
+                    <div id="card3" class="preserve-3d transition-transform duration-700 hover:rotate-x-45 hover:scale-110 cursor-pointer">
+                        <div class="bg-gradient-to-br from-red-500 to-pink-600 text-white p-6 rounded-xl shadow-lg">
+                            <h3 class="text-lg font-semibold mb-2">Multi Transform</h3>
+                            <p class="text-sm opacity-90">Hover para efecto combinado</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Card con flip effect -->
+                <div class="perspective-1000 h-32">
+                    <div id="flipCard" class="preserve-3d w-full h-full cursor-pointer transition-transform duration-700" style="transform-style: preserve-3d;">
+                        <div class="absolute inset-0 backface-hidden">
+                            <div class="bg-gradient-to-br from-yellow-500 to-orange-600 text-white p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+                                <h3 class="text-lg font-semibold mb-2">Flip Card</h3>
+                                <p class="text-sm opacity-90">Click para voltear</p>
+                            </div>
+                        </div>
+                        <div class="absolute inset-0 backface-hidden" style="transform: rotateY(180deg);">
+                            <div class="bg-gradient-to-br from-purple-500 to-indigo-600 text-white p-6 rounded-xl shadow-lg h-full flex flex-col justify-center">
+                                <h3 class="text-lg font-semibold mb-2">¡Volteado!</h3>
+                                <p class="text-sm opacity-90">Click para volver</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Explicación técnica -->
+            <div class="bg-gray-50 dark:bg-gray-800 rounded-xl p-6">
+                <h3 class="text-xl font-semibold text-gray-900 dark:text-white mb-4">
+                    🛠️ Utilidades 3D en TailwindCSS v4.0
+                </h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div>
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Nuevas Clases Disponibles:</h4>
+                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">rotate-x-{angle}</code> - Rotación en eje X</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">rotate-y-{angle}</code> - Rotación en eje Y</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">rotate-z-{angle}</code> - Rotación en eje Z</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">translate-z-{size}</code> - Traslación en Z</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">scale-z-{scale}</code> - Escala en Z</li>
+                        </ul>
+                    </div>
+                    <div>
+                        <h4 class="font-medium text-gray-900 dark:text-white mb-2">Propiedades de Soporte:</h4>
+                        <ul class="text-sm text-gray-600 dark:text-gray-300 space-y-1">
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">preserve-3d</code> - Preserva transformaciones 3D</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">perspective-{size}</code> - Define perspectiva</li>
+                            <li><code class="bg-gray-200 dark:bg-gray-700 px-2 py-1 rounded">backface-hidden</code> - Oculta cara trasera</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- JavaScript para interactividad -->
+    <script>
+        // Layout toggle functionality
+        const layoutToggle = document.getElementById('layoutToggle');
+        const mainLayout = document.getElementById('mainLayout');
+        let isWideLayout = false;
+        
+        layoutToggle.addEventListener('click', () => {
+            isWideLayout = !isWideLayout;
+            if (isWideLayout) {
+                mainLayout.className = 'grid gap-8 transition-all duration-500 ease-in-out grid-cols-1';
+                layoutToggle.textContent = 'Layout Columnas';
+            } else {
+                mainLayout.className = 'grid gap-8 transition-all duration-500 ease-in-out grid-cols-1 lg:grid-cols-3';
+                layoutToggle.textContent = 'Layout Ancho';
+            }
+        });
+        
+        // 3D Toggle functionality
+        const toggle3D = document.getElementById('3dToggle');
+        const cards3D = document.querySelectorAll('[id^="card"]');
+        let is3DActive = true;
+        
+        toggle3D.addEventListener('click', () => {
+            is3DActive = !is3DActive;
+            cards3D.forEach(card => {
+                if (is3DActive) {
+                    card.style.transform = '';
+                    card.classList.remove('!transform-none');
+                } else {
+                    card.classList.add('!transform-none');
+                }
+            });
+            toggle3D.textContent = is3DActive ? 'Desactivar 3D' : 'Activar 3D';
+        });
+        
+        // Flip card functionality
+        const flipCard = document.getElementById('flipCard');
+        let isFlipped = false;
+        
+        flipCard.addEventListener('click', () => {
+            isFlipped = !isFlipped;
+            flipCard.style.transform = isFlipped ? 'rotateY(180deg)' : 'rotateY(0deg)';
+        });
+        
+        // Enhanced hover effects
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add enhanced interaction feedback
+            const interactiveCards = document.querySelectorAll('.cursor-pointer');
+            
+            interactiveCards.forEach(card => {
+                card.addEventListener('mouseenter', () => {
+                    card.style.transition = 'all 0.3s ease-out';
+                });
+                
+                card.addEventListener('mouseleave', () => {
+                    card.style.transition = 'all 0.5s ease-out';
+                });
+            });
+        });
+    </script>
+</body>
+</html>

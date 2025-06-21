@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimización CSS: Antes vs Después</title>
+    <style>
+        /* Variables globales para consistencia */
+        :root {
+            --primary: #3b82f6;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            
+            /* Timing system optimizado */
+            --timing-instant: 100ms;  /* Para feedback inmediato */
+            --timing-fast: 200ms;     /* Para microinteracciones */
+            --timing-normal: 300ms;   /* Para transiciones principales */
+            --timing-slow: 500ms;     /* Para animaciones complejas */
+            
+            /* Easing curves naturales */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in-out-circ: cubic-bezier(0.785, 0.135, 0.15, 0.86);
+            --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: #f8fafc;
+            line-height: 1.6;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .section {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-top: 2rem;
+        }
+
+        .comparison-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .card-badge {
+            position: absolute;
+            top: -10px;
+            right: 1rem;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-before {
+            background: var(--danger);
+            color: white;
+        }
+
+        .badge-after {
+            background: var(--success);
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .demo-element {
+            width: 120px;
+            height: 120px;
+            border-radius: 12px;
+            margin: 1rem auto;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            color: white;
+        }
+
+        /* ===================================================
+           PROBLEMA #1: ANIMACIONES QUE CAUSAN REFLOW
+           =================================================== */
+
+        /* ❌ ANTES: Animación problemática que causa reflow */
+        .element-before-reflow {
+            background: var(--danger);
+            transition: width var(--timing-slow) ease, height var(--timing-slow) ease;
+            /*
+            PROBLEMA: Animar width y height fuerza al navegador a:
+            1. Recalcular el layout de todo el documento (reflow)
+            2. Repintar todos los elementos afectados (repaint)
+            3. Recomponer las capas (composite)
+            
+            Esto es MUY costoso computacionalmente
+            */
+        }
+
+        .element-before-reflow:hover {
+            width: 150px;  /* ❌ Causa reflow */
+            height: 150px; /* ❌ Causa reflow */
+        }
+
+        /* ✅ DESPUÉS: Animación optimizada usando transform */
+        .element-after-reflow {
+            background: var(--success);
+            transition: transform var(--timing-normal) var(--ease-out-expo);
+            /*
+            SOLUCIÓN: Transform solo afecta la capa de composición:
+            1. No hay recálculo de layout (sin reflow)
+            2. No hay repintado (sin repaint)
+            3. Solo recomposición GPU (muy eficiente)
+            
+            La GPU está diseñada específicamente para estas operaciones
+            */
+        }
+
+        .element-after-reflow:hover {
+            transform: scale(1.25); /* ✅ Solo usa GPU */
+        }
+
+        /* ===================================================
+           PROBLEMA #2: ANIMACIONES SIN OPTIMIZACIÓN DE CAPAS
+           =================================================== */
+
+        /* ❌ ANTES: Sin preparación de capa de composición */
+        .element-before-layer {
+            background: var(--warning);
+            transition: opacity var(--timing-normal) ease;
+            /*
+            PROBLEMA: El navegador tiene que crear una nueva capa 
+            de composición en el momento de la animación.
+            Esto causa un "layout shift" inicial que se percibe como jank.
+            */
+        }
+
+        .element-before-layer:hover {
+            opacity: 0.7;
+        }
+
+        /* ✅ DESPUÉS: Con preparación previa de capa */
+        .element-after-layer {
+            background: var(--primary);
+            transition: opacity var(--timing-normal) var(--ease-out-expo);
+            /*
+            SOLUCIÓN: will-change le dice al navegador "prepárate,
+            este elemento va a cambiar". El navegador crea la capa
+            de composición por adelantado, eliminando el jank inicial.
+            */
+            will-change: opacity;
+            /* 
+            IMPORTANTE: En producción, deberías remover will-change
+            después de la animación para liberar memoria:
+            element.style.willChange = 'auto';
+            */
+        }
+
+        .element-after-layer:hover {
+            opacity: 0.7;
+        }
+
+        /* ===================================================
+           PROBLEMA #3: TIMING INADECUADO PARA DISPOSITIVOS
+           =================================================== */
+
+        /* ❌ ANTES: Timing fijo que no considera el dispositivo */
+        .element-before-timing {
+            background: linear-gradient(45deg, var(--danger), #dc2626);
+            transition: transform 150ms linear;
+            /*
+            PROBLEMAS:
+            1. 150ms puede ser demasiado rápido para dispositivos lentos
+            2. Linear no se siente natural
+            3. No considera prefers-reduced-motion
+            */
+        }
+
+        .element-before-timing:hover {
+            transform: translateY(-10px);
+        }
+
+        /* ✅ DESPUÉS: Timing adaptativo y natural */
+        .element-after-timing {
+            background: linear-gradient(45deg, var(--success), #059669);
+            transition: transform var(--timing-fast) var(--ease-out-expo);
+            /*
+            SOLUCIONES:
+            1. Timing basado en variables CSS que se pueden ajustar
+            2. Easing curve que se siente natural
+            3. Respeta prefers-reduced-motion (ver más abajo)
+            */
+        }
+
+        .element-after-timing:hover {
+            transform: translateY(-8px);
+        }
+
+        /* ===================================================
+           CÓDIGO CSS PARA DIFERENTES ESCENARIOS DE DISPOSITIVOS
+           =================================================== */
+
+        /* Optimización para dispositivos de baja potencia */
+        @media (max-width: 768px) and (max-resolution: 150dpi) {
+            :root {
+                /* Reducir duración en dispositivos móviles básicos */
+                --timing-normal: 200ms;
+                --timing-slow: 300ms;
+            }
+            
+            /* Simplificar animaciones complejas */
+            .element-after-layer {
+                transition-property: opacity;
+                /* Remover otras propiedades animadas para simplificar */
+            }
+        }
+
+        /* Respeto absoluto por preferencias de accesibilidad */
+        @media (prefers-reduced-motion: reduce) {
+            /*
+            CRÍTICO: Algunos usuarios experimentan mareos o convulsiones
+            con animaciones. Esta no es una preferencia opcional.
+            */
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Optimización para dispositivos con update lento */
+        @media (update: slow) {
+            /*
+            Algunos dispositivos (e-readers, displays E-ink) tienen
+            refresh rates muy bajos. Las animaciones se ven rotas.
+            */
+            .element-before-reflow,
+            .element-after-reflow,
+            .element-before-layer,
+            .element-after-layer,
+            .element-before-timing,
+            .element-after-timing {
+                transition: none;
+            }
+        }
+
+        /* ===================================================
+           SISTEMA DE DEBUGGING VISUAL
+           =================================================== */
+
+        .debug-info {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-top: 1rem;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+        }
+
+        .code-block {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+        }
+
+        .code-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        .code-problem {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 3px solid var(--danger);
+            padding-left: 0.5rem;
+        }
+
+        .code-solution {
+            background: rgba(16, 185, 129, 0.1);
+            border-left: 3px solid var(--success);
+            padding-left: 0.5rem;
+        }
+
+        /* ===================================================
+           UTILIDADES DE PERFORMANCE MONITORING
+           =================================================== */
+
+        .performance-indicator {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            font-family: monospace;
+            font-size: 0.8rem;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .perf-good { border-left: 3px solid var(--success); }
+        .perf-warning { border-left: 3px solid var(--warning); }
+        .perf-bad { border-left: 3px solid var(--danger); }
+
+        /* ===================================================
+           RESPONSIVE DESIGN PARA EJEMPLOS
+           =================================================== */
+
+        @media (max-width: 768px) {
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .demo-element {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 style="text-align: center; font-size: 2.5rem; margin-bottom: 2rem; background: linear-gradient(135deg, var(--primary), var(--success)); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">
+            🔧 Optimización CSS: Guía Práctica
+        </h1>
+
+        <!-- Problema #1: Reflow vs Transform -->
+        <div class="section">
+            <h2 class="section-title">⚡ Problema #1: Animaciones que Causan Reflow</h2>
+            <p>Este es el error más común y costoso. Animar propiedades que afectan el layout fuerza al navegador a recalcular la posición de todos los elementos.</p>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <div class="card-badge badge-before">❌ ANTES</div>
+                    <h3 class="card-title">Animando Width/Height</h3>
+                    <div class="demo-element element-before-reflow">
+                        Hover me
+                    </div>
+                    <div class="debug-info">
+                        <strong>Problemas detectados:</strong><br>
+                        • Fuerza reflow en cada frame<br>
+                        • Repinta elementos cercanos<br>
+                        • Bloquea el main thread<br>
+                        • Performance: ~20-30 FPS
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <div class="card-badge badge-after">✅ DESPUÉS</div>
+                    <h3 class="card-title">Usando Transform Scale</h3>
+                    <div class="demo-element element-after-reflow">
+                        Hover me
+                    </div>
+                    <div class="debug-info">
+                        <strong>Optimizaciones aplicadas:</strong><br>
+                        • Solo usa la capa de composición<br>
+                        • Procesado por GPU<br>
+                        • No afecta otros elementos<br>
+                        • Performance: 60 FPS estables
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-problem">
+/* ❌ PROBLEMÁTICO: Causa reflow */
+.element {
+    transition: width 500ms ease, height 500ms ease;
+}
+.element:hover {
+    width: 150px;  /* Fuerza recálculo de layout */
+    height: 150px; /* Repinta elementos vecinos */
+}</div>
+
+                <div class="code-solution">
+/* ✅ OPTIMIZADO: Solo usa GPU */
+.element {
+    transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.element:hover {
+    transform: scale(1.25); /* Solo composición, sin reflow */
+}</div>
+            </div>
+        </div>
+
+        <!-- Problema #2: Will-Change Strategy -->
+        <div class="section">
+            <h2 class="section-title">🎯 Problema #2: Capas de Composición no Preparadas</h2>
+            <p>Sin will-change, el navegador crea capas de composición "just in time", causando jank al inicio de la animación.</p>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <div class="card-badge badge-before">❌ ANTES</div>
+                    <h3 class="card-title">Sin Will-Change</h3>
+                    <div class="demo-element element-before-layer">
+                        Hover me
+                    </div>
+                    <div class="debug-info">
+                        <strong>Problemas:</strong><br>
+                        • Creación de capa tardía<br>
+                        • Jank inicial perceptible<br>
+                        • Layout shift momentáneo
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <div class="card-badge badge-after">✅ DESPUÉS</div>
+                    <h3 class="card-title">Con Will-Change Preparado</h3>
+                    <div class="demo-element element-after-layer">
+                        Hover me
+                    </div>
+                    <div class="debug-info">
+                        <strong>Optimizaciones:</strong><br>
+                        • Capa creada preventivamente<br>
+                        • Transición instantánea<br>
+                        • Sin layout shifts
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-problem">
+/* ❌ PROBLEMÁTICO: Creación de capa tardía */
+.element {
+    transition: opacity 300ms ease;
+    /* El navegador crea la capa cuando empieza la animación */
+}</div>
+
+                <div class="code-solution">
+/* ✅ OPTIMIZADO: Preparación preventiva */
+.element {
+    transition: opacity 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    will-change: opacity; /* Prepara la capa por adelantado */
+}
+
+/* IMPORTANTE: Remover will-change después de la animación */
+.element.animation-complete {
+    will-change: auto; /* Libera memoria */
+}</div>
+            </div>
+        </div>
+
+        <!-- Problema #3: Timing y Accesibilidad -->
+        <div class="section">
+            <h2 class="section-title">⏱️ Problema #3: Timing Inadecuado y Falta de Accesibilidad</h2>
+            <p>El timing incorrecto puede hacer que las animaciones se sientan artificiales o causen problemas de accesibilidad.</p>
+            
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <div class="card-badge badge-before">❌ ANTES</div>
+                    <h3 class="card-title">Timing Rígido</h3>
+                    <div class="demo-element element-before-timing">
+                        Hover me
+                    </div>
+                    <div class="debug-info">
+                        <strong>Problemas:</strong><br>
+                        • Timing muy rápido<br>
+                        • Easing linear (robótico)<br>
+                        • No respeta prefer-reduced-motion
+                    </div>
+                </div>
+
+                <div class="comparison-card">
+                    <div class="card-badge badge-after">✅ DESPUÉS</div>
+                    <h3 class="card-title">Timing Natural y Accesible</h3>
+                    <div class="demo-element element-after-timing">
+                        Hover me
+                    </div>
+                    <div class="debug-info">
+                        <strong>Optimizaciones:</strong><br>
+                        • Timing basado en variables<br>
+                        • Easing curve natural<br>
+                        • Respeta preferencias del usuario
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-block">
+                <div class="code-problem">
+/* ❌ PROBLEMÁTICO: Timing rígido */
+.element {
+    transition: transform 150ms linear;
+    /* Muy rápido, easing no natural, sin accesibilidad */
+}</div>
+
+                <div class="code-solution">
+/* ✅ OPTIMIZADO: Sistema de timing inteligente */
+:root {
+    --timing-fast: 200ms;
+    --ease-natural: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.element {
+    transition: transform var(--timing-fast) var(--ease-natural);
+}
+
+/* Respeto por preferencias de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+    .element {
+        transition-duration: 0.01ms !important;
+    }
+}</div>
+            </div>
+        </div>
+
+        <!-- Herramientas de Debugging -->
+        <div class="section">
+            <h2 class="section-title">🔍 Herramientas de Debugging Integradas</h2>
+            <p>Presiona F12 y observa la consola para ver el monitoring en tiempo real de estas optimizaciones.</p>
+            
+            <div style="background: rgba(0,0,0,0.2); padding: 1rem; border-radius: 8px; margin-top: 1rem;">
+                <strong>Métricas que estamos monitoreando:</strong><br>
+                • FPS en tiempo real<br>
+                • Detección de long tasks<br>
+                • Uso de memoria de capas<br>
+                • Compatibilidad con dispositivo<br>
+                • Respeto por preferencias de usuario
+            </div>
+        </div>
+    </div>
+
+    <!-- Indicador de Performance en Tiempo Real -->
+    <div class="performance-indicator" id="perf-indicator">
+        <div>FPS: <span id="fps-counter">60</span></div>
+        <div>Frame: <span id="frame-time">16.7ms</span></div>
+    </div>
+
+    <script>
+        /*
+        Sistema de Monitoring de Performance en Tiempo Real
+        ================================================
+        
+        Este script demuestra cómo implementar monitoring de performance
+        en proyectos reales para detectar problemas de animación.
+        */
+
+        class AnimationPerformanceMonitor {
+            constructor() {
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.fps = 60;
+                this.frameTime = 16.7;
+                this.longTasks = 0;
+                
+                this.initializeMonitoring();
+                this.detectDeviceCapabilities();
+                this.checkAccessibilityPreferences();
+            }
+
+            initializeMonitoring() {
+                // Monitoreo de FPS continuo
+                const monitor = () => {
+                    this.frameCount++;
+                    const currentTime = performance.now();
+                    const deltaTime = currentTime - this.lastTime;
+
+                    // Calcular métricas cada segundo
+                    if (deltaTime >= 1000) {
+                        this.fps = Math.round((this.frameCount * 1000) / deltaTime);
+                        this.frameTime = deltaTime / this.frameCount;
+                        
+                        this.updatePerformanceIndicator();
+                        this.logPerformanceWarnings();
+                        
+                        this.frameCount = 0;
+                        this.lastTime = currentTime;
+                    }
+
+                    requestAnimationFrame(monitor);
+                };
+
+                requestAnimationFrame(monitor);
+            }
+
+            updatePerformanceIndicator() {
+                // Actualizar indicador visual
+                document.getElementById('fps-counter').textContent = this.fps;
+                document.getElementById('frame-time').textContent = this.frameTime.toFixed(1) + 'ms';
+
+                // Cambiar color basado en performance
+                const indicator = document.getElementById('perf-indicator');
+                indicator.className = 'performance-indicator ' + (
+                    this.fps >= 55 ? 'perf-good' : 
+                    this.fps >= 30 ? 'perf-warning' : 
+                    'perf-bad'
+                );
+            }
+
+            logPerformanceWarnings() {
+                // Advertir sobre performance pobre
+                if (this.fps < 30) {
+                    console.warn('🚨 Performance crítica: ' + this.fps + ' FPS');
+                    console.log('💡 Sugerencia: Revisar animaciones que causan reflow');
+                } else if (this.fps < 50) {
+                    console.warn('⚠️ Performance subóptima: ' + this.fps + ' FPS');
+                }
+
+                // Log de frame time alto
+                if (this.frameTime > 20) {
+                    console.warn('⏱️ Frame time alto: ' + this.frameTime.toFixed(1) + 'ms');
+                }
+            }
+
+            detectDeviceCapabilities() {
+                // Detectar capacidades del dispositivo
+                const info = {
+                    cores: navigator.hardwareConcurrency || 'unknown',
+                    memory: navigator.deviceMemory || 'unknown',
+                    connection: navigator.connection?.effectiveType || 'unknown',
+                    platform: navigator.platform
+                };
+
+                console.log('📱 Información del dispositivo:', info);
+
+                // Ajustar expectativas basado en hardware
+                if (info.cores <= 2) {
+                    console.log('⚡ Dispositivo de baja potencia detectado');
+                    console.log('💡 Recomendación: Reducir complejidad de animaciones');
+                }
+
+                if (info.memory && info.memory <= 2) {
+                    console.log('💾 Memoria limitada detectada');
+                    console.log('💡 Recomendación: Minimizar uso de will-change');
+                }
+            }
+
+            checkAccessibilityPreferences() {
+                // Verificar preferencias de accesibilidad
+                const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                
+                if (prefersReducedMotion) {
+                    console.log('♿ Usuario prefiere movimiento reducido');
+                    console.log('✅ Animaciones automáticamente reducidas');
+                } else {
+                    console.log('🎬 Animaciones completas habilitadas');
+                }
+
+                // Detectar otros media queries relevantes
+                const updateSlow = window.matchMedia('(update: slow)').matches;
+                if (updateSlow) {
+                    console.log('🐌 Dispositivo con update lento detectado');
+                    console.log('💡 Recomendación: Deshabilitar animaciones complejas');
+                }
+            }
+
+            // Detectar animaciones problemáticas específicas
+            auditAnimations() {
+                const styleSheets = Array.from(document.styleSheets);
+                let problematicRules = 0;
+
+                console.log('🔍 Auditando reglas CSS...');
+
+                styleSheets.forEach(sheet => {
+                    try {
+                        const rules = Array.from(sheet.cssRules || []);
+                        rules.forEach(rule => {
+                            if (rule.style) {
+                                // Detectar propiedades problemáticas
+                                const problematicProps = ['width', 'height', 'left', 'top', 'margin', 'padding'];
+                                const transitionProps = rule.style.transitionProperty || '';
+                                
+                                problematicProps.forEach(prop => {
+                                    if (transitionProps.includes(prop)) {
+                                        problematicRules++;
+                                        console.warn(`⚠️ Regla problemática encontrada: transition de ${prop}`);
+                                    }
+                                });
+                            }
+                        });
+                    } catch (e) {
+                        // Ignorar errores de CORS con stylesheets externos
+                    }
+                });
+
+                console.log(`📊 Auditoría completa: ${problematicRules} reglas problemáticas encontradas`);
+                return problematicRules;
+            }
+        }
+
+        // Setup de Long Task Observer para detectar bloqueos del main thread
+        if ('PerformanceObserver' in window) {
+            const observer = new PerformanceObserver((list) => {
+                list.getEntries().forEach((entry) => {
+                    if (entry.duration > 50) {
+                        console.warn(`⏳ Long task detectada: ${entry.duration.toFixed(2)}ms`);
+                        console.log('💡 Esto puede causar jank en animaciones');
+                    }
+                });
+            });
+
+            try {
+                observer.observe({ entryTypes: ['longtask'] });
+                console.log('👀 Long task observer activo');
+            } catch (e) {
+                console.log('ℹ️ Long task observer no soportado en este navegador');
+            }
+        }
+
+        // Inicializar sistema de monitoring
+        const monitor = new AnimationPerformanceMonitor();
+
+        // Ejecutar auditoría después de cargar
+        setTimeout(() => {
+            monitor.auditAnimations();
+        }, 1000);
+
+        // Log inicial con información del sistema
+        console.log('🚀 Sistema de optimización de animaciones CSS iniciado');
+        console.log('📋 Verifica la consola para tips de performance en tiempo real');
+        console.log('🎯 Hover sobre los elementos para ver las diferencias de performance');
+    </script>
+</body>
+</html>

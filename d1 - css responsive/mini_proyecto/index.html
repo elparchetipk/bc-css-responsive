@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description"
+    content="Landing page personal de [Tu Nombre] - Desarrollador Web Frontend especializado en CSS Responsive">
+  <title>[Tu Nombre] - Desarrollador Frontend</title>
+  <link rel="stylesheet" href="_css/styles.css">
+</head>
+
+<body>
+  <!-- Header con navegación responsive -->
+  <header class="header">
+    <div class="container">
+      <div class="header__content">
+        <div class="logo">
+          <h1 class="logo__text">[Tu Nombre]</h1>
+        </div>
+
+        <nav class="nav" role="navigation" aria-label="Navegación principal">
+          <ul class="nav__list">
+            <li class="nav__item">
+              <a href="#home" class="nav__link">Inicio</a>
+            </li>
+            <li class="nav__item">
+              <a href="#about" class="nav__link">Sobre Mí</a>
+            </li>
+            <li class="nav__item">
+              <a href="#skills" class="nav__link">Habilidades</a>
+            </li>
+            <li class="nav__item">
+              <a href="#contact" class="nav__link">Contacto</a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <!-- Sección Hero - Primera impresión -->
+  <section id="home" class="hero">
+    <div class="container">
+      <div class="hero__content">
+        <h2 class="hero__title">
+          Desarrollador Frontend <br>
+          <span class="hero__highlight">Especializado en CSS Responsive</span>
+        </h2>
+        <p class="hero__description">
+          Creo experiencias web que funcionan perfectamente en todos los dispositivos,
+          desde móviles hasta pantallas 4K.
+        </p>
+        <div class="hero__actions">
+          <a href="#contact" class="btn btn--primary">Contactar</a>
+          <a href="#about" class="btn btn--secondary">Ver Más</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Contenido principal -->
+  <main>
+    <!-- Sección Sobre Mí -->
+    <section id="about" class="about">
+      <div class="container">
+        <h2 class="section__title">Sobre Mí</h2>
+        <div class="about__content">
+          <div class="about__text">
+            <p>
+              Soy un desarrollador frontend apasionado por crear interfaces de usuario
+              que no solo se ven increíbles, sino que funcionan perfectamente en
+              cualquier dispositivo.
+            </p>
+            <p>
+              Especializado en CSS moderno, responsive design y frameworks como
+              Bootstrap y TailwindCSS. Siempre en búsqueda de las mejores prácticas
+              y las tecnologías más actuales.
+            </p>
+          </div>
+          <div class="about__image">
+            <div class="placeholder-image">
+              <!-- Placeholder para imagen personal -->
+              <span>Tu Foto</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Sección Habilidades -->
+    <section id="skills" class="skills">
+      <div class="container">
+        <h2 class="section__title">Habilidades</h2>
+        <div class="skills__grid">
+          <div class="skill-card">
+            <h3 class="skill-card__title">HTML5 Semántico</h3>
+            <p class="skill-card__description">
+              Estructura web accesible y optimizada para SEO
+            </p>
+          </div>
+          <div class="skill-card">
+            <h3 class="skill-card__title">CSS3 Avanzado</h3>
+            <p class="skill-card__description">
+              Grid, Flexbox, Animaciones y Variables CSS
+            </p>
+          </div>
+          <div class="skill-card">
+            <h3 class="skill-card__title">Responsive Design</h3>
+            <p class="skill-card__description">
+              Mobile-first, Media Queries y Container Queries
+            </p>
+          </div>
+          <div class="skill-card">
+            <h3 class="skill-card__title">Performance Web</h3>
+            <p class="skill-card__description">
+              Optimización de carga y experiencia de usuario
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer id="contact" class="footer">
+    <div class="container">
+      <div class="footer__content">
+        <h2 class="footer__title">¿Trabajamos Juntos?</h2>
+        <p class="footer__description">
+          Estoy disponible para proyectos freelance y oportunidades de colaboración.
+        </p>
+        <div class="footer__contact">
+          <a href="mailto:tu@email.com" class="contact-link">tu@email.com</a>
+          <a href="https://github.com/tuusuario" class="contact-link">GitHub</a>
+          <a href="https://linkedin.com/in/tuusuario" class="contact-link">LinkedIn</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+</body>
+
+</html>

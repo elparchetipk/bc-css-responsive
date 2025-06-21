@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Animaciones Keyframe Avanzadas</title>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --secondary: #8b5cf6;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            
+            /* Duraciones basadas en investigación UX */
+            --duration-instant: 100ms;
+            --duration-fast: 200ms;
+            --duration-normal: 400ms;
+            --duration-slow: 600ms;
+            --duration-slower: 1000ms;
+            
+            /* Curvas de easing naturales */
+            --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-smooth: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, sans-serif;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            min-height: 100vh;
+            color: white;
+            padding: 2rem;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 900;
+            margin-bottom: 3rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .demo-section {
+            margin-bottom: 4rem;
+            padding: 2rem;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .section-title {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 1.5rem;
+            color: #e2e8f0;
+        }
+
+        .demo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            align-items: start;
+        }
+
+        .demo-card {
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: 1.5rem;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .demo-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #f1f5f9;
+        }
+
+        .code-snippet {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: 1rem;
+            margin: 1rem 0;
+            font-family: 'Fira Code', monospace;
+            font-size: 0.85rem;
+            color: #e2e8f0;
+            overflow-x: auto;
+        }
+
+        /* ===========================================
+           ANIMACIONES DE ENTRADA (SCROLL TRIGGERS)
+           =========================================== */
+
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp var(--duration-slow) var(--ease-expo-out) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .slide-in-left {
+            opacity: 0;
+            transform: translateX(-50px);
+            animation: slideInLeft var(--duration-normal) var(--ease-expo-out) forwards;
+        }
+
+        @keyframes slideInLeft {
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        .scale-in {
+            opacity: 0;
+            transform: scale(0.8);
+            animation: scaleIn var(--duration-normal) var(--ease-bounce) forwards;
+        }
+
+        @keyframes scaleIn {
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* ===========================================
+           LOADING STATES AVANZADOS
+           =========================================== */
+
+        .skeleton-demo {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .skeleton-line {
+            height: 1rem;
+            background: linear-gradient(
+                90deg,
+                rgba(255, 255, 255, 0.1) 25%,
+                rgba(255, 255, 255, 0.2) 50%,
+                rgba(255, 255, 255, 0.1) 75%
+            );
+            background-size: 200% 100%;
+            border-radius: 4px;
+            animation: shimmer 2s infinite;
+        }
+
+        .skeleton-line:nth-child(1) { width: 100%; }
+        .skeleton-line:nth-child(2) { width: 75%; }
+        .skeleton-line:nth-child(3) { width: 50%; }
+
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
+        }
+
+        /* Spinner avanzado con múltiples elementos */
+        .advanced-spinner {
+            position: relative;
+            width: 50px;
+            height: 50px;
+            margin: 2rem auto;
+        }
+
+        .spinner-ring {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border: 3px solid transparent;
+            border-radius: 50%;
+            animation: spin var(--duration-slower) linear infinite;
+        }
+
+        .spinner-ring:nth-child(1) {
+            border-top-color: var(--primary);
+            animation-delay: 0s;
+        }
+
+        .spinner-ring:nth-child(2) {
+            border-right-color: var(--secondary);
+            animation-delay: -0.3s;
+            animation-direction: reverse;
+        }
+
+        .spinner-ring:nth-child(3) {
+            border-bottom-color: var(--success);
+            animation-delay: -0.6s;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* ===========================================
+           MICRO-INTERACCIONES CONTEXTUALES
+           =========================================== */
+
+        .like-button {
+            background: transparent;
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 12px 24px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--duration-fast) ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .like-button.liked {
+            background: var(--danger);
+            color: white;
+            animation: likeAnimation var(--duration-normal) var(--ease-bounce);
+        }
+
+        @keyframes likeAnimation {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        /* Efecto de corazones flotantes */
+        .floating-heart {
+            position: absolute;
+            color: var(--danger);
+            font-size: 1.5rem;
+            pointer-events: none;
+            animation: floatUp 2s ease-out forwards;
+        }
+
+        @keyframes floatUp {
+            0% {
+                opacity: 1;
+                transform: translateY(0) scale(0);
+            }
+            15% {
+                transform: translateY(-10px) scale(1);
+            }
+            100% {
+                opacity: 0;
+                transform: translateY(-100px) scale(0.3);
+            }
+        }
+
+        /* ===========================================
+           SISTEMA DE NOTIFICACIONES ANIMADAS
+           =========================================== */
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            color: #1f2937;
+            padding: 1rem 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+            transform: translateX(120%);
+            animation: slideInNotification var(--duration-normal) var(--ease-expo-out) forwards;
+            z-index: 1000;
+            max-width: 300px;
+        }
+
+        .notification.success { border-left: 4px solid var(--success); }
+        .notification.warning { border-left: 4px solid var(--warning); }
+        .notification.error { border-left: 4px solid var(--danger); }
+
+        @keyframes slideInNotification {
+            to { transform: translateX(0); }
+        }
+
+        @keyframes slideOutNotification {
+            to { transform: translateX(120%); }
+        }
+
+        /* ===========================================
+           PROGRESS INDICATORS AVANZADOS
+           =========================================== */
+
+        .circular-progress {
+            position: relative;
+            width: 80px;
+            height: 80px;
+            margin: 2rem auto;
+        }
+
+        .progress-circle {
+            width: 100%;
+            height: 100%;
+            transform: rotate(-90deg);
+        }
+
+        .progress-circle-bg,
+        .progress-circle-fill {
+            fill: none;
+            stroke-width: 6;
+            cx: 40;
+            cy: 40;
+            r: 32;
+        }
+
+        .progress-circle-bg {
+            stroke: rgba(255, 255, 255, 0.2);
+        }
+
+        .progress-circle-fill {
+            stroke: var(--primary);
+            stroke-linecap: round;
+            stroke-dasharray: 201; /* 2 * π * r */
+            stroke-dashoffset: 201;
+            animation: fillProgress 3s var(--ease-expo-out) forwards;
+        }
+
+        @keyframes fillProgress {
+            to { stroke-dashoffset: 50; } /* 75% progress */
+        }
+
+        .progress-text {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-weight: 700;
+            font-size: 1.2rem;
+        }
+
+        /* ===========================================
+           ANIMACIONES RESPONSIVE
+           =========================================== */
+
+        @media (max-width: 768px) {
+            .demo-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            /* Reducir intensidad en móviles */
+            .like-button.liked {
+                animation-duration: calc(var(--duration-normal) * 0.7);
+            }
+            
+            /* Ajustar notificaciones para móvil */
+            .notification {
+                right: 10px;
+                left: 10px;
+                max-width: none;
+            }
+        }
+
+        /* ===========================================
+           ACCESIBILIDAD Y PERFORMANCE
+           =========================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+        }
+
+        /* Optimización para dispositivos de baja potencia */
+        @media (update: slow) {
+            .shimmer,
+            .advanced-spinner,
+            .floating-heart {
+                animation: none;
+            }
+        }
+
+        /* Estados de enfoque para accesibilidad */
+        .like-button:focus-visible {
+            outline: 2px solid var(--primary);
+            outline-offset: 2px;
+        }
+
+        /* ===========================================
+           UTILIDADES DE CONTROL
+           =========================================== */
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin: 2rem 0;
+            flex-wrap: wrap;
+        }
+
+        .control-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all var(--duration-fast) ease;
+        }
+
+        .control-btn:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        /* Delayed animations para secuencias */
+        .delayed-1 { animation-delay: 0.1s; }
+        .delayed-2 { animation-delay: 0.2s; }
+        .delayed-3 { animation-delay: 0.3s; }
+        .delayed-4 { animation-delay: 0.4s; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="fade-in">🎬 Animaciones Keyframe Profesionales</h1>
+        
+        <div class="demo-section fade-in delayed-1">
+            <h2 class="section-title">💫 Animaciones de Entrada</h2>
+            <div class="demo-grid">
+                <div class="demo-card slide-in-left delayed-2">
+                    <h3 class="demo-title">Fade In Up</h3>
+                    <p>Aparece desde abajo con desvanecimiento. Ideal para contenido principal que quieres que capture atención gradualmente.</p>
+                    <div class="code-snippet">
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+                    </div>
+                </div>
+                
+                <div class="demo-card scale-in delayed-3">
+                    <h3 class="demo-title">Scale In</h3>
+                    <p>Crece desde el centro con efecto elástico. Perfecto para elementos importantes o call-to-actions.</p>
+                    <div class="code-snippet">
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section fade-in delayed-2">
+            <h2 class="section-title">⏳ Estados de Carga Avanzados</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3 class="demo-title">Skeleton Loading</h3>
+                    <p>Simula la estructura del contenido mientras carga, reduciendo la percepción de tiempo de espera.</p>
+                    <div class="skeleton-demo">
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line"></div>
+                        <div class="skeleton-line"></div>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3 class="demo-title">Spinner Multi-Ring</h3>
+                    <p>Indicador visual sofisticado que mantiene el interés durante cargas más largas.</p>
+                    <div class="advanced-spinner">
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                        <div class="spinner-ring"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="demo-section fade-in delayed-3">
+            <h2 class="section-title">💝 Micro-interacciones Contextuales</h2>
+            <div class="demo-grid">
+                <div class="demo-card">
+                    <h3 class="demo-title">Botón Like Animado</h3>
+                    <p>Combina feedback visual inmediato con elementos flotantes para crear una experiencia memorable.</p>
+                    <div style="text-align: center; margin: 2rem 0;">
+                        <button class="like-button" onclick="toggleLike(this)">
+                            ❤️ Me gusta
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="demo-card">
+                    <h3 class="demo-title">Progreso Circular</h3>
+                    <p>Visualiza el progreso de manera elegante usando animaciones SVG optimizadas.</p>
+                    <div class="circular-progress">
+                        <svg class="progress-circle" viewBox="0 0 80 80">
+                            <circle class="progress-circle-bg"></circle>
+                            <circle class="progress-circle-fill"></circle>
+                        </svg>
+                        <div class="progress-text">75%</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="control-btn" onclick="showNotification('success')">✅ Notificación Éxito</button>
+            <button class="control-btn" onclick="showNotification('warning')">⚠️ Notificación Advertencia</button>
+            <button class="control-btn" onclick="showNotification('error')">❌ Notificación Error</button>
+            <button class="control-btn" onclick="restartAnimations()">🔄 Reiniciar Animaciones</button>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de notificaciones con auto-dismiss
+        function showNotification(type) {
+            // Remover notificación existente
+            const existing = document.querySelector('.notification');
+            if (existing) existing.remove();
+            
+            const messages = {
+                success: '¡Operación completada exitosamente!',
+                warning: 'Atención: Revisa la información ingresada.',
+                error: 'Error: No se pudo completar la operación.'
+            };
+            
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = messages[type];
+            
+            document.body.appendChild(notification);
+            
+            // Auto-dismiss después de 3 segundos
+            setTimeout(() => {
+                notification.style.animation = 'slideOutNotification 0.3s ease-out forwards';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Sistema de like con corazones flotantes
+        function toggleLike(button) {
+            const isLiked = button.classList.toggle('liked');
+            
+            if (isLiked) {
+                button.textContent = '💖 Me encanta';
+                createFloatingHearts(button);
+                
+                // Feedback háptico si está disponible
+                if (navigator.vibrate) {
+                    navigator.vibrate([50, 100, 50]);
+                }
+            } else {
+                button.textContent = '❤️ Me gusta';
+            }
+        }
+
+        // Crear corazones flotantes
+        function createFloatingHearts(button) {
+            const rect = button.getBoundingClientRect();
+            const heartsCount = 5;
+            
+            for (let i = 0; i < heartsCount; i++) {
+                setTimeout(() => {
+                    const heart = document.createElement('div');
+                    heart.className = 'floating-heart';
+                    heart.textContent = '💖';
+                    heart.style.left = (rect.left + rect.width / 2 - 10 + Math.random() * 20) + 'px';
+                    heart.style.top = (rect.top - 10) + 'px';
+                    
+                    document.body.appendChild(heart);
+                    
+                    // Limpiar después de la animación
+                    setTimeout(() => heart.remove(), 2000);
+                }, i * 100);
+            }
+        }
+
+        // Reiniciar todas las animaciones
+        function restartAnimations() {
+            const animatedElements = document.querySelectorAll('[class*="fade-in"], [class*="slide-in"], [class*="scale-in"]');
+            
+            animatedElements.forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; // Trigger reflow
+                el.style.animation = null;
+            });
+        }
+
+        // Intersection Observer para animaciones de scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        // Observar elementos con animaciones
+        document.querySelectorAll('[class*="fade-in"], [class*="slide-in"], [class*="scale-in"]').forEach(el => {
+            el.style.animationPlayState = 'paused';
+            observer.observe(el);
+        });
+
+        // Performance monitoring
+        let frameCount = 0;
+        let lastTime = performance.now();
+
+        function monitorFPS() {
+            frameCount++;
+            const currentTime = performance.now();
+            
+            if (currentTime >= lastTime + 1000) {
+                const fps = Math.round((frameCount * 1000) / (currentTime - lastTime));
+                
+                if (fps < 30) {
+                    console.warn(`⚠️ FPS bajo detectado: ${fps}fps`);
+                }
+                
+                frameCount = 0;
+                lastTime = currentTime;
+            }
+            
+            requestAnimationFrame(monitorFPS);
+        }
+
+        // Iniciar monitoring solo en desarrollo
+        if (window.location.hostname === 'localhost') {
+            monitorFPS();
+        }
+
+        // Optimización para dispositivos de baja potencia
+        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
+            document.body.style.setProperty('--duration-normal', '200ms');
+            document.body.style.setProperty('--duration-slow', '300ms');
+            console.log('🎯 Animaciones optimizadas para dispositivo de baja potencia');
+        }
+    </script>
+</body>
+</html>

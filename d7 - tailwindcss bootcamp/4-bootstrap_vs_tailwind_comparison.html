@@ -1,0 +1,683 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap vs TailwindCSS v4.0 - Comparación Técnica</title>
+    
+    <!-- Bootstrap 5.3 -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- TailwindCSS v4.0 -->
+    <script src="https://cdn.tailwindcss.com/4.0.0-alpha.1"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'bs-primary': '#0d6efd',
+                        'bs-secondary': '#6c757d',
+                        'bs-success': '#198754',
+                        'bs-danger': '#dc3545',
+                        'bs-warning': '#ffc107',
+                        'bs-info': '#0dcaf0'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Estilos personalizados para la comparación */
+        .comparison-section {
+            min-height: 100vh;
+            scroll-snap-align: start;
+        }
+        
+        .framework-demo {
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .framework-demo:hover {
+            border-color: #3b82f6;
+            transform: translateY(-2px);
+        }
+        
+        .code-block {
+            background: #1e293b;
+            color: #e2e8f0;
+            border-radius: 0.75rem;
+            padding: 1.5rem;
+            overflow-x: auto;
+            font-family: 'Fira Code', monospace;
+            position: relative;
+        }
+        
+        .code-block::before {
+            content: attr(data-lang);
+            position: absolute;
+            top: 0.5rem;
+            right: 0.5rem;
+            background: #374151;
+            color: #9ca3af;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+            text-transform: uppercase;
+        }
+        
+        .metrics-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .pros-cons-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+        
+        @media (max-width: 768px) {
+            .pros-cons-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-gray-50">
+    
+    <!-- Navigation -->
+    <nav class="bg-white shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <h1 class="text-xl font-bold text-gray-900">Framework Comparison</h1>
+                <div class="flex space-x-4">
+                    <a href="#overview" class="text-gray-600 hover:text-blue-600 transition-colors">Overview</a>
+                    <a href="#syntax" class="text-gray-600 hover:text-blue-600 transition-colors">Sintaxis</a>
+                    <a href="#performance" class="text-gray-600 hover:text-blue-600 transition-colors">Performance</a>
+                    <a href="#maintenance" class="text-gray-600 hover:text-blue-600 transition-colors">Mantenimiento</a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Overview Section -->
+    <section id="overview" class="comparison-section py-20">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Filosofías de Desarrollo</h2>
+                <p class="text-xl text-gray-600 max-w-3xl mx-auto">
+                    Dos enfoques fundamentalmente diferentes para resolver el mismo problema: 
+                    crear interfaces de usuario responsive y mantenibles.
+                </p>
+            </div>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                
+                <!-- Bootstrap Philosophy -->
+                <div class="framework-demo bg-white rounded-xl shadow-lg p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.77 11.24H9.956V8.202h2.152c1.17 0 1.834.522 1.834 1.466 0 1.008-.773 1.572-2.174 1.572z"/>
+                                <path d="M12.5 0C5.596 0 0 5.596 0 12.5S5.596 25 12.5 25 25 19.404 25 12.5 19.404 0 12.5 0zm-1.3 19.615H8.967V5.385H11.77c2.532 0 4.134 1.322 4.134 3.618 0 1.69-.824 2.741-2.174 3.264v.055c1.67.33 2.697 1.457 2.697 3.344 0 2.463-1.834 4.064-4.727 4.064z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">Bootstrap 5.3+</h3>
+                            <p class="text-gray-600">Component-First Framework</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-purple-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-purple-900 mb-2">🧩 Filosofía: "Building Blocks"</h4>
+                            <p class="text-purple-700 text-sm">
+                                Proporciona componentes pre-construidos y sistemas de diseño completos. 
+                                "Ensambla bloques ya diseñados para crear tu interfaz."
+                            </p>
+                        </div>
+                        
+                        <div class="bg-blue-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-blue-900 mb-2">⚡ Ventaja Principal</h4>
+                            <p class="text-blue-700 text-sm">
+                                Desarrollo ultra-rápido para prototipado y proyectos estándar. 
+                                Consistencia visual garantizada desde el primer día.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-900 mb-2">🎯 Mejor Para</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Equipos grandes con diferentes niveles de skill</li>
+                                <li>• Proyectos con timelines cortos</li>
+                                <li>• Aplicaciones que siguen patrones UI estándar</li>
+                                <li>• Desarrolladores que prefieren escribir menos CSS</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- TailwindCSS Philosophy -->
+                <div class="framework-demo bg-white rounded-xl shadow-lg p-8">
+                    <div class="flex items-center mb-6">
+                        <div class="w-12 h-12 bg-cyan-500 rounded-lg flex items-center justify-center mr-4">
+                            <svg class="w-6 h-6 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C13.666,10.618,15.027,12,18.001,12c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C16.337,6.182,14.976,4.8,12.001,4.8z M6.001,12c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C7.666,17.818,9.027,19.2,12.001,19.2c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C10.337,13.382,8.976,12,6.001,12z"/>
+                            </svg>
+                        </div>
+                        <div>
+                            <h3 class="text-2xl font-bold text-gray-900">TailwindCSS v4.0</h3>
+                            <p class="text-gray-600">Utility-First Framework</p>
+                        </div>
+                    </div>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-cyan-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-cyan-900 mb-2">🔧 Filosofía: "Low-Level Building"</h4>
+                            <p class="text-cyan-700 text-sm">
+                                Proporciona utilidades atómicas para construir cualquier diseño. 
+                                "Ten control total sobre cada pixel de tu interfaz."
+                            </p>
+                        </div>
+                        
+                        <div class="bg-green-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-green-900 mb-2">⚡ Ventaja Principal</h4>
+                            <p class="text-green-700 text-sm">
+                                Flexibilidad infinita y bundles optimizados automáticamente. 
+                                Performance superior y diseños únicos sin limitaciones.
+                            </p>
+                        </div>
+                        
+                        <div class="bg-gray-50 p-4 rounded-lg">
+                            <h4 class="font-semibold text-gray-900 mb-2">🎯 Mejor Para</h4>
+                            <ul class="text-gray-700 text-sm space-y-1">
+                                <li>• Diseños custom y únicos</li>
+                                <li>• Aplicaciones con requirements de performance</li>
+                                <li>• Teams que valoran control granular</li>
+                                <li>• Proyectos a largo plazo con evolución continua</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Syntax Comparison -->
+    <section id="syntax" class="comparison-section py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Comparación de Sintaxis</h2>
+                <p class="text-xl text-gray-600">El mismo resultado, dos enfoques completamente diferentes</p>
+            </div>
+            
+            <!-- Card Component Comparison -->
+            <div class="mb-16">
+                <h3 class="text-2xl font-bold text-center text-gray-900 mb-8">Ejemplo: Tarjeta de Usuario</h3>
+                
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+                    
+                    <!-- Bootstrap Example -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-purple-700 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M11.77 11.24H9.956V8.202h2.152c1.17 0 1.834.522 1.834 1.466 0 1.008-.773 1.572-2.174 1.572z"/>
+                                <path d="M12.5 0C5.596 0 0 5.596 0 12.5S5.596 25 12.5 25 25 19.404 25 12.5 19.404 0 12.5 0zm-1.3 19.615H8.967V5.385H11.77c2.532 0 4.134 1.322 4.134 3.618 0 1.69-.824 2.741-2.174 3.264v.055c1.67.33 2.697 1.457 2.697 3.344 0 2.463-1.834 4.064-4.727 4.064z"/>
+                            </svg>
+                            Bootstrap Approach
+                        </h4>
+                        
+                        <div class="code-block" data-lang="html">
+<pre><code>&lt;div class="card shadow-sm"&gt;
+  &lt;div class="card-body"&gt;
+    &lt;div class="d-flex align-items-center mb-3"&gt;
+      &lt;img src="avatar.jpg" 
+           class="rounded-circle me-3" 
+           width="60" height="60"&gt;
+      &lt;div&gt;
+        &lt;h5 class="card-title mb-1"&gt;Ana García&lt;/h5&gt;
+        &lt;p class="text-muted mb-0"&gt;Desarrolladora&lt;/p&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
+    &lt;p class="card-text"&gt;
+      Especialista en frontend con 5 años de experiencia.
+    &lt;/p&gt;
+    &lt;div class="d-flex gap-2"&gt;
+      &lt;button class="btn btn-primary btn-sm"&gt;
+        Contactar
+      &lt;/button&gt;
+      &lt;button class="btn btn-outline-secondary btn-sm"&gt;
+        Ver Perfil
+      &lt;/button&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        
+                        <!-- Bootstrap Result -->
+                        <div class="mt-6 p-6 bg-gray-50 rounded-lg">
+                            <div class="card shadow-sm" style="max-width: 400px;">
+                                <div class="card-body">
+                                    <div class="d-flex align-items-center mb-3">
+                                        <img src="https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=60&h=60&fit=crop&crop=face" 
+                                             class="rounded-circle me-3" width="60" height="60">
+                                        <div>
+                                            <h5 class="card-title mb-1">Ana García</h5>
+                                            <p class="text-muted mb-0">Desarrolladora</p>
+                                        </div>
+                                    </div>
+                                    <p class="card-text">Especialista en frontend con 5 años de experiencia.</p>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn btn-primary btn-sm">Contactar</button>
+                                        <button class="btn btn-outline-secondary btn-sm">Ver Perfil</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- TailwindCSS Example -->
+                    <div>
+                        <h4 class="text-lg font-semibold text-cyan-700 mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M12.001,4.8c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C13.666,10.618,15.027,12,18.001,12c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C16.337,6.182,14.976,4.8,12.001,4.8z M6.001,12c-3.2,0-5.2,1.6-6,4.8c1.2-1.6,2.6-2.2,4.2-1.8c0.913,0.228,1.565,0.89,2.288,1.624 C7.666,17.818,9.027,19.2,12.001,19.2c3.2,0,5.2-1.6,6-4.8c-1.2,1.6-2.6,2.2-4.2,1.8c-0.913-0.228-1.565-0.89-2.288-1.624 C10.337,13.382,8.976,12,6.001,12z"/>
+                            </svg>
+                            TailwindCSS Approach
+                        </h4>
+                        
+                        <div class="code-block" data-lang="html">
+<pre><code>&lt;div class="bg-white rounded-xl shadow-sm border 
+            border-gray-200 p-6 max-w-sm"&gt;
+  &lt;div class="flex items-center space-x-4 mb-4"&gt;
+    &lt;img src="avatar.jpg" 
+         class="w-15 h-15 rounded-full object-cover"&gt;
+    &lt;div&gt;
+      &lt;h3 class="font-semibold text-gray-900"&gt;
+        Ana García
+      &lt;/h3&gt;
+      &lt;p class="text-gray-500 text-sm"&gt;Desarrolladora&lt;/p&gt;
+    &lt;/div&gt;
+  &lt;/div&gt;
+  &lt;p class="text-gray-600 text-sm mb-6"&gt;
+    Especialista en frontend con 5 años de experiencia.
+  &lt;/p&gt;
+  &lt;div class="flex space-x-3"&gt;
+    &lt;button class="bg-blue-500 hover:bg-blue-600 
+                   text-white px-4 py-2 rounded-lg 
+                   text-sm font-medium transition-colors"&gt;
+      Contactar
+    &lt;/button&gt;
+    &lt;button class="border border-gray-300 
+                   text-gray-700 hover:bg-gray-50 
+                   px-4 py-2 rounded-lg text-sm 
+                   font-medium transition-colors"&gt;
+      Ver Perfil
+    &lt;/button&gt;
+  &lt;/div&gt;
+&lt;/div&gt;</code></pre>
+                        </div>
+                        
+                        <!-- TailwindCSS Result -->
+                        <div class="mt-6 p-6 bg-gray-50 rounded-lg">
+                            <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6 max-w-sm">
+                                <div class="flex items-center space-x-4 mb-4">
+                                    <img src="https://images.unsplash.com/photo-1494790108755-2616b612b47c?w=60&h=60&fit=crop&crop=face" 
+                                         class="w-15 h-15 rounded-full object-cover">
+                                    <div>
+                                        <h3 class="font-semibold text-gray-900">Ana García</h3>
+                                        <p class="text-gray-500 text-sm">Desarrolladora</p>
+                                    </div>
+                                </div>
+                                <p class="text-gray-600 text-sm mb-6">Especialista en frontend con 5 años de experiencia.</p>
+                                <div class="flex space-x-3">
+                                    <button class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        Contactar
+                                    </button>
+                                    <button class="border border-gray-300 text-gray-700 hover:bg-gray-50 px-4 py-2 rounded-lg text-sm font-medium transition-colors">
+                                        Ver Perfil
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Analysis -->
+                <div class="bg-yellow-50 border border-yellow-200 rounded-lg p-6">
+                    <h4 class="font-semibold text-yellow-800 mb-3">📊 Análisis de la Comparación</h4>
+                    <div class="pros-cons-grid text-sm">
+                        <div>
+                            <h5 class="font-medium text-purple-700 mb-2">Bootstrap:</h5>
+                            <ul class="text-purple-600 space-y-1">
+                                <li>✅ Menos líneas de código</li>
+                                <li>✅ Clases semánticas (card, card-body)</li>
+                                <li>✅ Fácil de entender para principiantes</li>
+                                <li>❌ Difícil customizar sin CSS adicional</li>
+                                <li>❌ Bundle size más grande</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h5 class="font-medium text-cyan-700 mb-2">TailwindCSS:</h5>
+                            <ul class="text-cyan-600 space-y-1">
+                                <li>✅ Control granular sobre el diseño</li>
+                                <li>✅ No CSS personalizado necesario</li>
+                                <li>✅ Bundle size optimizado automáticamente</li>
+                                <li>❌ Curva de aprendizaje inicial</li>
+                                <li>❌ HTML verboso</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Performance Metrics -->
+    <section id="performance" class="comparison-section py-20 bg-gray-100">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Métricas de Performance</h2>
+                <p class="text-xl text-gray-600">Datos reales sobre tamaño de bundles y tiempo de carga</p>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                
+                <!-- Bundle Size -->
+                <div class="metrics-card rounded-xl p-6 text-center">
+                    <h3 class="text-lg font-semibold mb-4">Bundle Size</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-2xl font-bold">Bootstrap 5.3</p>
+                            <p class="text-sm opacity-90">~160KB (minified)</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold">TailwindCSS v4.0</p>
+                            <p class="text-sm opacity-90">~8-12KB (purged)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Build Speed -->
+                <div class="bg-gradient-to-br from-green-500 to-teal-600 rounded-xl p-6 text-center text-white">
+                    <h3 class="text-lg font-semibold mb-4">Build Speed</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-2xl font-bold">Bootstrap</p>
+                            <p class="text-sm opacity-90">~2-5s (Sass compilation)</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold">Tailwind v4.0</p>
+                            <p class="text-sm opacity-90">~100-300ms (Oxide)</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- First Paint -->
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl p-6 text-center text-white">
+                    <h3 class="text-lg font-semibold mb-4">First Paint</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-2xl font-bold">Bootstrap</p>
+                            <p class="text-sm opacity-90">~1.2s</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold">Tailwind</p>
+                            <p class="text-sm opacity-90">~0.8s</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Unused CSS -->
+                <div class="bg-gradient-to-br from-red-500 to-pink-600 rounded-xl p-6 text-center text-white">
+                    <h3 class="text-lg font-semibold mb-4">Unused CSS</h3>
+                    <div class="space-y-3">
+                        <div>
+                            <p class="text-2xl font-bold">Bootstrap</p>
+                            <p class="text-sm opacity-90">~85-90%</p>
+                        </div>
+                        <div>
+                            <p class="text-2xl font-bold">Tailwind</p>
+                            <p class="text-sm opacity-90">~0-5%</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Explanation -->
+            <div class="bg-white rounded-xl shadow-lg p-8">
+                <h3 class="text-2xl font-bold text-gray-900 mb-6">¿Por Qué TailwindCSS v4.0 es Más Rápido?</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">🔧 Motor Oxide (Rust)</h4>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Parser nativo 10x más rápido que PostCSS
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Análisis paralelo de archivos
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-blue-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Optimización de memoria automática
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div>
+                        <h4 class="text-lg font-semibold text-gray-900 mb-4">📦 Purging Automático</h4>
+                        <ul class="space-y-2 text-gray-600">
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Solo incluye clases utilizadas en el proyecto
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Tree-shaking inteligente
+                            </li>
+                            <li class="flex items-start">
+                                <span class="w-2 h-2 bg-green-500 rounded-full mt-2 mr-3 flex-shrink-0"></span>
+                                Bundle size mínimo garantizado
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Maintenance & Scalability -->
+    <section id="maintenance" class="comparison-section py-20 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-4xl font-bold text-gray-900 mb-4">Mantenimiento y Escalabilidad</h2>
+                <p class="text-xl text-gray-600">Cómo cada framework maneja proyectos a largo plazo</p>
+            </div>
+            
+            <div class="space-y-12">
+                
+                <!-- Team Productivity -->
+                <div class="bg-gray-50 rounded-xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">👥 Productividad del Equipo</h3>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <div class="bg-white rounded-lg p-6 border-l-4 border-purple-500">
+                            <h4 class="text-lg font-semibold text-purple-700 mb-4">Bootstrap: Consistencia por Defecto</h4>
+                            <ul class="space-y-2 text-gray-600">
+                                <li>✅ Equipos nuevos producen código consistente inmediatamente</li>
+                                <li>✅ Documentación extensa y patrones establecidos</li>
+                                <li>✅ Menor necesidad de design system interno</li>
+                                <li>⚠️ Dificultad para mantener customizaciones complejas</li>
+                                <li>❌ "Bootstrap look" difícil de evitar</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6 border-l-4 border-cyan-500">
+                            <h4 class="text-lg font-semibold text-cyan-700 mb-4">TailwindCSS: Flexibilidad Escalable</h4>
+                            <ul class="space-y-2 text-gray-600">
+                                <li>✅ Design system custom fácil de mantener</li>
+                                <li>✅ Refactoring seguro con herramientas automáticas</li>
+                                <li>✅ Performance mejora con el crecimiento del proyecto</li>
+                                <li>⚠️ Curva de aprendizaje inicial para el equipo</li>
+                                <li>❌ Requiere disciplina para mantener consistencia</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Code Maintenance -->
+                <div class="bg-blue-50 rounded-xl p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6">🛠️ Mantenimiento de Código</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="bg-white rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-900 mb-3">Refactoring</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-purple-600">Bootstrap:</span>
+                                    <span class="font-medium">Complejo</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-cyan-600">Tailwind:</span>
+                                    <span class="font-medium">Automático</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-900 mb-3">Debugging</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-purple-600">Bootstrap:</span>
+                                    <span class="font-medium">CSS specificity</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-cyan-600">Tailwind:</span>
+                                    <span class="font-medium">Inline visible</span>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-white rounded-lg p-6">
+                            <h4 class="font-semibold text-gray-900 mb-3">Updates</h4>
+                            <div class="space-y-2 text-sm">
+                                <div class="flex justify-between">
+                                    <span class="text-purple-600">Bootstrap:</span>
+                                    <span class="font-medium">Breaking changes</span>
+                                </div>
+                                <div class="flex justify-between">
+                                    <span class="text-cyan-600">Tailwind:</span>
+                                    <span class="font-medium">Backward compatible</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Decision Matrix -->
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-6 text-center">🎯 Matriz de Decisión</h3>
+                    
+                    <div class="overflow-x-auto">
+                        <table class="w-full">
+                            <thead>
+                                <tr class="border-b-2 border-gray-200">
+                                    <th class="text-left py-3 px-4 font-semibold text-gray-900">Criterio</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-purple-700">Bootstrap 5.3</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-cyan-700">TailwindCSS v4.0</th>
+                                    <th class="text-center py-3 px-4 font-semibold text-gray-700">Recomendación</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm">
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium">Velocidad de Prototipado</td>
+                                    <td class="py-3 px-4 text-center">🟢 Excelente</td>
+                                    <td class="py-3 px-4 text-center">🟡 Bueno</td>
+                                    <td class="py-3 px-4 text-center text-purple-600 font-medium">Bootstrap</td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium">Diseño Custom</td>
+                                    <td class="py-3 px-4 text-center">🟡 Limitado</td>
+                                    <td class="py-3 px-4 text-center">🟢 Excelente</td>
+                                    <td class="py-3 px-4 text-center text-cyan-600 font-medium">TailwindCSS</td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium">Performance</td>
+                                    <td class="py-3 px-4 text-center">🟡 Aceptable</td>
+                                    <td class="py-3 px-4 text-center">🟢 Superior</td>
+                                    <td class="py-3 px-4 text-center text-cyan-600 font-medium">TailwindCSS</td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium">Curva de Aprendizaje</td>
+                                    <td class="py-3 px-4 text-center">🟢 Fácil</td>
+                                    <td class="py-3 px-4 text-center">🟡 Moderada</td>
+                                    <td class="py-3 px-4 text-center text-purple-600 font-medium">Bootstrap</td>
+                                </tr>
+                                <tr class="border-b border-gray-100">
+                                    <td class="py-3 px-4 font-medium">Mantenimiento a Largo Plazo</td>
+                                    <td class="py-3 px-4 text-center">🟡 Complejo</td>
+                                    <td class="py-3 px-4 text-center">🟢 Excelente</td>
+                                    <td class="py-3 px-4 text-center text-cyan-600 font-medium">TailwindCSS</td>
+                                </tr>
+                                <tr>
+                                    <td class="py-3 px-4 font-medium">Bundle Size</td>
+                                    <td class="py-3 px-4 text-center">🔴 Grande</td>
+                                    <td class="py-3 px-4 text-center">🟢 Mínimo</td>
+                                    <td class="py-3 px-4 text-center text-cyan-600 font-medium">TailwindCSS</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Bootstrap Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Custom JavaScript -->
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+        
+        // Animate metrics cards on scroll
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -100px 0px'
+        };
+        
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.transform = 'translateY(0)';
+                    entry.target.style.opacity = '1';
+                }
+            });
+        }, observerOptions);
+        
+        document.querySelectorAll('.metrics-card').forEach(card => {
+            card.style.transform = 'translateY(20px)';
+            card.style.opacity = '0';
+            card.style.transition = 'all 0.6s ease-out';
+            observer.observe(card);
+        });
+    </script>
+</body>
+</html>

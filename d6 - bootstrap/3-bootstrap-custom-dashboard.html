@@ -1,0 +1,852 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Profesional - Bootstrap 5.3+ Personalizado</title>
+    
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ========================================
+           SISTEMA DE VARIABLES CSS PERSONALIZADO
+           ======================================== */
+        
+        :root {
+            /* === PALETA DE COLORES CORPORATIVA === */
+            /* Estos valores pueden cambiarse dinámicamente con JavaScript */
+            --bs-primary: #6366f1;        /* Índigo moderno */
+            --bs-primary-rgb: 99, 102, 241;
+            --bs-secondary: #8b5cf6;      /* Púrpura elegante */
+            --bs-success: #10b981;        /* Verde esmeralda */
+            --bs-danger: #ef4444;         /* Rojo coral */
+            --bs-warning: #f59e0b;        /* Ámbar cálido */
+            --bs-info: #06b6d4;           /* Cian vibrante */
+            --bs-light: #f8fafc;          /* Gris muy claro */
+            --bs-dark: #1e293b;           /* Azul oscuro */
+            
+            /* === VARIABLES PERSONALIZADAS === */
+            /* Estas no existen en Bootstrap por defecto */
+            --dashboard-sidebar-width: 260px;
+            --dashboard-header-height: 70px;
+            --dashboard-border-radius: 12px;
+            --dashboard-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --dashboard-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            
+            /* === TIPOGRAFÍA PERSONALIZADA === */
+            --bs-font-sans-serif: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            --dashboard-font-weight-medium: 500;
+            --dashboard-font-weight-semibold: 600;
+            
+            /* === ESPACIADO PERSONALIZADO === */
+            --dashboard-spacing-xs: 0.5rem;   /* 8px */
+            --dashboard-spacing-sm: 0.75rem;  /* 12px */
+            --dashboard-spacing-md: 1rem;     /* 16px */
+            --dashboard-spacing-lg: 1.5rem;   /* 24px */
+            --dashboard-spacing-xl: 2rem;     /* 32px */
+        }
+        
+        /* === MODO OSCURO PERSONALIZADO === */
+        [data-bs-theme="dark"] {
+            --bs-primary: #818cf8;        /* Índigo más claro para mejor contraste */
+            --bs-secondary: #a78bfa;
+            --bs-success: #34d399;
+            --bs-danger: #f87171;
+            --bs-warning: #fbbf24;
+            --bs-info: #22d3ee;
+            --bs-light: #374151;          /* Gris medio para modo oscuro */
+            --bs-dark: #111827;           /* Casi negro */
+            
+            /* Variables específicas del dashboard en modo oscuro */
+            --dashboard-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+            --dashboard-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.4);
+        }
+        
+        /* ========================================
+           COMPONENTES PERSONALIZADOS
+           ======================================== */
+        
+        /* === SIDEBAR PERSONALIZADO === */
+        .dashboard-sidebar {
+            width: var(--dashboard-sidebar-width);
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            background: linear-gradient(180deg, var(--bs-primary) 0%, var(--bs-secondary) 100%);
+            z-index: 1000;
+            transition: transform 0.3s ease;
+            overflow-y: auto;
+        }
+        
+        /* Responsive: ocultar sidebar en móvil */
+        @media (max-width: 991.98px) {
+            .dashboard-sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .dashboard-sidebar.show {
+                transform: translateX(0);
+            }
+        }
+        
+        /* === ÁREA PRINCIPAL === */
+        .dashboard-main {
+            margin-left: var(--dashboard-sidebar-width);
+            min-height: 100vh;
+            background-color: var(--bs-light);
+            transition: margin-left 0.3s ease;
+        }
+        
+        @media (max-width: 991.98px) {
+            .dashboard-main {
+                margin-left: 0;
+            }
+        }
+        
+        /* === HEADER PERSONALIZADO === */
+        .dashboard-header {
+            height: var(--dashboard-header-height);
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+        
+        [data-bs-theme="dark"] .dashboard-header {
+            background: rgba(17, 24, 39, 0.8);
+            border-bottom-color: rgba(255, 255, 255, 0.1);
+        }
+        
+        /* === NAVEGACIÓN DEL SIDEBAR === */
+        .sidebar-nav {
+            padding: var(--dashboard-spacing-lg) 0;
+        }
+        
+        .sidebar-nav .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: var(--dashboard-spacing-sm) var(--dashboard-spacing-lg);
+            margin: 0 var(--dashboard-spacing-sm);
+            border-radius: var(--dashboard-border-radius);
+            transition: all 0.2s ease;
+            font-weight: var(--dashboard-font-weight-medium);
+        }
+        
+        .sidebar-nav .nav-link:hover {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            transform: translateX(4px);
+        }
+        
+        .sidebar-nav .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            font-weight: var(--dashboard-font-weight-semibold);
+        }
+        
+        .sidebar-nav .nav-link i {
+            width: 20px;
+            margin-right: var(--dashboard-spacing-sm);
+        }
+        
+        /* === CARDS PERSONALIZADAS === */
+        .stat-card {
+            background: white;
+            border: none;
+            border-radius: var(--dashboard-border-radius);
+            box-shadow: var(--dashboard-shadow);
+            transition: all 0.3s ease;
+            overflow: hidden;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--dashboard-shadow-lg);
+        }
+        
+        [data-bs-theme="dark"] .stat-card {
+            background: var(--bs-dark);
+        }
+        
+        /* === ICONOS DE ESTADÍSTICAS === */
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        
+        .stat-icon.primary { background: rgba(var(--bs-primary-rgb), 0.1); color: var(--bs-primary); }
+        .stat-icon.success { background: rgba(16, 185, 129, 0.1); color: var(--bs-success); }
+        .stat-icon.warning { background: rgba(245, 158, 11, 0.1); color: var(--bs-warning); }
+        .stat-icon.danger { background: rgba(239, 68, 68, 0.1); color: var(--bs-danger); }
+        
+        /* === TABLA PERSONALIZADA === */
+        .custom-table {
+            background: white;
+            border-radius: var(--dashboard-border-radius);
+            box-shadow: var(--dashboard-shadow);
+            overflow: hidden;
+        }
+        
+        [data-bs-theme="dark"] .custom-table {
+            background: var(--bs-dark);
+        }
+        
+        .custom-table .table {
+            margin-bottom: 0;
+        }
+        
+        .custom-table .table thead th {
+            border-bottom: 2px solid var(--bs-border-color);
+            font-weight: var(--dashboard-font-weight-semibold);
+            text-transform: uppercase;
+            font-size: 0.75rem;
+            letter-spacing: 0.05em;
+            padding: var(--dashboard-spacing-md) var(--dashboard-spacing-lg);
+        }
+        
+        /* === UTILIDADES PERSONALIZADAS (API) === */
+        .rounded-xl { border-radius: var(--dashboard-border-radius) !important; }
+        .shadow-soft { box-shadow: var(--dashboard-shadow) !important; }
+        .shadow-soft-lg { box-shadow: var(--dashboard-shadow-lg) !important; }
+        .fw-medium { font-weight: var(--dashboard-font-weight-medium) !important; }
+        .fw-semibold { font-weight: var(--dashboard-font-weight-semibold) !important; }
+        
+        /* === GRÁFICO PLACEHOLDER === */
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, var(--bs-primary) 0%, var(--bs-info) 100%);
+            border-radius: var(--dashboard-border-radius);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: var(--dashboard-font-weight-semibold);
+        }
+        
+        /* === BREADCRUMB PERSONALIZADO === */
+        .custom-breadcrumb {
+            background: transparent;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .custom-breadcrumb .breadcrumb-item + .breadcrumb-item::before {
+            content: '→';
+            color: var(--bs-secondary);
+        }
+        
+        /* === ANIMACIONES SUTILES === */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .fade-in-up {
+            animation: fadeInUp 0.6s ease-out forwards;
+        }
+        
+        /* === RESPONSIVE UTILITIES === */
+        @media (max-width: 575.98px) {
+            .dashboard-header {
+                height: 60px;
+            }
+            
+            .stat-card .card-body {
+                padding: var(--dashboard-spacing-md);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         SIDEBAR DE NAVEGACIÓN
+         ======================================== -->
+    <div class="dashboard-sidebar" id="sidebar">
+        <!-- Logo y branding -->
+        <div class="p-4 border-bottom border-light border-opacity-25">
+            <h4 class="text-white mb-0 fw-bold">
+                <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+                DashBoard Pro
+            </h4>
+            <small class="text-white-50">v5.3+ Personalizado</small>
+        </div>
+        
+        <!-- Navegación principal -->
+        <nav class="sidebar-nav">
+            <ul class="nav flex-column">
+                <li class="nav-item">
+                    <a class="nav-link active" href="#dashboard">
+                        <i class="bi bi-speedometer2"></i>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#analytics">
+                        <i class="bi bi-graph-up"></i>
+                        Analytics
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#users">
+                        <i class="bi bi-people"></i>
+                        Usuarios
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#products">
+                        <i class="bi bi-box-seam"></i>
+                        Productos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#orders">
+                        <i class="bi bi-cart3"></i>
+                        Pedidos
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#settings">
+                        <i class="bi bi-gear"></i>
+                        Configuración
+                    </a>
+                </li>
+            </ul>
+            
+            <!-- Sección de personalización -->
+            <div class="px-3 mt-4">
+                <hr class="border-light border-opacity-25">
+                <h6 class="text-white-50 text-uppercase small fw-semibold mb-3">
+                    Personalización
+                </h6>
+                
+                <!-- Selector de tema -->
+                <div class="mb-3">
+                    <label class="text-white-50 small mb-2">Tema</label>
+                    <select class="form-select form-select-sm" id="themeSelector">
+                        <option value="light">Claro</option>
+                        <option value="dark">Oscuro</option>
+                    </select>
+                </div>
+                
+                <!-- Selector de color primario -->
+                <div class="mb-3">
+                    <label class="text-white-50 small mb-2">Color Principal</label>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-sm p-2 rounded-circle" style="background: #6366f1;" 
+                                onclick="changeThemeColor('#6366f1', '99, 102, 241')" title="Índigo"></button>
+                        <button class="btn btn-sm p-2 rounded-circle" style="background: #dc2626;" 
+                                onclick="changeThemeColor('#dc2626', '220, 38, 38')" title="Rojo"></button>
+                        <button class="btn btn-sm p-2 rounded-circle" style="background: #059669;" 
+                                onclick="changeThemeColor('#059669', '5, 150, 105')" title="Verde"></button>
+                        <button class="btn btn-sm p-2 rounded-circle" style="background: #7c3aed;" 
+                                onclick="changeThemeColor('#7c3aed', '124, 58, 237')" title="Púrpura"></button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </div>
+    
+    <!-- ========================================
+         ÁREA PRINCIPAL DEL DASHBOARD
+         ======================================== -->
+    <div class="dashboard-main">
+        <!-- Header superior -->
+        <header class="dashboard-header d-flex align-items-center">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <!-- Botón toggle para móvil -->
+                        <button class="btn btn-outline-primary d-lg-none me-3" 
+                                type="button" 
+                                onclick="toggleSidebar()">
+                            <i class="bi bi-list"></i>
+                        </button>
+                        
+                        <!-- Breadcrumb -->
+                        <nav aria-label="breadcrumb">
+                            <ol class="breadcrumb custom-breadcrumb mb-0">
+                                <li class="breadcrumb-item">
+                                    <a href="#" class="text-decoration-none">Dashboard</a>
+                                </li>
+                                <li class="breadcrumb-item active">Resumen General</li>
+                            </ol>
+                        </nav>
+                    </div>
+                    
+                    <div class="col-auto">
+                        <!-- Búsqueda -->
+                        <div class="input-group input-group-sm me-3 d-none d-md-flex" style="width: 250px;">
+                            <span class="input-group-text bg-transparent border-end-0">
+                                <i class="bi bi-search text-muted"></i>
+                            </span>
+                            <input type="text" class="form-control border-start-0" 
+                                   placeholder="Buscar...">
+                        </div>
+                    </div>
+                    
+                    <div class="col-auto">
+                        <!-- Notificaciones y perfil -->
+                        <div class="d-flex align-items-center gap-2">
+                            <button class="btn btn-outline-secondary btn-sm rounded-circle p-2">
+                                <i class="bi bi-bell"></i>
+                            </button>
+                            <div class="dropdown">
+                                <button class="btn btn-primary btn-sm rounded-circle p-2" 
+                                        data-bs-toggle="dropdown">
+                                    <i class="bi bi-person"></i>
+                                </button>
+                                <ul class="dropdown-menu dropdown-menu-end">
+                                    <li><a class="dropdown-item" href="#">Mi Perfil</a></li>
+                                    <li><a class="dropdown-item" href="#">Configuración</a></li>
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li><a class="dropdown-item" href="#">Cerrar Sesión</a></li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Contenido principal -->
+        <main class="p-4">
+            <!-- Título de página -->
+            <div class="row mb-4">
+                <div class="col">
+                    <h1 class="h3 fw-bold mb-2">Dashboard General</h1>
+                    <p class="text-muted mb-0">
+                        Bienvenido de vuelta. Aquí tienes un resumen de tu negocio.
+                    </p>
+                </div>
+            </div>
+            
+            <!-- Tarjetas de estadísticas -->
+            <div class="row g-4 mb-4">
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="stat-card card fade-in-up">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted small mb-1">Ingresos Totales</p>
+                                    <h3 class="fw-bold mb-0">$45,231</h3>
+                                    <small class="text-success">
+                                        <i class="bi bi-arrow-up"></i> +12.5%
+                                    </small>
+                                </div>
+                                <div class="stat-icon primary">
+                                    <i class="bi bi-currency-dollar"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="stat-card card fade-in-up" style="animation-delay: 0.1s;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted small mb-1">Nuevos Usuarios</p>
+                                    <h3 class="fw-bold mb-0">1,429</h3>
+                                    <small class="text-success">
+                                        <i class="bi bi-arrow-up"></i> +8.2%
+                                    </small>
+                                </div>
+                                <div class="stat-icon success">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="stat-card card fade-in-up" style="animation-delay: 0.2s;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted small mb-1">Pedidos</p>
+                                    <h3 class="fw-bold mb-0">892</h3>
+                                    <small class="text-warning">
+                                        <i class="bi bi-arrow-down"></i> -2.1%
+                                    </small>
+                                </div>
+                                <div class="stat-icon warning">
+                                    <i class="bi bi-cart3"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-12 col-sm-6 col-lg-3">
+                    <div class="stat-card card fade-in-up" style="animation-delay: 0.3s;">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-start">
+                                <div>
+                                    <p class="text-muted small mb-1">Tasa Conversión</p>
+                                    <h3 class="fw-bold mb-0">3.24%</h3>
+                                    <small class="text-danger">
+                                        <i class="bi bi-arrow-down"></i> -0.5%
+                                    </small>
+                                </div>
+                                <div class="stat-icon danger">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Gráficos y tablas -->
+            <div class="row g-4">
+                <!-- Gráfico principal -->
+                <div class="col-12 col-lg-8">
+                    <div class="stat-card card">
+                        <div class="card-header bg-transparent border-bottom">
+                            <h5 class="card-title mb-0 fw-semibold">
+                                Tendencia de Ingresos
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="chart-placeholder">
+                                <div class="text-center">
+                                    <i class="bi bi-bar-chart-line display-1 mb-3"></i>
+                                    <h5>Gráfico de Ingresos</h5>
+                                    <p class="mb-0">Aquí iría un gráfico real con Chart.js o similar</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Panel lateral -->
+                <div class="col-12 col-lg-4">
+                    <div class="stat-card card">
+                        <div class="card-header bg-transparent border-bottom">
+                            <h5 class="card-title mb-0 fw-semibold">
+                                Actividad Reciente
+                            </h5>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-primary bg-opacity-10 p-2 me-3">
+                                    <i class="bi bi-person-plus text-primary"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-medium">Nuevo usuario registrado</h6>
+                                    <small class="text-muted">Hace 5 minutos</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="rounded-circle bg-success bg-opacity-10 p-2 me-3">
+                                    <i class="bi bi-cart-check text-success"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-medium">Pedido completado</h6>
+                                    <small class="text-muted">Hace 12 minutos</small>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex align-items-center">
+                                <div class="rounded-circle bg-warning bg-opacity-10 p-2 me-3">
+                                    <i class="bi bi-exclamation-triangle text-warning"></i>
+                                </div>
+                                <div class="flex-grow-1">
+                                    <h6 class="mb-0 fw-medium">Stock bajo detectado</h6>
+                                    <small class="text-muted">Hace 1 hora</small>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Tabla de datos -->
+            <div class="row mt-4">
+                <div class="col-12">
+                    <div class="custom-table">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Producto</th>
+                                        <th>Categoría</th>
+                                        <th>Ventas</th>
+                                        <th>Ingresos</th>
+                                        <th>Estado</th>
+                                        <th>Acciones</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                                                    <i class="bi bi-laptop text-primary"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium">MacBook Pro</h6>
+                                                    <small class="text-muted">Laptop profesional</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Electrónicos</td>
+                                        <td>142</td>
+                                        <td>$28,400</td>
+                                        <td><span class="badge bg-success">Activo</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-success bg-opacity-10 rounded p-2 me-3">
+                                                    <i class="bi bi-phone text-success"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium">iPhone 15</h6>
+                                                    <small class="text-muted">Smartphone premium</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Móviles</td>
+                                        <td>89</td>
+                                        <td>$17,800</td>
+                                        <td><span class="badge bg-warning">Agotándose</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>
+                                            <div class="d-flex align-items-center">
+                                                <div class="bg-info bg-opacity-10 rounded p-2 me-3">
+                                                    <i class="bi bi-headphones text-info"></i>
+                                                </div>
+                                                <div>
+                                                    <h6 class="mb-0 fw-medium">AirPods Pro</h6>
+                                                    <small class="text-muted">Auriculares inalámbricos</small>
+                                                </div>
+                                            </div>
+                                        </td>
+                                        <td>Audio</td>
+                                        <td>267</td>
+                                        <td>$13,350</td>
+                                        <td><span class="badge bg-success">Activo</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ========================================
+        // GESTIÓN DEL TEMA Y PERSONALIZACIÓN
+        // ========================================
+        
+        /**
+         * Cambia el tema entre claro y oscuro
+         * Esta función demuestra cómo las variables CSS permiten cambios instantáneos
+         */
+        function toggleTheme() {
+            const html = document.documentElement;
+            const currentTheme = html.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            html.setAttribute('data-bs-theme', newTheme);
+            document.getElementById('themeSelector').value = newTheme;
+            
+            // Guardar preferencia
+            localStorage.setItem('dashboard-theme', newTheme);
+            
+            console.log(`Tema cambiado a: ${newTheme}`);
+        }
+        
+        /**
+         * Cambia el color principal del dashboard
+         * Demuestra la potencia de las variables CSS para personalización en tiempo real
+         */
+        function changeThemeColor(color, rgb) {
+            const root = document.documentElement;
+            
+            // Cambiar la variable CSS principal
+            root.style.setProperty('--bs-primary', color);
+            root.style.setProperty('--bs-primary-rgb', rgb);
+            
+            // Guardar preferencia
+            localStorage.setItem('dashboard-primary-color', color);
+            localStorage.setItem('dashboard-primary-rgb', rgb);
+            
+            // Feedback visual
+            console.log(`Color principal cambiado a: ${color}`);
+            
+            // Mostrar notificación temporal
+            showNotification('Color del tema actualizado correctamente', 'success');
+        }
+        
+        /**
+         * Toggle del sidebar en dispositivos móviles
+         */
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            sidebar.classList.toggle('show');
+        }
+        
+        /**
+         * Muestra notificaciones temporales
+         */
+        function showNotification(message, type = 'info') {
+            // Crear elemento de notificación
+            const notification = document.createElement('div');
+            notification.className = `alert alert-${type} alert-dismissible fade show position-fixed`;
+            notification.style.cssText = 'top: 20px; right: 20px; z-index: 9999; max-width: 350px;';
+            notification.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Auto-remover después de 3 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.remove();
+                }
+            }, 3000);
+        }
+        
+        // ========================================
+        // INICIALIZACIÓN Y EVENT LISTENERS
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Cargar tema guardado
+            const savedTheme = localStorage.getItem('dashboard-theme') || 'light';
+            document.documentElement.setAttribute('data-bs-theme', savedTheme);
+            document.getElementById('themeSelector').value = savedTheme;
+            
+            // Cargar color guardado
+            const savedColor = localStorage.getItem('dashboard-primary-color');
+            const savedRgb = localStorage.getItem('dashboard-primary-rgb');
+            if (savedColor && savedRgb) {
+                document.documentElement.style.setProperty('--bs-primary', savedColor);
+                document.documentElement.style.setProperty('--bs-primary-rgb', savedRgb);
+            }
+            
+            // Event listener para el selector de tema
+            document.getElementById('themeSelector').addEventListener('change', function() {
+                const selectedTheme = this.value;
+                document.documentElement.setAttribute('data-bs-theme', selectedTheme);
+                localStorage.setItem('dashboard-theme', selectedTheme);
+                showNotification(`Tema cambiado a: ${selectedTheme}`, 'info');
+            });
+            
+            // Cerrar sidebar en móvil al hacer clic fuera
+            document.addEventListener('click', function(e) {
+                const sidebar = document.getElementById('sidebar');
+                const isClickInsideSidebar = sidebar.contains(e.target);
+                const isToggleButton = e.target.closest('[onclick="toggleSidebar()"]');
+                
+                if (!isClickInsideSidebar && !isToggleButton && window.innerWidth <= 991) {
+                    sidebar.classList.remove('show');
+                }
+            });
+            
+            // Navegación del sidebar
+            document.querySelectorAll('.sidebar-nav .nav-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remover clase active de todos los links
+                    document.querySelectorAll('.sidebar-nav .nav-link').forEach(l => {
+                        l.classList.remove('active');
+                    });
+                    
+                    // Agregar clase active al link clickeado
+                    this.classList.add('active');
+                    
+                    // Cerrar sidebar en móvil
+                    if (window.innerWidth <= 991) {
+                        document.getElementById('sidebar').classList.remove('show');
+                    }
+                    
+                    // Simular navegación
+                    const section = this.textContent.trim();
+                    showNotification(`Navegando a: ${section}`, 'info');
+                });
+            });
+            
+            // Animación staggered para las cards
+            const cards = document.querySelectorAll('.fade-in-up');
+            cards.forEach((card, index) => {
+                card.style.animationDelay = `${index * 0.1}s`;
+            });
+            
+            console.log('🎯 Dashboard Bootstrap 5.3+ inicializado correctamente');
+            console.log('🎨 Variables CSS personalizadas cargadas');
+            console.log('📱 Funcionalidad responsive activada');
+        });
+        
+        // ========================================
+        // UTILIDADES DE DEBUGGING
+        // ========================================
+        
+        // Función para mostrar todas las variables CSS activas
+        function debugCSSVariables() {
+            const computedStyles = getComputedStyle(document.documentElement);
+            const variables = {};
+            
+            // Buscar todas las variables que empiecen con --bs o --dashboard
+            for (let i = 0; i < computedStyles.length; i++) {
+                const property = computedStyles[i];
+                if (property.startsWith('--bs') || property.startsWith('--dashboard')) {
+                    variables[property] = computedStyles.getPropertyValue(property);
+                }
+            }
+            
+            console.table(variables);
+            return variables;
+        }
+        
+        // Hacer disponible globalmente para debugging
+        window.debugCSSVariables = debugCSSVariables;
+        window.changeThemeColor = changeThemeColor;
+        window.toggleSidebar = toggleSidebar;
+    </script>
+</body>
+</html>

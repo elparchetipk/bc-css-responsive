@@ -1,0 +1,1311 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Empresarial - Bootstrap 5.3+ Avanzado</title>
+    
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ========================================
+           SISTEMA DE VARIABLES AVANZADO
+           ======================================== */
+        
+        :root {
+            /* === PALETA PROFESIONAL AMPLIADA === */
+            --bs-primary: #6366f1;
+            --bs-primary-rgb: 99, 102, 241;
+            --bs-secondary: #64748b;
+            --bs-success: #10b981;
+            --bs-danger: #ef4444;
+            --bs-warning: #f59e0b;
+            --bs-info: #06b6d4;
+            --bs-light: #f8fafc;
+            --bs-dark: #0f172a;
+            
+            /* === VARIABLES DE LAYOUT INTELIGENTE === */
+            --offcanvas-width: 320px;
+            --header-height: 64px;
+            --sidebar-width: 280px;
+            --border-radius-lg: 16px;
+            --border-radius-xl: 20px;
+            
+            /* === SOMBRAS PROFESIONALES === */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            
+            /* === TIPOGRAFÍA ESCALABLE === */
+            --font-size-xs: 0.75rem;    /* 12px */
+            --font-size-sm: 0.875rem;   /* 14px */
+            --font-size-base: 1rem;     /* 16px */
+            --font-size-lg: 1.125rem;   /* 18px */
+            --font-size-xl: 1.25rem;    /* 20px */
+            --font-size-2xl: 1.5rem;    /* 24px */
+            --font-size-3xl: 1.875rem;  /* 30px */
+            
+            /* === Z-INDEX SISTEMÁTICO === */
+            --z-dropdown: 1000;
+            --z-sticky: 1020;
+            --z-fixed: 1030;
+            --z-modal-backdrop: 1040;
+            --z-offcanvas: 1045;
+            --z-modal: 1055;
+            --z-popover: 1070;
+            --z-tooltip: 1080;
+        }
+        
+        /* === MODO OSCURO OPTIMIZADO === */
+        [data-bs-theme="dark"] {
+            --bs-primary: #818cf8;
+            --bs-light: #1e293b;
+            --bs-dark: #f1f5f9;
+            
+            /* Ajustes específicos para mejor legibilidad */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.3);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.4), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+        }
+        
+        /* ========================================
+           COMPONENTES AVANZADOS PERSONALIZADOS
+           ======================================== */
+        
+        /* === NAVBAR PROFESIONAL === */
+        .navbar-professional {
+            height: var(--header-height);
+            background: rgba(255, 255, 255, 0.85);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+            box-shadow: var(--shadow-sm);
+            z-index: var(--z-sticky);
+        }
+        
+        [data-bs-theme="dark"] .navbar-professional {
+            background: rgba(15, 23, 42, 0.85);
+            border-bottom-color: rgba(255, 255, 255, 0.08);
+        }
+        
+        /* === OFFCANVAS RESPONSIVE MEJORADO === */
+        .offcanvas-responsive {
+            width: var(--offcanvas-width);
+            border: none;
+            box-shadow: var(--shadow-xl);
+        }
+        
+        /* En pantallas grandes, el offcanvas se comporta como sidebar */
+        @media (min-width: 992px) {
+            .offcanvas-lg-responsive {
+                position: fixed !important;
+                top: var(--header-height);
+                left: 0;
+                width: var(--sidebar-width);
+                height: calc(100vh - var(--header-height));
+                visibility: visible !important;
+                transform: translateX(0) !important;
+                transition: none !important;
+                background: var(--bs-body-bg);
+                border-right: 1px solid var(--bs-border-color);
+                box-shadow: none;
+            }
+            
+            .offcanvas-lg-responsive .offcanvas-header {
+                display: none;
+            }
+            
+            /* Ajustar el contenido principal cuando hay sidebar */
+            .content-with-sidebar {
+                margin-left: var(--sidebar-width);
+                transition: margin-left 0.3s ease;
+            }
+        }
+        
+        /* === NAVEGACIÓN DEL OFFCANVAS === */
+        .offcanvas-nav .nav-link {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            margin: 0.25rem 1rem;
+            color: var(--bs-body-color);
+            transition: all 0.2s ease;
+            font-weight: 500;
+        }
+        
+        .offcanvas-nav .nav-link:hover {
+            background-color: var(--bs-primary);
+            color: white;
+            transform: translateX(4px);
+        }
+        
+        .offcanvas-nav .nav-link.active {
+            background-color: var(--bs-primary);
+            color: white;
+        }
+        
+        .offcanvas-nav .nav-link i {
+            width: 20px;
+            margin-right: 0.75rem;
+        }
+        
+        /* === CARDS INTERACTIVAS AVANZADAS === */
+        .interactive-card {
+            border: none;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            overflow: hidden;
+        }
+        
+        .interactive-card:hover {
+            transform: translateY(-8px);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .interactive-card .card-header {
+            background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+            color: white;
+            border: none;
+            padding: 1.5rem;
+        }
+        
+        /* === BOTONES CON ESTADOS AVANZADOS === */
+        .btn-gradient {
+            background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+            border: none;
+            color: white;
+            font-weight: 600;
+            padding: 0.75rem 2rem;
+            border-radius: 0.75rem;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-gradient:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+            color: white;
+        }
+        
+        .btn-gradient:active {
+            transform: translateY(0);
+        }
+        
+        /* === TABLA MODERNA === */
+        .modern-table {
+            background: var(--bs-body-bg);
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-md);
+            overflow: hidden;
+        }
+        
+        .modern-table .table {
+            margin-bottom: 0;
+        }
+        
+        .modern-table .table thead th {
+            background-color: var(--bs-light);
+            color: var(--bs-dark);
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: var(--font-size-xs);
+            letter-spacing: 0.1em;
+            padding: 1rem 1.5rem;
+            border: none;
+        }
+        
+        .modern-table .table tbody tr {
+            border-bottom: 1px solid var(--bs-border-color);
+            transition: background-color 0.2s ease;
+        }
+        
+        .modern-table .table tbody tr:hover {
+            background-color: rgba(var(--bs-primary-rgb), 0.04);
+        }
+        
+        .modern-table .table tbody td {
+            padding: 1rem 1.5rem;
+            border: none;
+            vertical-align: middle;
+        }
+        
+        /* === BADGES MODERNOS === */
+        .badge-modern {
+            padding: 0.5rem 1rem;
+            border-radius: 2rem;
+            font-weight: 500;
+            font-size: var(--font-size-xs);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        /* === MODAL PERSONALIZADO === */
+        .modal-modern .modal-content {
+            border: none;
+            border-radius: var(--border-radius-xl);
+            box-shadow: var(--shadow-xl);
+        }
+        
+        .modal-modern .modal-header {
+            background: linear-gradient(135deg, var(--bs-primary), var(--bs-info));
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-xl) var(--border-radius-xl) 0 0;
+            padding: 1.5rem 2rem;
+        }
+        
+        .modal-modern .modal-body {
+            padding: 2rem;
+        }
+        
+        .modal-modern .modal-footer {
+            border: none;
+            padding: 1.5rem 2rem;
+            background-color: var(--bs-light);
+        }
+        
+        /* === TOOLTIPS Y POPOVERS PERSONALIZADOS === */
+        .tooltip-inner {
+            background-color: var(--bs-dark);
+            color: var(--bs-light);
+            border-radius: 0.5rem;
+            padding: 0.5rem 1rem;
+            font-size: var(--font-size-sm);
+            max-width: 200px;
+        }
+        
+        /* === PROGRESS BARS ANIMADOS === */
+        .progress-modern {
+            height: 0.75rem;
+            border-radius: 2rem;
+            background-color: rgba(var(--bs-primary-rgb), 0.1);
+            overflow: hidden;
+        }
+        
+        .progress-modern .progress-bar {
+            border-radius: 2rem;
+            transition: width 1s ease-in-out;
+            background: linear-gradient(90deg, var(--bs-primary), var(--bs-info));
+        }
+        
+        /* === NOTIFICACIONES FLOTANTES === */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: var(--z-tooltip);
+        }
+        
+        .toast-modern {
+            border: none;
+            border-radius: var(--border-radius-lg);
+            box-shadow: var(--shadow-lg);
+            backdrop-filter: blur(10px);
+        }
+        
+        /* === UTILIDADES DE ANIMACIÓN === */
+        .fade-in {
+            animation: fadeIn 0.5s ease-in;
+        }
+        
+        .slide-in-right {
+            animation: slideInRight 0.5s ease-out;
+        }
+        
+        .pulse-gentle {
+            animation: pulseGentle 2s infinite;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        @keyframes slideInRight {
+            from { transform: translateX(100%); opacity: 0; }
+            to { transform: translateX(0); opacity: 1; }
+        }
+        
+        @keyframes pulseGentle {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+        
+        /* === RESPONSIVE OPTIMIZATIONS === */
+        @media (max-width: 575.98px) {
+            .interactive-card .card-body {
+                padding: 1rem;
+            }
+            
+            .modern-table .table thead th,
+            .modern-table .table tbody td {
+                padding: 0.75rem 1rem;
+            }
+            
+            .btn-gradient {
+                padding: 0.5rem 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         NAVBAR PRINCIPAL CON FUNCIONALIDAD AVANZADA
+         ======================================== -->
+    <nav class="navbar navbar-expand-lg navbar-professional sticky-top">
+        <div class="container-fluid">
+            <!-- Brand y toggle button -->
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>
+                <span class="text-primary">Sistema</span>Pro
+            </a>
+            
+            <!-- Botón para offcanvas (visible en todas las pantallas para demostración) -->
+            <button class="btn btn-outline-primary me-2" 
+                    type="button" 
+                    data-bs-toggle="offcanvas" 
+                    data-bs-target="#navigationOffcanvas"
+                    data-bs-placement="top"
+                    title="Abrir menú de navegación">
+                <i class="bi bi-list"></i>
+            </button>
+            
+            <!-- Navegación principal -->
+            <div class="navbar-nav ms-auto">
+                <!-- Dropdown de notificaciones -->
+                <div class="nav-item dropdown me-2">
+                    <button class="btn btn-outline-secondary position-relative" 
+                            data-bs-toggle="dropdown"
+                            data-bs-title="Notificaciones pendientes"
+                            data-bs-placement="bottom">
+                        <i class="bi bi-bell"></i>
+                        <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                            3
+                        </span>
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li class="dropdown-header">Notificaciones</li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-info-circle me-2"></i>Nueva actualización disponible</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-exclamation-triangle me-2"></i>Servidor con alta carga</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person-plus me-2"></i>Nuevo usuario registrado</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item text-center" href="#">Ver todas</a></li>
+                    </ul>
+                </div>
+                
+                <!-- Toggle de tema -->
+                <button class="btn btn-outline-secondary me-2" 
+                        onclick="toggleTheme()"
+                        data-bs-title="Cambiar tema"
+                        data-bs-placement="bottom">
+                    <i class="bi bi-moon-stars" id="themeIcon"></i>
+                </button>
+                
+                <!-- Dropdown de usuario -->
+                <div class="nav-item dropdown">
+                    <button class="btn btn-primary" 
+                            data-bs-toggle="dropdown">
+                        <i class="bi bi-person-circle me-1"></i>
+                        Usuario
+                    </button>
+                    <ul class="dropdown-menu dropdown-menu-end">
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-person me-2"></i>Mi Perfil</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-gear me-2"></i>Configuración</a></li>
+                        <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#helpModal">
+                            <i class="bi bi-question-circle me-2"></i>Ayuda</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="#"><i class="bi bi-box-arrow-right me-2"></i>Cerrar Sesión</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- ========================================
+         OFFCANVAS RESPONSIVE - LA JOYA DE LA CORONA
+         ======================================== -->
+    <div class="offcanvas offcanvas-start offcanvas-lg offcanvas-responsive" 
+         tabindex="-1" 
+         id="navigationOffcanvas">
+        
+        <!-- Header del offcanvas (solo visible en móvil) -->
+        <div class="offcanvas-header border-bottom">
+            <h5 class="offcanvas-title fw-bold">
+                <i class="bi bi-grid-3x3-gap-fill text-primary me-2"></i>
+                Navegación
+            </h5>
+            <button type="button" 
+                    class="btn-close" 
+                    data-bs-dismiss="offcanvas" 
+                    data-bs-target="#navigationOffcanvas"></button>
+        </div>
+        
+        <!-- Cuerpo del offcanvas con navegación -->
+        <div class="offcanvas-body p-0">
+            <!-- Información del usuario (solo en sidebar mode) -->
+            <div class="p-4 border-bottom d-none d-lg-block">
+                <div class="d-flex align-items-center">
+                    <div class="bg-primary rounded-circle p-3 me-3">
+                        <i class="bi bi-person text-white"></i>
+                    </div>
+                    <div>
+                        <h6 class="mb-0 fw-semibold">Juan Pérez</h6>
+                        <small class="text-muted">Administrador</small>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Navegación principal -->
+            <nav class="offcanvas-nav mt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#dashboard" onclick="navigateToSection('dashboard')">
+                            <i class="bi bi-speedometer2"></i>
+                            Dashboard Principal
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#analytics" onclick="navigateToSection('analytics')">
+                            <i class="bi bi-graph-up"></i>
+                            Analytics Avanzado
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#users" onclick="navigateToSection('users')">
+                            <i class="bi bi-people"></i>
+                            Gestión de Usuarios
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#projects" onclick="navigateToSection('projects')">
+                            <i class="bi bi-kanban"></i>
+                            Proyectos Activos
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#reports" onclick="navigateToSection('reports')">
+                            <i class="bi bi-file-earmark-text"></i>
+                            Reportes & Informes
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#settings" onclick="navigateToSection('settings')">
+                            <i class="bi bi-gear"></i>
+                            Configuración Global
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Sección de herramientas -->
+                <div class="px-4 mt-4">
+                    <h6 class="text-muted text-uppercase small fw-semibold mb-3">Herramientas</h6>
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" data-bs-toggle="modal" data-bs-target="#quickActionsModal">
+                                <i class="bi bi-lightning"></i>
+                                Acciones Rápidas
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="showAdvancedSearch()">
+                                <i class="bi bi-search"></i>
+                                Búsqueda Avanzada
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#" onclick="exportData()">
+                                <i class="bi bi-download"></i>
+                                Exportar Datos
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </div>
+    </div>
+    
+    <!-- ========================================
+         CONTENIDO PRINCIPAL CON LAYOUT RESPONSIVE
+         ======================================== -->
+    <main class="content-with-sidebar p-4 fade-in" id="mainContent">
+        <!-- Header de página con breadcrumb -->
+        <div class="row mb-4">
+            <div class="col">
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item"><a href="#" class="text-decoration-none">Inicio</a></li>
+                        <li class="breadcrumb-item active" id="currentSection">Dashboard Principal</li>
+                    </ol>
+                </nav>
+                <h1 class="h2 fw-bold mb-2" id="pageTitle">Dashboard Principal</h1>
+                <p class="text-muted mb-0" id="pageDescription">
+                    Resumen ejecutivo y métricas clave de tu organización
+                </p>
+            </div>
+            <div class="col-auto">
+                <button class="btn btn-gradient" data-bs-toggle="modal" data-bs-target="#quickActionsModal">
+                    <i class="bi bi-plus-lg me-2"></i>
+                    Nueva Acción
+                </button>
+            </div>
+        </div>
+        
+        <!-- Cards de métricas principales -->
+        <div class="row g-4 mb-4">
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="interactive-card card pulse-gentle">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Ingresos del Mes</p>
+                                <h3 class="fw-bold mb-0">$127,430</h3>
+                                <small class="text-success">
+                                    <i class="bi bi-arrow-up"></i> +15.3% vs mes anterior
+                                </small>
+                            </div>
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-currency-dollar text-success fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="progress-modern mt-3">
+                            <div class="progress-bar" role="progressbar" style="width: 75%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="interactive-card card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Usuarios Activos</p>
+                                <h3 class="fw-bold mb-0">8,429</h3>
+                                <small class="text-info">
+                                    <i class="bi bi-arrow-up"></i> +8.7% esta semana
+                                </small>
+                            </div>
+                            <div class="bg-info bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-people text-info fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="progress-modern mt-3">
+                            <div class="progress-bar bg-info" role="progressbar" style="width: 60%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="interactive-card card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Proyectos Activos</p>
+                                <h3 class="fw-bold mb-0">47</h3>
+                                <small class="text-warning">
+                                    <i class="bi bi-arrow-down"></i> -2.1% en progreso
+                                </small>
+                            </div>
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-kanban text-warning fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="progress-modern mt-3">
+                            <div class="progress-bar bg-warning" role="progressbar" style="width: 85%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-12 col-sm-6 col-xl-3">
+                <div class="interactive-card card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <p class="text-muted small mb-1">Satisfacción</p>
+                                <h3 class="fw-bold mb-0">94.2%</h3>
+                                <small class="text-success">
+                                    <i class="bi bi-arrow-up"></i> +2.4% este trimestre
+                                </small>
+                            </div>
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3">
+                                <i class="bi bi-emoji-smile text-primary fs-4"></i>
+                            </div>
+                        </div>
+                        <div class="progress-modern mt-3">
+                            <div class="progress-bar" role="progressbar" style="width: 94%"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Tabla de datos principales -->
+        <div class="row">
+            <div class="col-12">
+                <div class="modern-table">
+                    <div class="d-flex justify-content-between align-items-center p-4 border-bottom">
+                        <h5 class="mb-0 fw-semibold">Proyectos Recientes</h5>
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-outline-secondary btn-sm" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Filtrar resultados">
+                                <i class="bi bi-funnel"></i>
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" 
+                                    data-bs-toggle="tooltip" 
+                                    data-bs-title="Exportar tabla">
+                                <i class="bi bi-download"></i>
+                            </button>
+                            <button class="btn btn-primary btn-sm" 
+                                    data-bs-toggle="modal" 
+                                    data-bs-target="#projectModal">
+                                <i class="bi bi-plus-lg me-1"></i>
+                                Nuevo Proyecto
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Proyecto</th>
+                                    <th>Cliente</th>
+                                    <th>Progreso</th>
+                                    <th>Estado</th>
+                                    <th>Fecha Límite</th>
+                                    <th>Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-primary bg-opacity-10 rounded p-2 me-3">
+                                                <i class="bi bi-code-slash text-primary"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-semibold">Rediseño Web Corporativo</h6>
+                                                <small class="text-muted">Plataforma e-commerce moderna</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-medium">TechCorp Solutions</span><br>
+                                            <small class="text-muted">tech@solutions.com</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="progress-modern">
+                                            <div class="progress-bar" role="progressbar" style="width: 75%"></div>
+                                        </div>
+                                        <small class="text-muted">75% completado</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-modern bg-warning">En progreso</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">15 Feb 2025</span><br>
+                                        <small class="text-muted">En 3 días</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm" 
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-title="Editar proyecto">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-success bg-opacity-10 rounded p-2 me-3">
+                                                <i class="bi bi-phone text-success"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-semibold">App Móvil Delivery</h6>
+                                                <small class="text-muted">iOS y Android nativo</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-medium">FoodDelivery Inc</span><br>
+                                            <small class="text-muted">info@fooddelivery.co</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="progress-modern">
+                                            <div class="progress-bar bg-success" role="progressbar" style="width: 95%"></div>
+                                        </div>
+                                        <small class="text-muted">95% completado</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-modern bg-success">Casi terminado</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">28 Feb 2025</span><br>
+                                        <small class="text-muted">En 16 días</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm" 
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-title="Editar proyecto">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td>
+                                        <div class="d-flex align-items-center">
+                                            <div class="bg-info bg-opacity-10 rounded p-2 me-3">
+                                                <i class="bi bi-graph-up text-info"></i>
+                                            </div>
+                                            <div>
+                                                <h6 class="mb-0 fw-semibold">Dashboard Analytics</h6>
+                                                <small class="text-muted">Business Intelligence</small>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div>
+                                            <span class="fw-medium">DataViz Corp</span><br>
+                                            <small class="text-muted">contact@dataviz.io</small>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="progress-modern">
+                                            <div class="progress-bar bg-info" role="progressbar" style="width: 40%"></div>
+                                        </div>
+                                        <small class="text-muted">40% completado</small>
+                                    </td>
+                                    <td>
+                                        <span class="badge badge-modern bg-primary">Planificación</span>
+                                    </td>
+                                    <td>
+                                        <span class="fw-medium">20 Mar 2025</span><br>
+                                        <small class="text-muted">En 35 días</small>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1">
+                                            <button class="btn btn-outline-primary btn-sm" 
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-title="Ver detalles">
+                                                <i class="bi bi-eye"></i>
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm" 
+                                                    data-bs-toggle="tooltip" 
+                                                    data-bs-title="Editar proyecto">
+                                                <i class="bi bi-pencil"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- ========================================
+         MODALES AVANZADOS
+         ======================================== -->
+    
+    <!-- Modal de Acciones Rápidas -->
+    <div class="modal fade modal-modern" id="quickActionsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-lightning me-2"></i>
+                        Acciones Rápidas
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-12 col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-person-plus display-4 text-primary mb-3"></i>
+                                    <h6 class="fw-semibold">Agregar Usuario</h6>
+                                    <p class="text-muted small">Crear nueva cuenta de usuario</p>
+                                    <button class="btn btn-outline-primary btn-sm">Crear</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-folder-plus display-4 text-success mb-3"></i>
+                                    <h6 class="fw-semibold">Nuevo Proyecto</h6>
+                                    <p class="text-muted small">Iniciar proyecto desde plantilla</p>
+                                    <button class="btn btn-outline-success btn-sm">Iniciar</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-upload display-4 text-info mb-3"></i>
+                                    <h6 class="fw-semibold">Importar Datos</h6>
+                                    <p class="text-muted small">Subir archivo CSV o Excel</p>
+                                    <button class="btn btn-outline-info btn-sm">Subir</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 col-md-6">
+                            <div class="card h-100">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-gear display-4 text-warning mb-3"></i>
+                                    <h6 class="fw-semibold">Configurar</h6>
+                                    <p class="text-muted small">Ajustar configuración del sistema</p>
+                                    <button class="btn btn-outline-warning btn-sm">Configurar</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Guardar Cambios</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Ayuda -->
+    <div class="modal fade modal-modern" id="helpModal" tabindex="-1">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-question-circle me-2"></i>
+                        Centro de Ayuda
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <div class="accordion" id="helpAccordion">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#help1">
+                                    ¿Cómo navegar por el sistema?
+                                </button>
+                            </h2>
+                            <div id="help1" class="accordion-collapse collapse show" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    Utiliza el menú lateral para acceder a las diferentes secciones. En dispositivos móviles, 
+                                    toca el icono de menú en la parte superior para abrir la navegación.
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion-item">
+                            <h2 class="accordion-header">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#help2">
+                                    ¿Cómo crear un nuevo proyecto?
+                                </button>
+                            </h2>
+                            <div id="help2" class="accordion-collapse collapse" data-bs-parent="#helpAccordion">
+                                <div class="accordion-body">
+                                    Haz clic en "Nueva Acción" en la parte superior derecha, luego selecciona "Nuevo Proyecto" 
+                                    y completa el formulario con la información requerida.
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Modal de Proyecto -->
+    <div class="modal fade modal-modern" id="projectModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title fw-bold">
+                        <i class="bi bi-plus-circle me-2"></i>
+                        Crear Nuevo Proyecto
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-medium">Nombre del Proyecto</label>
+                                <input type="text" class="form-control" placeholder="Ej: Rediseño web corporativo">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-medium">Cliente</label>
+                                <select class="form-select">
+                                    <option>Seleccionar cliente...</option>
+                                    <option>TechCorp Solutions</option>
+                                    <option>FoodDelivery Inc</option>
+                                    <option>DataViz Corp</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label fw-medium">Descripción</label>
+                                <textarea class="form-control" rows="3" placeholder="Describe brevemente el proyecto..."></textarea>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-medium">Fecha de Inicio</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-medium">Fecha Límite</label>
+                                <input type="date" class="form-control">
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-medium">Presupuesto</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">$</span>
+                                    <input type="number" class="form-control" placeholder="0.00">
+                                </div>
+                            </div>
+                            <div class="col-12 col-md-6">
+                                <label class="form-label fw-medium">Prioridad</label>
+                                <select class="form-select">
+                                    <option>Baja</option>
+                                    <option>Media</option>
+                                    <option selected>Alta</option>
+                                    <option>Crítica</option>
+                                </select>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-primary">Crear Proyecto</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Container para toasts -->
+    <div class="toast-container"></div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ========================================
+        // GESTIÓN AVANZADA DEL SISTEMA
+        // ========================================
+        
+        /**
+         * Objeto principal para gestionar el estado de la aplicación
+         * Implementa el patrón Module para encapsular funcionalidad
+         */
+        const SystemManager = {
+            currentSection: 'dashboard',
+            theme: localStorage.getItem('system-theme') || 'light',
+            
+            /**
+             * Inicializa todos los componentes del sistema
+             */
+            init() {
+                this.setupTheme();
+                this.initializeTooltips();
+                this.initializeOffcanvasHandlers();
+                this.animateProgressBars();
+                this.setupNavigationHandlers();
+                console.log('🚀 Sistema empresarial inicializado correctamente');
+            },
+            
+            /**
+             * Configura el tema inicial y sus manejadores
+             */
+            setupTheme() {
+                document.documentElement.setAttribute('data-bs-theme', this.theme);
+                const themeIcon = document.getElementById('themeIcon');
+                if (themeIcon) {
+                    themeIcon.className = this.theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+                }
+            },
+            
+            /**
+             * Inicializa todos los tooltips de la página
+             */
+            initializeTooltips() {
+                const tooltips = document.querySelectorAll('[data-bs-title]');
+                tooltips.forEach(tooltip => {
+                    new bootstrap.Tooltip(tooltip);
+                });
+            },
+            
+            /**
+             * Configura los manejadores del offcanvas responsive
+             */
+            initializeOffcanvasHandlers() {
+                const offcanvasElement = document.getElementById('navigationOffcanvas');
+                if (offcanvasElement) {
+                    const offcanvas = new bootstrap.Offcanvas(offcanvasElement);
+                    
+                    // En pantallas grandes, el offcanvas actúa como sidebar
+                    window.addEventListener('resize', () => {
+                        if (window.innerWidth >= 992) {
+                            offcanvas.hide();
+                        }
+                    });
+                }
+            },
+            
+            /**
+             * Anima las barras de progreso con efecto de carga
+             */
+            animateProgressBars() {
+                const progressBars = document.querySelectorAll('.progress-bar');
+                
+                // Usar Intersection Observer para animar cuando entran en vista
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            const progressBar = entry.target;
+                            const targetWidth = progressBar.style.width;
+                            
+                            // Resetear y animar
+                            progressBar.style.width = '0%';
+                            setTimeout(() => {
+                                progressBar.style.width = targetWidth;
+                            }, 200);
+                            
+                            observer.unobserve(progressBar);
+                        }
+                    });
+                });
+                
+                progressBars.forEach(bar => observer.observe(bar));
+            },
+            
+            /**
+             * Configura los manejadores de navegación
+             */
+            setupNavigationHandlers() {
+                // Cerrar offcanvas en móvil al navegar
+                document.addEventListener('click', (e) => {
+                    const navLink = e.target.closest('.offcanvas-nav .nav-link');
+                    if (navLink && window.innerWidth < 992) {
+                        const offcanvas = bootstrap.Offcanvas.getInstance(document.getElementById('navigationOffcanvas'));
+                        if (offcanvas) {
+                            offcanvas.hide();
+                        }
+                    }
+                });
+            },
+            
+            /**
+             * Muestra notificaciones toast
+             */
+            showToast(message, type = 'info', duration = 5000) {
+                const toastContainer = document.querySelector('.toast-container');
+                const toastId = 'toast-' + Date.now();
+                
+                const toastHTML = `
+                    <div class="toast toast-modern align-items-center text-bg-${type} border-0" role="alert" id="${toastId}">
+                        <div class="d-flex">
+                            <div class="toast-body fw-medium">
+                                <i class="bi bi-${this.getToastIcon(type)} me-2"></i>
+                                ${message}
+                            </div>
+                            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                        </div>
+                    </div>
+                `;
+                
+                toastContainer.insertAdjacentHTML('beforeend', toastHTML);
+                
+                const toastElement = document.getElementById(toastId);
+                const toast = new bootstrap.Toast(toastElement, { delay: duration });
+                toast.show();
+                
+                // Limpiar después de que se oculte
+                toastElement.addEventListener('hidden.bs.toast', () => {
+                    toastElement.remove();
+                });
+            },
+            
+            /**
+             * Obtiene el icono apropiado para cada tipo de toast
+             */
+            getToastIcon(type) {
+                const icons = {
+                    'success': 'check-circle',
+                    'danger': 'exclamation-triangle',
+                    'warning': 'exclamation-triangle',
+                    'info': 'info-circle',
+                    'primary': 'lightbulb'
+                };
+                return icons[type] || 'info-circle';
+            }
+        };
+        
+        /**
+         * Alterna entre tema claro y oscuro
+         */
+        function toggleTheme() {
+            const currentTheme = document.documentElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            document.documentElement.setAttribute('data-bs-theme', newTheme);
+            localStorage.setItem('system-theme', newTheme);
+            
+            const themeIcon = document.getElementById('themeIcon');
+            themeIcon.className = newTheme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+            
+            SystemManager.theme = newTheme;
+            SystemManager.showToast(`Tema cambiado a ${newTheme === 'dark' ? 'oscuro' : 'claro'}`, 'success');
+        }
+        
+        /**
+         * Navega a una sección específica del sistema
+         */
+        function navigateToSection(section) {
+            // Actualizar estado activo en navegación
+            document.querySelectorAll('.offcanvas-nav .nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            
+            event.target.classList.add('active');
+            
+            // Actualizar contenido de la página
+            const sectionData = {
+                'dashboard': {
+                    title: 'Dashboard Principal',
+                    description: 'Resumen ejecutivo y métricas clave de tu organización'
+                },
+                'analytics': {
+                    title: 'Analytics Avanzado',
+                    description: 'Análisis detallado de rendimiento y tendencias'
+                },
+                'users': {
+                    title: 'Gestión de Usuarios',
+                    description: 'Administración de cuentas y permisos de usuario'
+                },
+                'projects': {
+                    title: 'Proyectos Activos',
+                    description: 'Seguimiento y gestión de proyectos en curso'
+                },
+                'reports': {
+                    title: 'Reportes & Informes',
+                    description: 'Generación y análisis de reportes empresariales'
+                },
+                'settings': {
+                    title: 'Configuración Global',
+                    description: 'Configuración general del sistema y preferencias'
+                }
+            };
+            
+            const data = sectionData[section] || sectionData['dashboard'];
+            
+            document.getElementById('pageTitle').textContent = data.title;
+            document.getElementById('pageDescription').textContent = data.description;
+            document.getElementById('currentSection').textContent = data.title;
+            
+            SystemManager.currentSection = section;
+            SystemManager.showToast(`Navegando a: ${data.title}`, 'info');
+        }
+        
+        /**
+         * Muestra búsqueda avanzada
+         */
+        function showAdvancedSearch() {
+            SystemManager.showToast('Funcionalidad de búsqueda avanzada próximamente', 'info');
+        }
+        
+        /**
+         * Exporta datos del sistema
+         */
+        function exportData() {
+            SystemManager.showToast('Iniciando exportación de datos...', 'success');
+            
+            // Simular proceso de exportación
+            setTimeout(() => {
+                SystemManager.showToast('Datos exportados correctamente', 'success');
+            }, 2000);
+        }
+        
+        // ========================================
+        // INICIALIZACIÓN DEL SISTEMA
+        // ========================================
+        
+        /**
+         * Inicializa el sistema cuando el DOM está listo
+         */
+        document.addEventListener('DOMContentLoaded', function() {
+            SystemManager.init();
+            
+            // Mostrar mensaje de bienvenida
+            setTimeout(() => {
+                SystemManager.showToast('¡Bienvenido al Sistema Empresarial!', 'primary', 3000);
+            }, 1000);
+            
+            // Configurar eventos de formularios en modales
+            document.getElementById('projectModal').addEventListener('shown.bs.modal', function() {
+                // Enfocar el primer campo del formulario
+                this.querySelector('input').focus();
+            });
+            
+            // Debugging para desarrolladores
+            console.log('📊 Sistema de métricas activo');
+            console.log('🎨 Variables CSS personalizadas cargadas');
+            console.log('📱 Offcanvas responsive configurado');
+            console.log('⚡ Componentes avanzados inicializados');
+            
+            // Hacer disponibles funciones globalmente para debugging
+            window.SystemManager = SystemManager;
+            window.navigateToSection = navigateToSection;
+            window.toggleTheme = toggleTheme;
+        });
+        
+        // ========================================
+        // UTILIDADES DE PERFORMANCE
+        // ========================================
+        
+        /**
+         * Monitorea el performance del sistema
+         */
+        function debugPerformance() {
+            if (performance.mark) {
+                performance.mark('system-loaded');
+                performance.measure('system-load-time', 'navigationStart', 'system-loaded');
+                
+                const loadTime = performance.getEntriesByName('system-load-time')[0];
+                console.log(`⚡ Tiempo de carga del sistema: ${loadTime.duration.toFixed(2)}ms`);
+            }
+        }
+        
+        // Ejecutar debugging de performance
+        window.addEventListener('load', debugPerformance);
+    </script>
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fundamentos de Flexbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #333;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #4a5568;
+            margin-bottom: 30px;
+            font-size: 2.5rem;
+        }
+
+        .section {
+            margin-bottom: 40px;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            margin-bottom: 20px;
+            border-left: 4px solid #667eea;
+            padding-left: 15px;
+        }
+
+        /* === DEMOSTRACIÓN 1: FLEX CONTAINER BÁSICO === */
+        .demo-1 {
+            background: #f7fafc;
+            border: 2px dashed #667eea;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            display: flex; /* Esto convierte el div en flex container */
+        }
+
+        .flex-item {
+            background: #667eea;
+            color: white;
+            padding: 15px 25px;
+            margin: 5px;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        /* === DEMOSTRACIÓN 2: DIRECCIONES FLEXBOX === */
+        .demo-row {
+            display: flex;
+            flex-direction: row; /* Dirección horizontal (default) */
+            background: #edf2f7;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .demo-column {
+            display: flex;
+            flex-direction: column; /* Dirección vertical */
+            background: #e6fffa;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            height: 200px;
+        }
+
+        /* === DEMOSTRACIÓN 3: JUSTIFICACIÓN Y ALINEACIÓN === */
+        .demo-justify-center {
+            display: flex;
+            justify-content: center; /* Centrado horizontal */
+            background: #fff5f5;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .demo-align-center {
+            display: flex;
+            align-items: center; /* Centrado vertical */
+            background: #f0fff4;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            height: 100px;
+        }
+
+        .demo-center-both {
+            display: flex;
+            justify-content: center; /* Centrado horizontal */
+            align-items: center; /* Centrado vertical */
+            background: #fefcbf;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            height: 100px;
+        }
+
+        /* === DEMOSTRACIÓN 4: FLEX GROW === */
+        .demo-grow {
+            display: flex;
+            background: #f7fafc;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+        }
+
+        .grow-item-1 {
+            flex-grow: 1; /* Crece 1 unidad */
+            background: #48bb78;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .grow-item-2 {
+            flex-grow: 2; /* Crece 2 unidades (doble que el anterior) */
+            background: #38a169;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .fixed-item {
+            background: #2d3748;
+            color: white;
+            padding: 10px;
+            margin: 5px;
+            border-radius: 5px;
+            text-align: center;
+            width: 120px; /* Ancho fijo */
+        }
+
+        .code-label {
+            background: #2d3748;
+            color: #ffd700;
+            padding: 5px 10px;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            margin-bottom: 10px;
+            display: inline-block;
+        }
+
+        .explanation {
+            background: #edf2f7;
+            padding: 15px;
+            border-left: 4px solid #4299e1;
+            margin: 10px 0;
+            border-radius: 0 8px 8px 0;
+            font-style: italic;
+        }
+
+        /* === MATRIZ DE DECISIÓN === */
+        .decision-matrix {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin: 30px 0;
+        }
+
+        .matrix-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .matrix-card {
+            background: rgba(255,255,255,0.1);
+            backdrop-filter: blur(10px);
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .matrix-card h3 {
+            margin-bottom: 15px;
+            color: #ffd700;
+        }
+
+        .matrix-card ul {
+            list-style: none;
+        }
+
+        .matrix-card li {
+            padding: 5px 0;
+            position: relative;
+            padding-left: 25px;
+        }
+
+        .matrix-card li:before {
+            content: "✓";
+            position: absolute;
+            left: 0;
+            color: #48bb78;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧠 Fundamentos de Flexbox</h1>
+
+        <!-- Sección 1: Contenedor Flex Básico -->
+        <div class="section">
+            <h2>1. Flex Container Básico</h2>
+            <div class="code-label">display: flex;</div>
+            <div class="demo-1">
+                <div class="flex-item">Item 1</div>
+                <div class="flex-item">Item 2</div>
+                <div class="flex-item">Item 3</div>
+            </div>
+            <div class="explanation">
+                Al aplicar <code>display: flex</code> al contenedor, los elementos hijos se convierten automáticamente en flex items y se alinean horizontalmente.
+            </div>
+        </div>
+
+        <!-- Sección 2: Direcciones -->
+        <div class="section">
+            <h2>2. Direcciones de Flexbox</h2>
+            
+            <div class="code-label">flex-direction: row;</div>
+            <div class="demo-row">
+                <div class="flex-item">A</div>
+                <div class="flex-item">B</div>
+                <div class="flex-item">C</div>
+            </div>
+
+            <div class="code-label">flex-direction: column;</div>
+            <div class="demo-column">
+                <div class="flex-item">A</div>
+                <div class="flex-item">B</div>
+                <div class="flex-item">C</div>
+            </div>
+        </div>
+
+        <!-- Sección 3: Alineación -->
+        <div class="section">
+            <h2>3. Alineación y Justificación</h2>
+            
+            <div class="code-label">justify-content: center;</div>
+            <div class="demo-justify-center">
+                <div class="flex-item">Centrado H</div>
+            </div>
+
+            <div class="code-label">align-items: center;</div>
+            <div class="demo-align-center">
+                <div class="flex-item">Centrado V</div>
+            </div>
+
+            <div class="code-label">justify-content: center; align-items: center;</div>
+            <div class="demo-center-both">
+                <div class="flex-item">Perfecto Centro</div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Flex Grow -->
+        <div class="section">
+            <h2>4. Flex Grow - Distribución de Espacio</h2>
+            <div class="code-label">flex-grow: 1 y 2</div>
+            <div class="demo-grow">
+                <div class="grow-item-1">flex-grow: 1</div>
+                <div class="grow-item-2">flex-grow: 2</div>
+                <div class="fixed-item">Fijo 120px</div>
+            </div>
+            <div class="explanation">
+                <code>flex-grow</code> determina cómo se distribuye el espacio disponible. El elemento con flex-grow: 2 será el doble de ancho que el elemento con flex-grow: 1.
+            </div>
+        </div>
+
+        <!-- Matriz de Decisión -->
+        <div class="decision-matrix">
+            <h2 style="text-align: center; margin-bottom: 20px;">🎯 Matriz de Decisión: ¿Cuándo usar Grid vs Flexbox?</h2>
+            <div class="matrix-grid">
+                <div class="matrix-card">
+                    <h3>🔧 Usa FLEXBOX cuando:</h3>
+                    <ul>
+                        <li>Diseñas componentes individuales</li>
+                        <li>Alineas elementos en una dimensión</li>
+                        <li>Distribuyes espacio entre elementos</li>
+                        <li>Centras contenido</li>
+                        <li>Crear barras de navegación</li>
+                        <li>Organizar botones o formularios</li>
+                    </ul>
+                </div>
+                <div class="matrix-card">
+                    <h3>🏗️ Usa CSS GRID cuando:</h3>
+                    <ul>
+                        <li>Diseñas layouts de página completa</li>
+                        <li>Trabajas en dos dimensiones</li>
+                        <li>Necesitas posicionamiento complejo</li>
+                        <li>Crear sistemas de grid</li>
+                        <li>Layouts de dashboard</li>
+                        <li>Galerías de imágenes</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,1324 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Herramientas de Debugging para CSS Moderno</title>
+    <style>
+        /* =================================================================
+           SISTEMA DE DEBUGGING: HERRAMIENTAS PARA DIAGNOSTICAR PROBLEMAS
+           ================================================================= */
+        
+        @layer reset, debugging-base, container-debugger, cascade-analyzer, performance-monitor, error-handlers;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+        
+        @layer debugging-base {
+            :root {
+                /* Tokens específicos para herramientas de debugging */
+                --debug-primary: #ef4444;
+                --debug-secondary: #f59e0b;
+                --debug-success: #10b981;
+                --debug-info: #3b82f6;
+                --debug-background: rgba(0,0,0,0.8);
+                --debug-text: #ffffff;
+                --debug-border: #374151;
+                
+                /* Estados de debug */
+                --debug-visible: 1;
+                --debug-hidden: 0;
+            }
+            
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                background: #f8fafc;
+                color: #1f2937;
+                position: relative;
+            }
+            
+            /* 
+               Modo debugging global que se activa con una clase en el body.
+               Esto permite encender/apagar todas las herramientas de debugging
+               con una sola acción.
+            */
+            body.debug-mode {
+                --debug-visible: 1;
+                
+                /* En modo debug, agregamos un borde distintivo a todos los containers */
+                * {
+                    outline: 1px solid rgba(239, 68, 68, 0.2);
+                }
+                
+                /* Destacamos los contextos de container queries */
+                [style*="container-type"],
+                .container-context {
+                    outline: 2px solid var(--debug-primary);
+                    outline-offset: -2px;
+                    position: relative;
+                    
+                    /* Etiqueta que muestra el tipo de container */
+                    &::before {
+                        content: "📦 Container Context";
+                        position: absolute;
+                        top: -20px;
+                        left: 0;
+                        background: var(--debug-primary);
+                        color: white;
+                        font-size: 10px;
+                        padding: 2px 6px;
+                        border-radius: 3px;
+                        z-index: 10000;
+                        font-weight: 600;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           CONTAINER QUERY DEBUGGER: VISUALIZADOR DE CONTEXTOS
+           ================================================================= */
+        
+        @layer container-debugger {
+            /*
+               Panel principal del debugger que muestra información en tiempo real
+               sobre los contextos de container queries activos
+            */
+            .container-debugger {
+                position: fixed;
+                top: 20px;
+                left: 20px;
+                width: 320px;
+                background: var(--debug-background);
+                color: var(--debug-text);
+                border-radius: 8px;
+                border: 1px solid var(--debug-border);
+                box-shadow: 0 20px 25px rgba(0,0,0,0.4);
+                z-index: 10000;
+                opacity: var(--debug-hidden);
+                visibility: hidden;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                
+                /* El debugger se muestra cuando el modo debug está activo */
+                .debug-mode & {
+                    opacity: var(--debug-visible);
+                    visibility: visible;
+                }
+                
+                & .debugger-header {
+                    padding: 16px;
+                    border-bottom: 1px solid var(--debug-border);
+                    background: rgba(239, 68, 68, 0.1);
+                    
+                    & .header-title {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: var(--debug-primary);
+                        margin-bottom: 4px;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        
+                        & .status-indicator {
+                            width: 8px;
+                            height: 8px;
+                            background: var(--debug-success);
+                            border-radius: 50%;
+                            animation: pulse-debug 2s infinite;
+                        }
+                    }
+                    
+                    & .header-subtitle {
+                        font-size: 11px;
+                        color: #9ca3af;
+                        text-transform: uppercase;
+                        letter-spacing: 0.5px;
+                    }
+                }
+                
+                & .debugger-content {
+                    padding: 16px;
+                    max-height: 400px;
+                    overflow-y: auto;
+                    
+                    & .debug-section {
+                        margin-bottom: 20px;
+                        
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                        
+                        & .section-title {
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: var(--debug-info);
+                            margin-bottom: 8px;
+                            text-transform: uppercase;
+                            letter-spacing: 0.5px;
+                        }
+                        
+                        & .debug-item {
+                            background: rgba(255,255,255,0.05);
+                            border: 1px solid var(--debug-border);
+                            border-radius: 4px;
+                            padding: 8px;
+                            margin-bottom: 6px;
+                            font-size: 11px;
+                            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                            
+                            & .item-label {
+                                color: var(--debug-secondary);
+                                font-weight: 600;
+                            }
+                            
+                            & .item-value {
+                                color: #e5e7eb;
+                                margin-left: 8px;
+                            }
+                            
+                            & .item-status {
+                                float: right;
+                                padding: 2px 6px;
+                                border-radius: 3px;
+                                font-size: 9px;
+                                font-weight: 600;
+                                
+                                &.active {
+                                    background: var(--debug-success);
+                                    color: white;
+                                }
+                                
+                                &.inactive {
+                                    background: var(--debug-border);
+                                    color: #9ca3af;
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                & .debugger-controls {
+                    padding: 12px 16px;
+                    border-top: 1px solid var(--debug-border);
+                    background: rgba(0,0,0,0.3);
+                    
+                    & .control-button {
+                        background: var(--debug-info);
+                        color: white;
+                        border: none;
+                        padding: 6px 12px;
+                        border-radius: 4px;
+                        font-size: 11px;
+                        font-weight: 600;
+                        cursor: pointer;
+                        margin-right: 8px;
+                        transition: background 0.2s ease;
+                        
+                        &:hover {
+                            background: #2563eb;
+                        }
+                        
+                        &.danger {
+                            background: var(--debug-primary);
+                            
+                            &:hover {
+                                background: #dc2626;
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /*
+               Overlay que muestra información contextual cuando se hace hover
+               sobre elementos con container queries
+            */
+            .container-overlay {
+                position: absolute;
+                background: var(--debug-background);
+                color: var(--debug-text);
+                padding: 8px 12px;
+                border-radius: 6px;
+                font-size: 11px;
+                font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+                z-index: 10001;
+                opacity: 0;
+                visibility: hidden;
+                transition: all 0.2s ease;
+                backdrop-filter: blur(10px);
+                border: 1px solid var(--debug-border);
+                
+                &.visible {
+                    opacity: 1;
+                    visibility: visible;
+                }
+                
+                & .overlay-title {
+                    color: var(--debug-secondary);
+                    font-weight: 600;
+                    margin-bottom: 4px;
+                }
+                
+                & .overlay-info {
+                    color: #e5e7eb;
+                    line-height: 1.3;
+                }
+            }
+        }
+        
+        /* =================================================================
+           CASCADE ANALYZER: ANALIZADOR DE ESPECIFICIDAD Y CAPAS
+           ================================================================= */
+        
+        @layer cascade-analyzer {
+            /*
+               Herramienta que visualiza la cascada CSS y ayuda a entender
+               por qué ciertos estilos no se están aplicando
+            */
+            .cascade-analyzer {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                width: 350px;
+                background: var(--debug-background);
+                color: var(--debug-text);
+                border-radius: 8px;
+                border: 1px solid var(--debug-border);
+                box-shadow: 0 20px 25px rgba(0,0,0,0.4);
+                z-index: 10000;
+                opacity: var(--debug-hidden);
+                visibility: hidden;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                
+                .debug-mode & {
+                    opacity: var(--debug-visible);
+                    visibility: visible;
+                }
+                
+                & .analyzer-header {
+                    padding: 16px;
+                    border-bottom: 1px solid var(--debug-border);
+                    background: rgba(59, 130, 246, 0.1);
+                    
+                    & .header-title {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: var(--debug-info);
+                        margin-bottom: 4px;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        
+                        & .cascade-icon {
+                            font-size: 16px;
+                        }
+                    }
+                    
+                    & .selected-element {
+                        font-size: 11px;
+                        color: #9ca3af;
+                        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                    }
+                }
+                
+                & .analyzer-content {
+                    padding: 16px;
+                    max-height: 450px;
+                    overflow-y: auto;
+                    
+                    & .layer-info {
+                        margin-bottom: 16px;
+                        
+                        & .layer-title {
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: var(--debug-secondary);
+                            margin-bottom: 8px;
+                            padding: 4px 8px;
+                            background: rgba(245, 158, 11, 0.1);
+                            border-radius: 4px;
+                            border-left: 3px solid var(--debug-secondary);
+                        }
+                        
+                        & .layer-rules {
+                            & .rule-item {
+                                background: rgba(255,255,255,0.05);
+                                border: 1px solid var(--debug-border);
+                                border-radius: 4px;
+                                padding: 8px;
+                                margin-bottom: 4px;
+                                font-size: 11px;
+                                font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                                
+                                & .rule-selector {
+                                    color: var(--debug-info);
+                                    font-weight: 600;
+                                }
+                                
+                                & .rule-property {
+                                    color: #e5e7eb;
+                                    margin-left: 12px;
+                                    margin-top: 2px;
+                                    
+                                    & .property-name {
+                                        color: var(--debug-success);
+                                    }
+                                    
+                                    & .property-value {
+                                        color: #fbbf24;
+                                    }
+                                }
+                                
+                                & .rule-specificity {
+                                    float: right;
+                                    background: var(--debug-border);
+                                    color: #9ca3af;
+                                    padding: 1px 4px;
+                                    border-radius: 2px;
+                                    font-size: 9px;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           PERFORMANCE MONITOR: MONITOR DE RENDIMIENTO EN TIEMPO REAL
+           ================================================================= */
+        
+        @layer performance-monitor {
+            /*
+               Monitor que rastrea el rendimiento de container queries
+               y otras operaciones CSS costosas
+            */
+            .performance-monitor {
+                position: fixed;
+                bottom: 20px;
+                left: 20px;
+                width: 300px;
+                background: var(--debug-background);
+                color: var(--debug-text);
+                border-radius: 8px;
+                border: 1px solid var(--debug-border);
+                box-shadow: 0 20px 25px rgba(0,0,0,0.4);
+                z-index: 10000;
+                opacity: var(--debug-hidden);
+                visibility: hidden;
+                transition: all 0.3s ease;
+                backdrop-filter: blur(10px);
+                
+                .debug-mode & {
+                    opacity: var(--debug-visible);
+                    visibility: visible;
+                }
+                
+                & .monitor-header {
+                    padding: 16px;
+                    border-bottom: 1px solid var(--debug-border);
+                    background: rgba(16, 185, 129, 0.1);
+                    
+                    & .header-title {
+                        font-size: 14px;
+                        font-weight: 700;
+                        color: var(--debug-success);
+                        margin-bottom: 4px;
+                        display: flex;
+                        align-items: center;
+                        gap: 8px;
+                        
+                        & .perf-icon {
+                            font-size: 16px;
+                        }
+                    }
+                    
+                    & .performance-score {
+                        font-size: 18px;
+                        font-weight: 800;
+                        color: var(--debug-success);
+                        
+                        & .score-label {
+                            font-size: 11px;
+                            color: #9ca3af;
+                            font-weight: 400;
+                            margin-left: 4px;
+                        }
+                    }
+                }
+                
+                & .monitor-content {
+                    padding: 16px;
+                    
+                    & .metric-group {
+                        margin-bottom: 16px;
+                        
+                        &:last-child {
+                            margin-bottom: 0;
+                        }
+                        
+                        & .metric-title {
+                            font-size: 12px;
+                            font-weight: 600;
+                            color: var(--debug-info);
+                            margin-bottom: 8px;
+                        }
+                        
+                        & .metric-item {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: center;
+                            margin-bottom: 6px;
+                            font-size: 11px;
+                            
+                            & .metric-name {
+                                color: #e5e7eb;
+                            }
+                            
+                            & .metric-value {
+                                font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                                font-weight: 600;
+                                
+                                &.good {
+                                    color: var(--debug-success);
+                                }
+                                
+                                &.warning {
+                                    color: var(--debug-secondary);
+                                }
+                                
+                                &.critical {
+                                    color: var(--debug-primary);
+                                }
+                            }
+                        }
+                    }
+                    
+                    & .performance-chart {
+                        height: 60px;
+                        background: rgba(255,255,255,0.05);
+                        border-radius: 4px;
+                        position: relative;
+                        overflow: hidden;
+                        margin-top: 12px;
+                        
+                        & .chart-line {
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 2px;
+                            background: linear-gradient(90deg, var(--debug-success), var(--debug-info));
+                            animation: pulse-chart 2s ease-in-out infinite;
+                        }
+                        
+                        & .chart-label {
+                            position: absolute;
+                            top: 50%;
+                            left: 50%;
+                            transform: translate(-50%, -50%);
+                            font-size: 10px;
+                            color: #9ca3af;
+                            text-align: center;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           ERROR HANDLERS: MANEJADORES DE ERRORES Y WARNINGS
+           ================================================================= */
+        
+        @layer error-handlers {
+            /*
+               Sistema de notificaciones para errores y warnings de CSS
+            */
+            .error-notifications {
+                position: fixed;
+                top: 20px;
+                left: 50%;
+                transform: translateX(-50%);
+                z-index: 10002;
+                max-width: 500px;
+                width: 100%;
+                
+                & .error-item {
+                    background: var(--debug-background);
+                    color: var(--debug-text);
+                    border-radius: 8px;
+                    border: 1px solid var(--debug-border);
+                    padding: 16px;
+                    margin-bottom: 12px;
+                    box-shadow: 0 10px 25px rgba(0,0,0,0.4);
+                    backdrop-filter: blur(10px);
+                    opacity: 0;
+                    transform: translateY(-20px);
+                    transition: all 0.3s ease;
+                    
+                    &.visible {
+                        opacity: 1;
+                        transform: translateY(0);
+                    }
+                    
+                    &.error {
+                        border-left: 4px solid var(--debug-primary);
+                        background: rgba(239, 68, 68, 0.1);
+                    }
+                    
+                    &.warning {
+                        border-left: 4px solid var(--debug-secondary);
+                        background: rgba(245, 158, 11, 0.1);
+                    }
+                    
+                    &.info {
+                        border-left: 4px solid var(--debug-info);
+                        background: rgba(59, 130, 246, 0.1);
+                    }
+                    
+                    & .error-header {
+                        display: flex;
+                        align-items: center;
+                        margin-bottom: 8px;
+                        
+                        & .error-icon {
+                            margin-right: 8px;
+                            font-size: 16px;
+                        }
+                        
+                        & .error-title {
+                            font-size: 14px;
+                            font-weight: 700;
+                            flex: 1;
+                        }
+                        
+                        & .error-close {
+                            background: none;
+                            border: none;
+                            color: #9ca3af;
+                            cursor: pointer;
+                            font-size: 16px;
+                            padding: 4px;
+                            
+                            &:hover {
+                                color: var(--debug-text);
+                            }
+                        }
+                    }
+                    
+                    & .error-content {
+                        font-size: 12px;
+                        line-height: 1.4;
+                        color: #d1d5db;
+                        
+                        & .error-details {
+                            font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                            background: rgba(0,0,0,0.3);
+                            padding: 8px;
+                            border-radius: 4px;
+                            margin-top: 8px;
+                            font-size: 11px;
+                            overflow-x: auto;
+                        }
+                    }
+                }
+            }
+            
+            /*
+               Indicadores visuales para elementos con problemas
+            */
+            .debug-mode {
+                /* Elementos con container queries no funcionales */
+                [data-container-error] {
+                    outline: 2px dashed var(--debug-primary) !important;
+                    position: relative;
+                    
+                    &::after {
+                        content: "⚠️ Container Query Error";
+                        position: absolute;
+                        top: -24px;
+                        left: 0;
+                        background: var(--debug-primary);
+                        color: white;
+                        font-size: 10px;
+                        padding: 2px 6px;
+                        border-radius: 3px;
+                        z-index: 10000;
+                        font-weight: 600;
+                        animation: blink-error 1s infinite;
+                    }
+                }
+                
+                /* Elementos con problemas de especificidad */
+                [data-specificity-conflict] {
+                    outline: 2px dashed var(--debug-secondary) !important;
+                    
+                    &::after {
+                        content: "⚠️ Specificity Conflict";
+                        position: absolute;
+                        top: -24px;
+                        right: 0;
+                        background: var(--debug-secondary);
+                        color: white;
+                        font-size: 10px;
+                        padding: 2px 6px;
+                        border-radius: 3px;
+                        z-index: 10000;
+                        font-weight: 600;
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           ANIMACIONES Y EFECTOS ESPECIALES
+           ================================================================= */
+        
+        @keyframes pulse-debug {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+        
+        @keyframes pulse-chart {
+            0%, 100% { transform: scaleY(1); }
+            50% { transform: scaleY(1.5); }
+        }
+        
+        @keyframes blink-error {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+        
+        /* =================================================================
+           COMPONENTES DE PRUEBA PARA DEMOSTRAR LAS HERRAMIENTAS
+           ================================================================= */
+        
+        .test-container {
+            container-type: inline-size;
+            container-name: test-container;
+            width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+            
+            & .test-component {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 20px;
+                border-radius: 6px;
+                text-align: center;
+                transition: all 0.3s ease;
+                
+                & .component-title {
+                    font-size: 18px;
+                    font-weight: 600;
+                    margin-bottom: 8px;
+                }
+                
+                & .component-info {
+                    font-size: 14px;
+                    opacity: 0.9;
+                }
+            }
+        }
+        
+        @container test-container (min-width: 400px) {
+            .test-component {
+                display: flex;
+                align-items: center;
+                justify-content: space-between;
+                text-align: left;
+                
+                & .component-info {
+                    margin-left: 20px;
+                }
+            }
+        }
+        
+        /* Controles para la demostración */
+        .debug-controls {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: white;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.15);
+            border: 1px solid #e5e7eb;
+            
+            & .control-title {
+                font-size: 14px;
+                font-weight: 600;
+                margin-bottom: 12px;
+                color: #374151;
+            }
+            
+            & .control-button {
+                display: block;
+                width: 100%;
+                margin-bottom: 8px;
+                padding: 8px 16px;
+                background: #3b82f6;
+                color: white;
+                border: none;
+                border-radius: 6px;
+                font-size: 12px;
+                font-weight: 600;
+                cursor: pointer;
+                transition: background 0.2s ease;
+                
+                &:hover {
+                    background: #2563eb;
+                }
+                
+                &.active {
+                    background: #10b981;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sistema de herramientas de debugging -->
+    
+    <!-- Container Query Debugger -->
+    <div class="container-debugger">
+        <div class="debugger-header">
+            <div class="header-title">
+                <span class="status-indicator"></span>
+                Container Query Debugger
+            </div>
+            <div class="header-subtitle">Monitoreando contextos activos</div>
+        </div>
+        
+        <div class="debugger-content">
+            <div class="debug-section">
+                <div class="section-title">Contextos Activos</div>
+                <div class="debug-item">
+                    <span class="item-label">test-container:</span>
+                    <span class="item-value">600px</span>
+                    <span class="item-status active">ACTIVO</span>
+                </div>
+                <div class="debug-item">
+                    <span class="item-label">Breakpoint:</span>
+                    <span class="item-value">min-width: 400px</span>
+                    <span class="item-status active">MATCHED</span>
+                </div>
+            </div>
+            
+            <div class="debug-section">
+                <div class="section-title">Reglas Aplicadas</div>
+                <div class="debug-item">
+                    <span class="item-label">display:</span>
+                    <span class="item-value">flex</span>
+                    <span class="item-status active">ACTIVO</span>
+                </div>
+                <div class="debug-item">
+                    <span class="item-label">text-align:</span>
+                    <span class="item-value">left</span>
+                    <span class="item-status active">ACTIVO</span>
+                </div>
+            </div>
+            
+            <div class="debug-section">
+                <div class="section-title">Performance</div>
+                <div class="debug-item">
+                    <span class="item-label">Recálculos:</span>
+                    <span class="item-value">3</span>
+                    <span class="item-status active">NORMAL</span>
+                </div>
+                <div class="debug-item">
+                    <span class="item-label">Tiempo:</span>
+                    <span class="item-value">0.8ms</span>
+                    <span class="item-status active">RÁPIDO</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="debugger-controls">
+            <button class="control-button" onclick="exportDebugData()">📊 Exportar</button>
+            <button class="control-button" onclick="clearDebugData()">🗑️ Limpiar</button>
+            <button class="control-button danger" onclick="toggleDebugMode()">❌ Cerrar</button>
+        </div>
+    </div>
+    
+    <!-- Cascade Analyzer -->
+    <div class="cascade-analyzer">
+        <div class="analyzer-header">
+            <div class="header-title">
+                <span class="cascade-icon">🎯</span>
+                Cascade Analyzer
+            </div>
+            <div class="selected-element">Elemento: .test-component</div>
+        </div>
+        
+        <div class="analyzer-content">
+            <div class="layer-info">
+                <div class="layer-title">@layer components</div>
+                <div class="layer-rules">
+                    <div class="rule-item">
+                        <div class="rule-selector">.test-component</div>
+                        <div class="rule-specificity">(0,1,0)</div>
+                        <div class="rule-property">
+                            <span class="property-name">background:</span>
+                            <span class="property-value">linear-gradient(...)</span>
+                        </div>
+                        <div class="rule-property">
+                            <span class="property-name">padding:</span>
+                            <span class="property-value">20px</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="layer-info">
+                <div class="layer-title">@layer container-queries</div>
+                <div class="layer-rules">
+                    <div class="rule-item">
+                        <div class="rule-selector">@container test-container (min-width: 400px)</div>
+                        <div class="rule-specificity">(0,1,0)</div>
+                        <div class="rule-property">
+                            <span class="property-name">display:</span>
+                            <span class="property-value">flex</span>
+                        </div>
+                        <div class="rule-property">
+                            <span class="property-name">text-align:</span>
+                            <span class="property-value">left</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Performance Monitor -->
+    <div class="performance-monitor">
+        <div class="monitor-header">
+            <div class="header-title">
+                <span class="perf-icon">⚡</span>
+                Performance Monitor
+            </div>
+            <div class="performance-score">
+                92<span class="score-label">/ 100</span>
+            </div>
+        </div>
+        
+        <div class="monitor-content">
+            <div class="metric-group">
+                <div class="metric-title">Rendering</div>
+                <div class="metric-item">
+                    <span class="metric-name">Paint Time</span>
+                    <span class="metric-value good">2.4ms</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-name">Layout Time</span>
+                    <span class="metric-value good">1.2ms</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-name">Style Recalc</span>
+                    <span class="metric-value good">0.8ms</span>
+                </div>
+            </div>
+            
+            <div class="metric-group">
+                <div class="metric-title">Container Queries</div>
+                <div class="metric-item">
+                    <span class="metric-name">Evaluaciones</span>
+                    <span class="metric-value good">3</span>
+                </div>
+                <div class="metric-item">
+                    <span class="metric-name">Caché Hits</span>
+                    <span class="metric-value good">95%</span>
+                </div>
+            </div>
+            
+            <div class="performance-chart">
+                <div class="chart-line"></div>
+                <div class="chart-label">Rendimiento en tiempo real</div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Error Notifications -->
+    <div class="error-notifications" id="error-notifications">
+        <!-- Las notificaciones se insertan dinámicamente aquí -->
+    </div>
+    
+    <!-- Overlay para información contextual -->
+    <div class="container-overlay" id="container-overlay">
+        <div class="overlay-title">Container Context</div>
+        <div class="overlay-info">
+            Name: <strong>test-container</strong><br>
+            Type: <strong>inline-size</strong><br>
+            Width: <strong>600px</strong><br>
+            Active Queries: <strong>1</strong>
+        </div>
+    </div>
+    
+    <!-- Contenido de prueba -->
+    <div style="padding: 100px 20px;">
+        <h1 style="text-align: center; margin-bottom: 40px; color: #1f2937;">🔧 Sistema de Debugging para CSS Moderno</h1>
+        
+        <div style="max-width: 800px; margin: 0 auto 40px; padding: 20px; background: #e0f2fe; border-radius: 8px; border-left: 4px solid #0288d1;">
+            <h3 style="color: #01579b; margin-bottom: 12px;">📋 Cómo usar estas herramientas:</h3>
+            <p style="color: #0277bd; margin-bottom: 8px; font-size: 14px;"><strong>1.</strong> Activa el modo debug haciendo clic en "Activar Debug Mode"</p>
+            <p style="color: #0277bd; margin-bottom: 8px; font-size: 14px;"><strong>2.</strong> Observa cómo aparecen las herramientas de debugging</p>
+            <p style="color: #0277bd; margin-bottom: 8px; font-size: 14px;"><strong>3.</strong> Redimensiona el contenedor de prueba para ver cómo cambian los datos</p>
+            <p style="color: #0277bd; font-size: 14px;"><strong>4.</strong> Haz hover sobre elementos para ver información contextual</p>
+        </div>
+        
+        <!-- Contenedor de prueba con container queries -->
+        <div class="test-container" id="test-container">
+            <div class="test-component">
+                <div class="component-title">🎯 Componente de Prueba</div>
+                <div class="component-info">Este componente cambia según el tamaño de su contenedor usando container queries</div>
+            </div>
+        </div>
+        
+        <!-- Controles de demostración -->
+        <div class="debug-controls">
+            <div class="control-title">🛠️ Controles de Debug</div>
+            <button class="control-button" id="toggle-debug" onclick="toggleDebugMode()">
+                Activar Debug Mode
+            </button>
+            <button class="control-button" onclick="resizeContainer(400)">
+                Redimensionar (400px)
+            </button>
+            <button class="control-button" onclick="resizeContainer(600)">
+                Redimensionar (600px)
+            </button>
+            <button class="control-button" onclick="triggerError()">
+                Simular Error
+            </button>
+            <button class="control-button" onclick="showPerformanceData()">
+                Mostrar Performance
+            </button>
+        </div>
+    </div>
+    
+    <script>
+        /*
+           SISTEMA DE DEBUGGING PARA CSS MODERNO
+           
+           Este script coordina todas las herramientas de debugging y proporciona
+           funcionalidad para monitorear container queries en tiempo real.
+        */
+        
+        // Estado global del debugging
+        let debugState = {
+            active: false,
+            monitoring: false,
+            selectedElement: null,
+            containerContexts: new Map(),
+            performanceData: {
+                paintTime: 2.4,
+                layoutTime: 1.2,
+                styleRecalc: 0.8,
+                containerEvaluations: 3,
+                cacheHits: 95
+            }
+        };
+        
+        // Referencias a elementos del DOM
+        const debugToggle = document.getElementById('toggle-debug');
+        const testContainer = document.getElementById('test-container');
+        const containerOverlay = document.getElementById('container-overlay');
+        const errorNotifications = document.getElementById('error-notifications');
+        
+        /*
+           Funciones principales de debugging
+        */
+        
+        function toggleDebugMode() {
+            debugState.active = !debugState.active;
+            
+            if (debugState.active) {
+                document.body.classList.add('debug-mode');
+                debugToggle.textContent = 'Desactivar Debug Mode';
+                debugToggle.classList.add('active');
+                
+                // Iniciar monitoreo de container queries
+                startContainerQueryMonitoring();
+                
+                // Mostrar notificación de activación
+                showNotification('info', 'Debug Mode Activado', 'Todas las herramientas de debugging están ahora activas');
+                
+                console.log('🔧 Debug Mode ACTIVADO');
+                console.log('📊 Monitoreando container queries...');
+                
+            } else {
+                document.body.classList.remove('debug-mode');
+                debugToggle.textContent = 'Activar Debug Mode';
+                debugToggle.classList.remove('active');
+                
+                // Detener monitoreo
+                stopContainerQueryMonitoring();
+                
+                console.log('❌ Debug Mode DESACTIVADO');
+            }
+        }
+        
+        function startContainerQueryMonitoring() {
+            if (debugState.monitoring) return;
+            
+            debugState.monitoring = true;
+            
+            // Crear ResizeObserver para monitorear cambios en containers
+            const containerObserver = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    const element = entry.target;
+                    const containerName = getContainerName(element);
+                    const width = Math.round(entry.contentRect.width);
+                    
+                    // Actualizar información del container
+                    debugState.containerContexts.set(containerName, {
+                        element: element,
+                        width: width,
+                        height: Math.round(entry.contentRect.height),
+                        activeQueries: getActiveQueries(element, width),
+                        lastUpdate: Date.now()
+                    });
+                    
+                    // Actualizar debugger UI
+                    updateContainerDebugger();
+                    
+                    // Log para consola
+                    console.log(`📦 Container "${containerName}": ${width}px`);
+                    
+                    // Simular datos de performance
+                    updatePerformanceData();
+                }
+            });
+            
+            // Observar todos los elementos con container-type
+            document.querySelectorAll('[style*="container-type"], .test-container').forEach(el => {
+                containerObserver.observe(el);
+            });
+            
+            debugState.containerObserver = containerObserver;
+        }
+        
+        function stopContainerQueryMonitoring() {
+            if (debugState.containerObserver) {
+                debugState.containerObserver.disconnect();
+                debugState.monitoring = false;
+            }
+        }
+        
+        function updateContainerDebugger() {
+            // Aquí actualizaríamos los datos en el debugger en tiempo real
+            // En una implementación real, esto se conectaría con las APIs de debugging del navegador
+            
+            const debugItems = document.querySelectorAll('.debug-item .item-value');
+            if (debugItems.length > 0) {
+                const containerData = Array.from(debugState.containerContexts.values())[0];
+                if (containerData) {
+                    debugItems[0].textContent = `${containerData.width}px`;
+                }
+            }
+        }
+        
+        function updatePerformanceData() {
+            // Simular actualizaciones de performance
+            debugState.performanceData.containerEvaluations++;
+            debugState.performanceData.paintTime = Math.random() * 2 + 1;
+            debugState.performanceData.layoutTime = Math.random() * 1.5 + 0.5;
+            
+            // Actualizar UI del monitor de performance
+            const paintTimeElement = document.querySelector('.metric-item .metric-value');
+            if (paintTimeElement) {
+                paintTimeElement.textContent = debugState.performanceData.paintTime.toFixed(1) + 'ms';
+            }
+        }
+        
+        /*
+           Funciones de utilidad para el debugging
+        */
+        
+        function getContainerName(element) {
+            // Extraer el nombre del container del CSS o usar un default
+            return element.style.containerName || 
+                   element.className || 
+                   element.id || 
+                   'unnamed-container';
+        }
+        
+        function getActiveQueries(element, width) {
+            // En una implementación real, esto consultaría las APIs del navegador
+            // para obtener qué container queries están activas
+            const queries = [];
+            
+            if (width >= 400) {
+                queries.push('min-width: 400px');
+            }
+            
+            return queries;
+        }
+        
+        function showNotification(type, title, message) {
+            const notification = document.createElement('div');
+            notification.className = `error-item ${type}`;
+            
+            const icon = type === 'error' ? '❌' : type === 'warning' ? '⚠️' : 'ℹ️';
+            
+            notification.innerHTML = `
+                <div class="error-header">
+                    <span class="error-icon">${icon}</span>
+                    <span class="error-title">${title}</span>
+                    <button class="error-close" onclick="this.closest('.error-item').remove()">×</button>
+                </div>
+                <div class="error-content">
+                    ${message}
+                </div>
+            `;
+            
+            errorNotifications.appendChild(notification);
+            
+            // Mostrar con animación
+            setTimeout(() => {
+                notification.classList.add('visible');
+            }, 100);
+            
+            // Auto-remover después de 5 segundos
+            setTimeout(() => {
+                if (notification.parentNode) {
+                    notification.classList.remove('visible');
+                    setTimeout(() => {
+                        notification.remove();
+                    }, 300);
+                }
+            }, 5000);
+        }
+        
+        /*
+           Funciones de control para la demostración
+        */
+        
+        function resizeContainer(width) {
+            testContainer.style.width = width + 'px';
+            console.log(`🔄 Redimensionando contenedor a ${width}px`);
+            
+            if (debugState.active) {
+                showNotification('info', 'Container Redimensionado', `Nuevo ancho: ${width}px`);
+            }
+        }
+        
+        function triggerError() {
+            console.error('🚫 Error simulado de container query');
+            
+            showNotification('error', 'Container Query Error', 
+                'Error simulado: Container query no pudo evaluar la condición min-width debido a contexto inválido.');
+            
+            // Marcar elemento con error para debugging visual
+            testContainer.setAttribute('data-container-error', 'true');
+            
+            setTimeout(() => {
+                testContainer.removeAttribute('data-container-error');
+            }, 3000);
+        }
+        
+        function showPerformanceData() {
+            console.log('📊 Datos de Performance:', debugState.performanceData);
+            
+            showNotification('info', 'Performance Data', 
+                `Paint: ${debugState.performanceData.paintTime.toFixed(1)}ms | Layout: ${debugState.performanceData.layoutTime.toFixed(1)}ms | Evaluaciones: ${debugState.performanceData.containerEvaluations}`);
+        }
+        
+        function exportDebugData() {
+            const data = {
+                timestamp: new Date().toISOString(),
+                containerContexts: Object.fromEntries(debugState.containerContexts),
+                performanceData: debugState.performanceData,
+                activeQueries: []
+            };
+            
+            console.log('📤 Exportando datos de debugging:', data);
+            
+            // En una implementación real, esto podría enviar datos a un servicio de análisis
+            showNotification('info', 'Datos Exportados', 'Los datos de debugging han sido exportados a la consola');
+        }
+        
+        function clearDebugData() {
+            debugState.containerContexts.clear();
+            debugState.performanceData = {
+                paintTime: 0,
+                layoutTime: 0,
+                styleRecalc: 0,
+                containerEvaluations: 0,
+                cacheHits: 100
+            };
+            
+            console.log('🗑️ Datos de debugging limpiados');
+            showNotification('info', 'Datos Limpiados', 'Todos los datos de debugging han sido reiniciados');
+        }
+        
+        /*
+           Event listeners para interactividad
+        */
+        
+        // Hover sobre elementos para mostrar información contextual
+        document.addEventListener('mouseover', (e) => {
+            if (!debugState.active) return;
+            
+            const element = e.target.closest('[style*="container-type"], .test-container');
+            if (element) {
+                const containerName = getContainerName(element);
+                const containerData = debugState.containerContexts.get(containerName);
+                
+                if (containerData) {
+                    // Actualizar contenido del overlay
+                    const overlayInfo = containerOverlay.querySelector('.overlay-info');
+                    overlayInfo.innerHTML = `
+                        Name: <strong>${containerName}</strong><br>
+                        Type: <strong>inline-size</strong><br>
+                        Width: <strong>${containerData.width}px</strong><br>
+                        Active Queries: <strong>${containerData.activeQueries.length}</strong>
+                    `;
+                    
+                    // Posicionar overlay
+                    containerOverlay.style.left = (e.pageX + 10) + 'px';
+                    containerOverlay.style.top = (e.pageY - 60) + 'px';
+                    containerOverlay.classList.add('visible');
+                }
+            }
+        });
+        
+        document.addEventListener('mouseout', (e) => {
+            if (!e.relatedTarget || !e.relatedTarget.closest('.container-overlay')) {
+                containerOverlay.classList.remove('visible');
+            }
+        });
+        
+        /*
+           Inicialización
+        */
+        
+        console.log('🚀 Sistema de debugging inicializado');
+        console.log('💡 Tip: Activa el Debug Mode para ver todas las herramientas');
+        console.log('💡 Tip: Usa la consola del navegador para ver logs detallados');
+        
+        // Detectar soporte de container queries
+        if (CSS.supports('container-type', 'inline-size')) {
+            console.log('✅ Container Queries soportadas');
+        } else {
+            console.warn('⚠️ Container Queries no soportadas en este navegador');
+            showNotification('warning', 'Soporte Limitado', 
+                'Container Queries no están completamente soportadas en este navegador. Algunas funciones de debugging pueden no funcionar correctamente.');
+        }
+    </script>
+</body>
+</html>

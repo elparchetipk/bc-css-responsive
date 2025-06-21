@@ -1,0 +1,85 @@
+/* src/input.css - Configuración TailwindCSS v4.0 */
+
+/* Importar base de TailwindCSS */
+@import "tailwindcss";
+
+/* Nueva sintaxis @theme - reemplaza tailwind.config.js */
+@theme {
+  /* Colores personalizados con CSS variables nativas */
+  --color-brand-50: #f0f9ff;
+  --color-brand-100: #e0f2fe;
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --color-brand-900: #0c4a6e;
+  
+  /* Tipografía personalizada */
+  --font-display: 'Poppins', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+  
+  /* Espaciado personalizado */
+  --spacing-18: 4.5rem;
+  --spacing-22: 5.5rem;
+  
+  /* Breakpoints personalizados */
+  --breakpoint-xs: 475px;
+  --breakpoint-3xl: 1600px;
+  
+  /* Animaciones personalizadas */
+  --animate-fade-in: fade-in 0.5s ease-out;
+  --animate-slide-up: slide-up 0.3s ease-out;
+}
+
+/* Definir animaciones keyframes */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slide-up {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+/* Componentes personalizados con @layer */
+@layer components {
+  .btn-primary {
+    @apply bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-lg font-semibold transition-colors duration-200;
+  }
+  
+  .card-modern {
+    @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700;
+  }
+  
+  .heading-display {
+    @apply font-display text-4xl md:text-6xl font-bold tracking-tight;
+  }
+}
+
+/* Utilidades personalizadas con @layer */
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+  
+  .animate-fade-in {
+    animation: var(--animate-fade-in);
+  }
+  
+  .animate-slide-up {
+    animation: var(--animate-slide-up);
+  }
+  
+  /* Utilidades para container queries */
+  .container-sm {
+    container-type: inline-size;
+    container-name: sidebar;
+  }
+}
+
+/* Media queries personalizadas */
+@media (prefers-reduced-motion: reduce) {
+  .animate-fade-in,
+  .animate-slide-up {
+    animation: none;
+  }
+}

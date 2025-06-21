@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TailwindCSS v4.0 - Demo Interactivo</title>
+    
+    <!-- Tailwind CSS v4.0 - En producción usarías el archivo compilado -->
+    <script src="https://cdn.tailwindcss.com/4.0.0-alpha.1"></script>
+    
+    <!-- Configuración inline para demo (en producción va en archivo CSS separado) -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            900: '#0c4a6e'
+                        }
+                    },
+                    fontFamily: {
+                        display: ['Poppins', 'system-ui', 'sans-serif'],
+                        body: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.3s ease-out',
+                        'float': 'float 3s ease-in-out infinite'
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            'from': { opacity: '0', transform: 'translateY(10px)' },
+                            'to': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideUp: {
+                            'from': { transform: 'translateY(100%)' },
+                            'to': { transform: 'translateY(0)' }
+                        },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-10px)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Fuentes de Google -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body class="font-body bg-gradient-to-br from-gray-50 to-gray-100 dark:from-gray-900 dark:to-gray-800 min-h-screen">
+    
+    <!-- Header con Theme Switcher -->
+    <header class="sticky top-0 z-50 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md border-b border-gray-200 dark:border-gray-700">
+        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <div class="flex items-center space-x-4">
+                    <div class="w-8 h-8 bg-brand-500 rounded-lg animate-float"></div>
+                    <h1 class="font-display font-bold text-xl text-gray-900 dark:text-white">
+                        TailwindCSS v4.0
+                    </h1>
+                </div>
+                
+                <!-- Theme Toggle Button -->
+                <button 
+                    id="themeToggle"
+                    class="p-2 rounded-lg bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors duration-200"
+                    aria-label="Toggle tema oscuro"
+                >
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                    </svg>
+                </button>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Hero Section con Nuevas Características -->
+    <section class="relative overflow-hidden py-20 lg:py-32">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center animate-fade-in">
+                <h2 class="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tight text-gray-900 dark:text-white mb-6">
+                    El Futuro del
+                    <span class="text-transparent bg-clip-text bg-gradient-to-r from-brand-500 to-blue-600">
+                        CSS Utility-First
+                    </span>
+                </h2>
+                
+                <p class="text-xl md:text-2xl text-gray-600 dark:text-gray-300 mb-8 max-w-3xl mx-auto">
+                    Experimenta builds 10x más rápidos con el motor Oxide y configuración CSS nativa
+                </p>
+                
+                <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                    <button class="btn-primary group">
+                        Empezar Proyecto
+                        <svg class="w-5 h-5 ml-2 group-hover:translate-x-1 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7l5 5m0 0l-5 5m5-5H6"></path>
+                        </svg>
+                    </button>
+                    
+                    <button class="px-6 py-3 border-2 border-gray-300 dark:border-gray-600 text-gray-700 dark:text-gray-300 rounded-lg hover:border-brand-500 dark:hover:border-brand-400 transition-colors duration-200">
+                        Ver Documentación
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Elementos decorativos con CSS Grid -->
+        <div class="absolute inset-0 -z-10 overflow-hidden">
+            <div class="absolute top-1/4 left-1/4 w-64 h-64 bg-brand-500/10 rounded-full blur-3xl animate-pulse"></div>
+            <div class="absolute bottom-1/4 right-1/4 w-96 h-96 bg-blue-500/10 rounded-full blur-3xl animate-pulse delay-1000"></div>
+        </div>
+    </section>
+
+    <!-- Features Grid con Container Queries -->
+    <section class="py-20 bg-white dark:bg-gray-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h3 class="font-display text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Características Revolucionarias
+                </h3>
+                <p class="text-lg text-gray-600 dark:text-gray-300 max-w-2xl mx-auto">
+                    Descubre las innovaciones que hacen de TailwindCSS v4.0 un salto cuántico en desarrollo CSS
+                </p>
+            </div>
+            
+            <!-- Grid adaptativo con diferentes layouts -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+                <!-- Feature 1: Motor Oxide -->
+                <div class="card-modern group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="w-12 h-12 bg-brand-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-display text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                        Motor Oxide
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Parser CSS escrito en Rust que proporciona builds hasta 10x más rápidos que versiones anteriores.
+                    </p>
+                    <div class="text-sm text-brand-600 dark:text-brand-400 font-medium">
+                        Performance extremo →
+                    </div>
+                </div>
+                
+                <!-- Feature 2: CSS-First Config -->
+                <div class="card-modern group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="w-12 h-12 bg-green-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-display text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                        Configuración CSS
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Directiva @theme reemplaza JavaScript config, permitiendo personalización runtime con variables CSS.
+                    </p>
+                    <div class="text-sm text-green-600 dark:text-green-400 font-medium">
+                        Flexibilidad total →
+                    </div>
+                </div>
+                
+                <!-- Feature 3: Container Queries -->
+                <div class="card-modern group hover:shadow-xl transition-all duration-300 hover:-translate-y-2">
+                    <div class="w-12 h-12 bg-purple-500 rounded-lg flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"></path>
+                        </svg>
+                    </div>
+                    <h4 class="font-display text-xl font-semibold text-gray-900 dark:text-white mb-3">
+                        Container Queries
+                    </h4>
+                    <p class="text-gray-600 dark:text-gray-300 mb-4">
+                        Componentes que se adaptan a su contenedor, no solo al viewport. El futuro del diseño responsive.
+                    </p>
+                    <div class="text-sm text-purple-600 dark:text-purple-400 font-medium">
+                        Componentes adaptativos →
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Código en Vivo -->
+    <section class="py-20 bg-gray-50 dark:bg-gray-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-12">
+                <h3 class="font-display text-3xl md:text-4xl font-bold text-gray-900 dark:text-white mb-4">
+                    Configuración CSS-First en Acción
+                </h3>
+                <p class="text-lg text-gray-600 dark:text-gray-300">
+                    Observa cómo la nueva sintaxis @theme hace el desarrollo más intuitivo
+                </p>
+            </div>
+            
+            <!-- Código de ejemplo -->
+            <div class="bg-gray-900 rounded-xl p-6 overflow-x-auto">
+                <pre class="text-green-400 text-sm"><code>/* Nueva configuración TailwindCSS v4.0 */
+@theme {
+  --color-brand-500: #0ea5e9;
+  --color-brand-600: #0284c7;
+  --font-display: 'Poppins', sans-serif;
+  
+  /* Variables disponibles en runtime */
+  --animate-float: float 3s ease-in-out infinite;
+}
+
+@layer components {
+  .btn-primary {
+    @apply bg-brand-500 hover:bg-brand-600 
+           text-white px-6 py-3 rounded-lg 
+           font-semibold transition-colors;
+  }
+}</code></pre>
+            </div>
+        </div>
+    </section>
+
+    <!-- JavaScript para funcionalidad interactiva -->
+    <script>
+        // Theme toggle functionality
+        const themeToggle = document.getElementById('themeToggle');
+        const html = document.documentElement;
+        
+        // Check for saved theme preference or default to system preference
+        const currentTheme = localStorage.getItem('theme') || 
+                           (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+        
+        html.classList.toggle('dark', currentTheme === 'dark');
+        
+        themeToggle.addEventListener('click', () => {
+            html.classList.toggle('dark');
+            const newTheme = html.classList.contains('dark') ? 'dark' : 'light';
+            localStorage.setItem('theme', newTheme);
+        });
+        
+        // Smooth scroll for navigation
+        document.addEventListener('DOMContentLoaded', () => {
+            // Add stagger animation to grid items
+            const gridItems = document.querySelectorAll('.card-modern');
+            gridItems.forEach((item, index) => {
+                item.style.animationDelay = `${index * 0.1}s`;
+                item.classList.add('animate-fade-in');
+            });
+        });
+    </script>
+    
+    <style>
+        /* Estilos adicionales para componentes custom */
+        .btn-primary {
+            @apply bg-brand-500 hover:bg-brand-600 text-white px-6 py-3 rounded-lg font-semibold transition-all duration-200 inline-flex items-center;
+        }
+        
+        .card-modern {
+            @apply bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 border border-gray-200 dark:border-gray-700;
+        }
+    </style>
+</body>
+</html>

@@ -1,0 +1,1089 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Interactivo - Flexbox Mastery</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        /* === HEADER DEL QUIZ === */
+        .quiz-header {
+            background: linear-gradient(135deg, #2d3748, #4a5568);
+            color: white;
+            padding: 30px;
+            text-align: center;
+            position: relative;
+        }
+
+        .quiz-title {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .quiz-subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .progress-bar {
+            margin-top: 20px;
+            height: 6px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 3px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(45deg, #48bb78, #68d391);
+            width: 0%;
+            transition: width 0.5s ease;
+            border-radius: 3px;
+        }
+
+        /* === CONTENIDO PRINCIPAL === */
+        .quiz-content {
+            padding: 40px;
+        }
+
+        .question-container {
+            display: none;
+            animation: fadeInUp 0.5s ease-out;
+        }
+
+        .question-container.active {
+            display: block;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .question-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .question-number {
+            background: #667eea;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: bold;
+            font-size: 0.9rem;
+        }
+
+        .question-category {
+            background: #f7fafc;
+            color: #4a5568;
+            padding: 6px 12px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            border: 1px solid #e2e8f0;
+        }
+
+        .question-text {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-weight: 500;
+        }
+
+        /* === TIPOS DE PREGUNTAS === */
+
+        /* Multiple Choice */
+        .multiple-choice {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .choice-option {
+            background: #f7fafc;
+            border: 2px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 18px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .choice-option:hover {
+            background: #edf2f7;
+            border-color: #cbd5e0;
+        }
+
+        .choice-option.selected {
+            background: rgba(102, 126, 234, 0.1);
+            border-color: #667eea;
+            color: #2d3748;
+        }
+
+        .choice-option.correct {
+            background: rgba(72, 187, 120, 0.1);
+            border-color: #48bb78;
+            color: #2d3748;
+        }
+
+        .choice-option.incorrect {
+            background: rgba(245, 101, 101, 0.1);
+            border-color: #f56565;
+            color: #2d3748;
+        }
+
+        .choice-letter {
+            background: #cbd5e0;
+            color: #2d3748;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .choice-option.selected .choice-letter {
+            background: #667eea;
+            color: white;
+        }
+
+        .choice-option.correct .choice-letter {
+            background: #48bb78;
+            color: white;
+        }
+
+        .choice-option.incorrect .choice-letter {
+            background: #f56565;
+            color: white;
+        }
+
+        /* Code Challenge */
+        .code-challenge {
+            background: #2d3748;
+            color: #e2e8f0;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            position: relative;
+        }
+
+        .code-title {
+            color: #ffd700;
+            margin-bottom: 15px;
+            font-weight: bold;
+        }
+
+        .code-input {
+            width: 100%;
+            background: #1a202c;
+            color: #e2e8f0;
+            border: 1px solid #4a5568;
+            border-radius: 6px;
+            padding: 12px;
+            font-family: 'Courier New', monospace;
+            resize: vertical;
+            min-height: 80px;
+            margin-top: 15px;
+        }
+
+        .code-input:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        /* Drag and Drop */
+        .drag-drop-container {
+            display: flex;
+            gap: 30px;
+            margin: 20px 0;
+        }
+
+        .drag-source {
+            flex: 1;
+            background: #f7fafc;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px dashed #cbd5e0;
+        }
+
+        .drag-target {
+            flex: 1;
+            background: #edf2f7;
+            border-radius: 10px;
+            padding: 20px;
+            border: 2px dashed #a0aec0;
+            min-height: 200px;
+        }
+
+        .draggable-item {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 10px 15px;
+            margin: 8px 0;
+            cursor: move;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .draggable-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+        }
+
+        .draggable-item.dragging {
+            opacity: 0.5;
+        }
+
+        /* === FEEDBACK Y EXPLICACIÓN === */
+        .feedback-container {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            border-radius: 10px;
+            border-left: 5px solid;
+        }
+
+        .feedback-container.show {
+            display: block;
+            animation: slideDown 0.3s ease-out;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .feedback-correct {
+            background: rgba(72, 187, 120, 0.1);
+            border-left-color: #48bb78;
+        }
+
+        .feedback-incorrect {
+            background: rgba(245, 101, 101, 0.1);
+            border-left-color: #f56565;
+        }
+
+        .feedback-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feedback-explanation {
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* === CONTROLES === */
+        .quiz-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* === RESULTADOS FINALES === */
+        .results-container {
+            display: none;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .results-container.show {
+            display: block;
+            animation: fadeInUp 0.6s ease-out;
+        }
+
+        .results-score {
+            font-size: 4rem;
+            font-weight: bold;
+            color: #48bb78;
+            margin-bottom: 20px;
+        }
+
+        .results-message {
+            font-size: 1.3rem;
+            color: #2d3748;
+            margin-bottom: 30px;
+        }
+
+        .results-breakdown {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .result-stat {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .stat-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+            margin-top: 5px;
+        }
+
+        /* === EXERCISE SECTION === */
+        .exercise-section {
+            background: #f0fff4;
+            border: 2px solid #48bb78;
+            border-radius: 15px;
+            padding: 25px;
+            margin: 30px 0;
+        }
+
+        .exercise-title {
+            color: #22543d;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .exercise-description {
+            color: #2f855a;
+            line-height: 1.6;
+            margin-bottom: 20px;
+        }
+
+        .exercise-task {
+            background: white;
+            border-radius: 8px;
+            padding: 20px;
+            border: 1px solid #c6f6d5;
+        }
+
+        /* === RESPONSIVE === */
+        @media (max-width: 768px) {
+            .quiz-container {
+                margin: 10px;
+            }
+            
+            .quiz-content {
+                padding: 20px;
+            }
+            
+            .drag-drop-container {
+                flex-direction: column;
+            }
+            
+            .question-header {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .results-breakdown {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <!-- Header del Quiz -->
+        <div class="quiz-header">
+            <h1 class="quiz-title">🧠 Quiz de Repetición Espaciada</h1>
+            <p class="quiz-subtitle">Consolida tu dominio de Flexbox - Día 3</p>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <!-- Contenido del Quiz -->
+        <div class="quiz-content">
+            <!-- Pregunta 1: Conceptos Fundamentales -->
+            <div class="question-container active" data-question="1">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 1/8</span>
+                    <span class="question-category">Conceptos Fundamentales</span>
+                </div>
+                
+                <div class="question-text">
+                    ¿Cuál es la diferencia principal entre CSS Grid y Flexbox según lo que aprendiste hoy?
+                </div>
+                
+                <div class="multiple-choice">
+                    <div class="choice-option" data-choice="a">
+                        <div class="choice-letter">A</div>
+                        <div>Grid es para layouts 2D complejos, Flexbox es para layouts 1D y componentes</div>
+                    </div>
+                    <div class="choice-option" data-choice="b">
+                        <div class="choice-letter">B</div>
+                        <div>Grid es más moderno que Flexbox y siempre es mejor opción</div>
+                    </div>
+                    <div class="choice-option" data-choice="c">
+                        <div class="choice-letter">C</div>
+                        <div>Flexbox es solo para centrar elementos, Grid para todo lo demás</div>
+                    </div>
+                    <div class="choice-option" data-choice="d">
+                        <div class="choice-letter">D</div>
+                        <div>No hay diferencias significativas, son intercambiables</div>
+                    </div>
+                </div>
+                
+                <div class="feedback-container" id="feedback1">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Pregunta 2: Propiedades Flexbox -->
+            <div class="question-container" data-question="2">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 2/8</span>
+                    <span class="question-category">Propiedades Flexbox</span>
+                </div>
+                
+                <div class="question-text">
+                    Para centrar perfectamente un elemento tanto horizontal como verticalmente con Flexbox, ¿qué propiedades necesitas?
+                </div>
+                
+                <div class="multiple-choice">
+                    <div class="choice-option" data-choice="a">
+                        <div class="choice-letter">A</div>
+                        <div><code>display: flex; align-items: center;</code></div>
+                    </div>
+                    <div class="choice-option" data-choice="b">
+                        <div class="choice-letter">B</div>
+                        <div><code>display: flex; justify-content: center; align-items: center;</code></div>
+                    </div>
+                    <div class="choice-option" data-choice="c">
+                        <div class="choice-letter">C</div>
+                        <div><code>display: flex; justify-content: center;</code></div>
+                    </div>
+                    <div class="choice-option" data-choice="d">
+                        <div class="choice-letter">D</div>
+                        <div><code>display: flex; flex-direction: center;</code></div>
+                    </div>
+                </div>
+                
+                <div class="feedback-container" id="feedback2">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Pregunta 3: Código Práctico -->
+            <div class="question-container" data-question="3">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 3/8</span>
+                    <span class="question-category">Código Práctico</span>
+                </div>
+                
+                <div class="question-text">
+                    Completa el CSS para crear una navegación horizontal donde los elementos se distribuyan equitativamente:
+                </div>
+                
+                <div class="code-challenge">
+                    <div class="code-title">CSS Challenge:</div>
+.navbar {
+    display: flex;
+    /* Escribe aquí las propiedades que faltan */
+}
+
+.nav-item {
+    /* ¿Qué propiedad hace que cada item tome el mismo espacio? */
+}
+                    <textarea class="code-input" id="codeInput3" placeholder="Escribe tu respuesta aquí...&#10;Ejemplo: justify-content: space-between;"></textarea>
+                </div>
+                
+                <div class="feedback-container" id="feedback3">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Pregunta 4: Casos de Uso -->
+            <div class="question-container" data-question="4">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 4/8</span>
+                    <span class="question-category">Casos de Uso</span>
+                </div>
+                
+                <div class="question-text">
+                    ¿En cuál de estos casos usarías Flexbox en lugar de CSS Grid?
+                </div>
+                
+                <div class="multiple-choice">
+                    <div class="choice-option" data-choice="a">
+                        <div class="choice-letter">A</div>
+                        <div>Layout completo de una página web (header, sidebar, main, footer)</div>
+                    </div>
+                    <div class="choice-option" data-choice="b">
+                        <div class="choice-letter">B</div>
+                        <div>Galería de imágenes con filas y columnas específicas</div>
+                    </div>
+                    <div class="choice-option" data-choice="c">
+                        <div class="choice-letter">C</div>
+                        <div>Botones dentro de una tarjeta (card footer)</div>
+                    </div>
+                    <div class="choice-option" data-choice="d">
+                        <div class="choice-letter">D</div>
+                        <div>Dashboard con widgets en posiciones específicas</div>
+                    </div>
+                </div>
+                
+                <div class="feedback-container" id="feedback4">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Pregunta 5: flex-grow -->
+            <div class="question-container" data-question="5">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 5/8</span>
+                    <span class="question-category">Propiedades Avanzadas</span>
+                </div>
+                
+                <div class="question-text">
+                    Si tienes tres elementos con <code>flex-grow: 1</code>, <code>flex-grow: 2</code> y <code>flex-grow: 1</code> respectivamente, ¿cómo se distribuirá el espacio disponible?
+                </div>
+                
+                <div class="multiple-choice">
+                    <div class="choice-option" data-choice="a">
+                        <div class="choice-letter">A</div>
+                        <div>Todos tendrán el mismo tamaño</div>
+                    </div>
+                    <div class="choice-option" data-choice="b">
+                        <div class="choice-letter">B</div>
+                        <div>25% - 50% - 25% del espacio disponible</div>
+                    </div>
+                    <div class="choice-option" data-choice="c">
+                        <div class="choice-letter">C</div>
+                        <div>33.3% - 33.3% - 33.3% del espacio disponible</div>
+                    </div>
+                    <div class="choice-option" data-choice="d">
+                        <div class="choice-letter">D</div>
+                        <div>El segundo elemento será el doble de grande que los otros</div>
+                    </div>
+                </div>
+                
+                <div class="feedback-container" id="feedback5">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Pregunta 6: Integración -->
+            <div class="question-container" data-question="6">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 6/8</span>
+                    <span class="question-category">Integración Grid + Flexbox</span>
+                </div>
+                
+                <div class="question-text">
+                    En el dashboard que construimos, ¿qué técnica usamos para el layout principal y cuál para los componentes internos?
+                </div>
+                
+                <div class="multiple-choice">
+                    <div class="choice-option" data-choice="a">
+                        <div class="choice-letter">A</div>
+                        <div>Grid para el layout principal, Flexbox para componentes internos</div>
+                    </div>
+                    <div class="choice-option" data-choice="b">
+                        <div class="choice-letter">B</div>
+                        <div>Flexbox para todo el layout</div>
+                    </div>
+                    <div class="choice-option" data-choice="c">
+                        <div class="choice-letter">C</div>
+                        <div>Grid para todo el layout</div>
+                    </div>
+                    <div class="choice-option" data-choice="d">
+                        <div class="choice-letter">D</div>
+                        <div>Flexbox para el layout principal, Grid para componentes internos</div>
+                    </div>
+                </div>
+                
+                <div class="feedback-container" id="feedback6">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Pregunta 7: Responsive -->
+            <div class="question-container" data-question="7">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 7/8</span>
+                    <span class="question-category">Responsive Design</span>
+                </div>
+                
+                <div class="question-text">
+                    ¿Qué propiedad de Flexbox permite que los elementos se "envuelvan" a la siguiente línea en pantallas pequeñas?
+                </div>
+                
+                <div class="multiple-choice">
+                    <div class="choice-option" data-choice="a">
+                        <div class="choice-letter">A</div>
+                        <div><code>flex-direction: wrap</code></div>
+                    </div>
+                    <div class="choice-option" data-choice="b">
+                        <div class="choice-letter">B</div>
+                        <div><code>flex-wrap: wrap</code></div>
+                    </div>
+                    <div class="choice-option" data-choice="c">
+                        <div class="choice-letter">C</div>
+                        <div><code>align-items: wrap</code></div>
+                    </div>
+                    <div class="choice-option" data-choice="d">
+                        <div class="choice-letter">D</div>
+                        <div><code>justify-content: wrap</code></div>
+                    </div>
+                </div>
+                
+                <div class="feedback-container" id="feedback7">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Pregunta 8: Ejercicio de Enseñanza -->
+            <div class="question-container" data-question="8">
+                <div class="question-header">
+                    <span class="question-number">Pregunta 8/8</span>
+                    <span class="question-category">Enseñanza Entre Pares</span>
+                </div>
+                
+                <div class="exercise-section">
+                    <div class="exercise-title">
+                        👥 Ejercicio de Enseñanza Entre Pares
+                    </div>
+                    <div class="exercise-description">
+                        Imagina que debes explicar a un compañero cuándo usar Grid vs Flexbox. Escribe una explicación clara y simple con un ejemplo de cada uno.
+                    </div>
+                    <div class="exercise-task">
+                        <textarea class="code-input" id="teachingExercise" placeholder="Tu explicación aquí...&#10;&#10;Ejemplo:&#10;- Usa Grid cuando...&#10;- Usa Flexbox cuando...&#10;- Ejemplo de Grid: ...&#10;- Ejemplo de Flexbox: ..." style="min-height: 150px;"></textarea>
+                    </div>
+                </div>
+                
+                <div class="feedback-container" id="feedback8">
+                    <div class="feedback-title">
+                        <span class="feedback-icon"></span>
+                        <span class="feedback-text"></span>
+                    </div>
+                    <div class="feedback-explanation"></div>
+                </div>
+            </div>
+
+            <!-- Resultados Finales -->
+            <div class="results-container" id="resultsContainer">
+                <div class="results-score" id="finalScore">0%</div>
+                <div class="results-message" id="resultsMessage">¡Excelente trabajo!</div>
+                
+                <div class="results-breakdown">
+                    <div class="result-stat">
+                        <div class="stat-number" id="correctAnswers">0</div>
+                        <div class="stat-label">Respuestas Correctas</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="stat-number" id="totalQuestions">8</div>
+                        <div class="stat-label">Total de Preguntas</div>
+                    </div>
+                    <div class="result-stat">
+                        <div class="stat-number" id="masteryLevel">Novato</div>
+                        <div class="stat-label">Nivel de Dominio</div>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <button class="btn btn-primary" onclick="restartQuiz()">🔄 Repetir Quiz</button>
+                    <button class="btn btn-secondary" onclick="reviewMistakes()">📋 Revisar Errores</button>
+                </div>
+            </div>
+
+            <!-- Controles del Quiz -->
+            <div class="quiz-controls">
+                <button class="btn btn-secondary" id="prevBtn" onclick="previousQuestion()" disabled>← Anterior</button>
+                <div>
+                    <span id="questionProgress">1 de 8</span>
+                </div>
+                <button class="btn btn-primary" id="nextBtn" onclick="nextQuestion()" disabled>Siguiente →</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Estado del quiz
+        let currentQuestion = 1;
+        let totalQuestions = 8;
+        let answers = {};
+        let score = 0;
+
+        // Respuestas correctas
+        const correctAnswers = {
+            1: 'a',
+            2: 'b', 
+            3: 'justify-content: space-between; (o space-around/space-evenly) y flex: 1;',
+            4: 'c',
+            5: 'b',
+            6: 'a',
+            7: 'b',
+            8: 'teaching' // Respuesta abierta
+        };
+
+        // Explicaciones
+        const explanations = {
+            1: {
+                correct: "¡Correcto! Grid es ideal para layouts bidimensionales complejos (como estructura de página), mientras que Flexbox es perfecto para layouts unidimensionales y componentes individuales.",
+                incorrect: "Grid maneja layouts bidimensionales complejos, mientras que Flexbox es mejor para layouts unidimensionales y componentes. Ambos tienen sus casos de uso específicos y se complementan perfectamente."
+            },
+            2: {
+                correct: "¡Perfecto! justify-content: center centra horizontalmente y align-items: center centra verticalmente. Juntos crean el centrado perfecto.",
+                incorrect: "Para centrado perfecto necesitas tanto justify-content: center (horizontal) como align-items: center (vertical). Solo uno de ellos no es suficiente."
+            },
+            3: {
+                correct: "¡Excelente! justify-content: space-between distribuye equitativamente, y flex: 1 hace que cada item tome el mismo espacio disponible.",
+                incorrect: "Para distribución equitativa necesitas justify-content: space-between (o space-around/space-evenly) en el contenedor y flex: 1 en los items para que tomen el mismo espacio."
+            },
+            4: {
+                correct: "¡Correcto! Los botones en un footer de card son un caso perfecto para Flexbox - layout unidimensional que necesita alineación y distribución simple.",
+                incorrect: "Flexbox es ideal para componentes como botones en cards. Grid sería excesivo para este caso simple. Usa Grid para layouts complejos bidimensionales."
+            },
+            5: {
+                correct: "¡Exacto! flex-grow funciona como proporción: 1+2+1=4 partes totales, así que será 1/4 + 2/4 + 1/4 = 25% + 50% + 25%.",
+                incorrect: "flex-grow funciona como proporción del espacio disponible. Con valores 1, 2, 1 tienes 4 partes totales, por lo que la distribución es 25% - 50% - 25%."
+            },
+            6: {
+                correct: "¡Perfecto! Esta es la arquitectura profesional: Grid define la estructura macro (sidebar, header, main) y Flexbox organiza el contenido interno de cada área.",
+                incorrect: "En el dashboard usamos Grid para el layout principal (sidebar + header + main) y Flexbox para organizar el contenido dentro de cada sección. Esta separación de responsabilidades es clave."
+            },
+            7: {
+                correct: "¡Correcto! flex-wrap: wrap permite que los elementos se envuelvan a la siguiente línea cuando no hay espacio suficiente en la línea actual.",
+                incorrect: "flex-wrap: wrap es la propiedad que permite el 'wrapping' o envolvimiento de elementos flexbox a la siguiente línea. flex-direction controla la dirección, no el wrapping."
+            },
+            8: {
+                correct: "¡Excelente explicación! Enseñar a otros es una de las mejores formas de consolidar tu propio aprendizaje. Has demostrado una comprensión sólida de los conceptos.",
+                incorrect: "Buen intento en el ejercicio de enseñanza. Recuerda: Grid para layouts 2D complejos, Flexbox para layouts 1D y componentes. La práctica hace al maestro."
+            }
+        };
+
+        // Inicializar quiz
+        function initQuiz() {
+            updateProgress();
+            updateControls();
+        }
+
+        // Manejar selección de respuestas
+        document.addEventListener('click', function(e) {
+            if (e.target.closest('.choice-option')) {
+                const option = e.target.closest('.choice-option');
+                const container = option.closest('.question-container');
+                const questionNum = container.dataset.question;
+                
+                // Remover selección anterior
+                container.querySelectorAll('.choice-option').forEach(opt => {
+                    opt.classList.remove('selected');
+                });
+                
+                // Seleccionar nueva opción
+                option.classList.add('selected');
+                answers[questionNum] = option.dataset.choice;
+                
+                // Habilitar botón siguiente
+                document.getElementById('nextBtn').disabled = false;
+            }
+        });
+
+        // Manejar input de código
+        document.addEventListener('input', function(e) {
+            if (e.target.classList.contains('code-input')) {
+                const questionNum = getCurrentQuestionNumber();
+                answers[questionNum] = e.target.value;
+                document.getElementById('nextBtn').disabled = e.target.value.trim() === '';
+            }
+        });
+
+        function getCurrentQuestionNumber() {
+            const activeQuestion = document.querySelector('.question-container.active');
+            return activeQuestion ? activeQuestion.dataset.question : null;
+        }
+
+        function nextQuestion() {
+            // Mostrar feedback para la pregunta actual
+            showFeedback(currentQuestion);
+            
+            setTimeout(() => {
+                if (currentQuestion < totalQuestions) {
+                    currentQuestion++;
+                    showQuestion(currentQuestion);
+                } else {
+                    showResults();
+                }
+            }, 2000);
+        }
+
+        function previousQuestion() {
+            if (currentQuestion > 1) {
+                currentQuestion--;
+                showQuestion(currentQuestion);
+            }
+        }
+
+        function showQuestion(questionNum) {
+            // Ocultar todas las preguntas
+            document.querySelectorAll('.question-container').forEach(q => {
+                q.classList.remove('active');
+            });
+            
+            // Mostrar pregunta actual
+            const currentQ = document.querySelector(`[data-question="${questionNum}"]`);
+            if (currentQ) {
+                currentQ.classList.add('active');
+            }
+            
+            updateProgress();
+            updateControls();
+            
+            // Ocultar feedback
+            document.querySelectorAll('.feedback-container').forEach(f => {
+                f.classList.remove('show');
+            });
+        }
+
+        function showFeedback(questionNum) {
+            const feedback = document.getElementById(`feedback${questionNum}`);
+            const userAnswer = answers[questionNum];
+            const correct = correctAnswers[questionNum];
+            
+            let isCorrect = false;
+            
+            if (questionNum == 3) {
+                // Pregunta de código - verificar si contiene las palabras clave
+                isCorrect = userAnswer && 
+                           (userAnswer.includes('space-between') || userAnswer.includes('space-around') || userAnswer.includes('space-evenly')) &&
+                           userAnswer.includes('flex: 1');
+            } else if (questionNum == 8) {
+                // Pregunta de enseñanza - siempre es correcta si hay contenido
+                isCorrect = userAnswer && userAnswer.trim().length > 50;
+            } else {
+                isCorrect = userAnswer === correct;
+            }
+            
+            if (isCorrect) {
+                score++;
+                feedback.className = 'feedback-container feedback-correct show';
+                feedback.querySelector('.feedback-icon').textContent = '✅';
+                feedback.querySelector('.feedback-text').textContent = '¡Correcto!';
+                feedback.querySelector('.feedback-explanation').textContent = explanations[questionNum].correct;
+                
+                // Marcar opción como correcta
+                if (questionNum <= 7 && questionNum != 3) {
+                    const correctOption = document.querySelector(`[data-question="${questionNum}"] [data-choice="${correct}"]`);
+                    if (correctOption) correctOption.classList.add('correct');
+                }
+            } else {
+                feedback.className = 'feedback-container feedback-incorrect show';
+                feedback.querySelector('.feedback-icon').textContent = '❌';
+                feedback.querySelector('.feedback-text').textContent = 'Incorrecto';
+                feedback.querySelector('.feedback-explanation').textContent = explanations[questionNum].incorrect;
+                
+                // Marcar respuestas
+                if (questionNum <= 7 && questionNum != 3) {
+                    const userOption = document.querySelector(`[data-question="${questionNum}"] [data-choice="${userAnswer}"]`);
+                    const correctOption = document.querySelector(`[data-question="${questionNum}"] [data-choice="${correct}"]`);
+                    if (userOption) userOption.classList.add('incorrect');
+                    if (correctOption) correctOption.classList.add('correct');
+                }
+            }
+        }
+
+        function updateProgress() {
+            const progress = (currentQuestion / totalQuestions) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+            document.getElementById('questionProgress').textContent = `${currentQuestion} de ${totalQuestions}`;
+        }
+
+        function updateControls() {
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            
+            prevBtn.disabled = currentQuestion === 1;
+            
+            // Verificar si hay respuesta para habilitar siguiente
+            const hasAnswer = answers[currentQuestion] && answers[currentQuestion].trim() !== '';
+            nextBtn.disabled = !hasAnswer;
+            
+            if (currentQuestion === totalQuestions) {
+                nextBtn.textContent = 'Ver Resultados';
+            } else {
+                nextBtn.textContent = 'Siguiente →';
+            }
+        }
+
+        function showResults() {
+            // Ocultar contenido del quiz
+            document.querySelector('.quiz-content').style.display = 'none';
+            
+            // Mostrar resultados
+            const resultsContainer = document.getElementById('resultsContainer');
+            resultsContainer.classList.add('show');
+            
+            const percentage = Math.round((score / totalQuestions) * 100);
+            document.getElementById('finalScore').textContent = percentage + '%';
+            document.getElementById('correctAnswers').textContent = score;
+            
+            // Determinar mensaje y nivel
+            let message, level;
+            if (percentage >= 90) {
+                message = '¡Excelente! Has dominado Flexbox 🏆';
+                level = 'Experto';
+            } else if (percentage >= 75) {
+                message = '¡Muy bien! Tienes una comprensión sólida 👍';
+                level = 'Avanzado';
+            } else if (percentage >= 60) {
+                message = 'Buen trabajo! Sigue practicando 📚';
+                level = 'Intermedio';
+            } else {
+                message = 'Sigue estudiando, lo lograrás! 💪';
+                level = 'Principiante';
+            }
+            
+            document.getElementById('resultsMessage').textContent = message;
+            document.getElementById('masteryLevel').textContent = level;
+        }
+
+        function restartQuiz() {
+            location.reload();
+        }
+
+        function reviewMistakes() {
+            alert('Función de revisión de errores - Para implementar en versión completa');
+        }
+
+        // Inicializar al cargar la página
+        initQuiz();
+
+        // Auto-save de respuestas en localStorage
+        function saveProgress() {
+            localStorage.setItem('flexboxQuizProgress', JSON.stringify({
+                currentQuestion,
+                answers,
+                score
+            }));
+        }
+
+        // Guardar progreso cada vez que se responde
+        document.addEventListener('input', saveProgress);
+        document.addEventListener('click', saveProgress);
+    </script>
+</body>
+</html>

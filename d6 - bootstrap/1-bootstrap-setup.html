@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootstrap 5.3+ - Configuración Moderna</title>
+    
+    <!-- Bootstrap 5.3+ CSS desde CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- Custom CSS Variables para personalización -->
+    <style>
+        :root {
+            /* Personalizamos las variables CSS de Bootstrap */
+            --bs-primary: #6366f1;
+            --bs-secondary: #8b5cf6;
+            --bs-success: #10b981;
+            --bs-danger: #ef4444;
+            --bs-warning: #f59e0b;
+            --bs-info: #06b6d4;
+            --bs-light: #f8fafc;
+            --bs-dark: #1e293b;
+            
+            /* Variables personalizadas para el modo oscuro */
+            --bs-body-bg: #ffffff;
+            --bs-body-color: #212529;
+        }
+        
+        /* Personalización para modo oscuro */
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #0f172a;
+            --bs-body-color: #e2e8f0;
+            --bs-border-color: #334155;
+        }
+        
+        /* Estilos personalizados para demostrar flexibilidad */
+        .custom-navbar {
+            backdrop-filter: blur(10px);
+            background-color: rgba(255, 255, 255, 0.8) !important;
+        }
+        
+        [data-bs-theme="dark"] .custom-navbar {
+            background-color: rgba(15, 23, 42, 0.8) !important;
+        }
+        
+        .feature-card {
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: none;
+            border-radius: 1rem;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+        }
+        
+        .breakpoint-demo {
+            min-height: 300px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px dashed var(--bs-border-color);
+            border-radius: 0.5rem;
+            margin: 1rem 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar con toggle de modo oscuro -->
+    <nav class="navbar navbar-expand-lg custom-navbar sticky-top">
+        <div class="container">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-bootstrap"></i> Bootstrap 5.3+
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="#features">Características</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#grid">Grid System</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#components">Componentes</a>
+                    </li>
+                    <li class="nav-item">
+                        <!-- Toggle de modo oscuro -->
+                        <button class="btn btn-outline-primary btn-sm ms-2" id="themeToggle">
+                            <i class="bi bi-moon-stars" id="themeIcon"></i>
+                            <span id="themeText">Modo Oscuro</span>
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section demostrando variables CSS -->
+    <section class="py-5 bg-primary text-white">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <h1 class="display-4 fw-bold mb-4">
+                        Bootstrap 5.3+ Moderno
+                    </h1>
+                    <p class="lead mb-4">
+                        Descubre las nuevas características que hacen de Bootstrap 5.3+ 
+                        la herramienta perfecta para desarrollo web profesional en 2025.
+                    </p>
+                    <div class="d-flex gap-3">
+                        <button class="btn btn-light btn-lg">
+                            Comenzar Ahora
+                        </button>
+                        <button class="btn btn-outline-light btn-lg">
+                            Ver Documentación
+                        </button>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="text-center">
+                        <i class="bi bi-code-slash display-1 opacity-75"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Características Nuevas -->
+    <section id="features" class="py-5">
+        <div class="container">
+            <h2 class="text-center mb-5">Nuevas Características Bootstrap 5.3+</h2>
+            
+            <div class="row g-4">
+                <!-- Modo Oscuro Nativo -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-primary bg-opacity-10 rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-moon-stars text-primary fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Modo Oscuro Nativo</h5>
+                            <p class="card-text">
+                                Implementación nativa del modo oscuro sin JavaScript adicional. 
+                                Utiliza el atributo <code>data-bs-theme</code> para cambios instantáneos.
+                            </p>
+                            <button class="btn btn-outline-primary btn-sm" onclick="demonstrateDarkMode()">
+                                Demostrar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Variables CSS -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-success bg-opacity-10 rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-palette text-success fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Variables CSS Modernas</h5>
+                            <p class="card-text">
+                                Personalización en tiempo real usando CSS Custom Properties. 
+                                Cambia colores y espaciado sin recompilar.
+                            </p>
+                            <button class="btn btn-outline-success btn-sm" onclick="demonstrateCustomVars()">
+                                Personalizar
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Breakpoint XXL -->
+                <div class="col-md-6 col-lg-4">
+                    <div class="card feature-card h-100">
+                        <div class="card-body text-center p-4">
+                            <div class="bg-warning bg-opacity-10 rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-display text-warning fs-3"></i>
+                            </div>
+                            <h5 class="card-title">Breakpoint XXL</h5>
+                            <p class="card-text">
+                                Nuevo breakpoint para pantallas ultra-wide (1400px+). 
+                                Perfecto para monitores modernos y displays 4K.
+                            </p>
+                            <small class="text-muted">
+                                Resolución actual: <span id="currentResolution"></span>
+                            </small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demostración de Breakpoints -->
+    <section id="grid" class="py-5 bg-light">
+        <div class="container">
+            <h2 class="text-center mb-5">Sistema de Breakpoints Mejorado</h2>
+            
+            <div class="row">
+                <div class="col-12">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Breakpoint</th>
+                                    <th>Clase</th>
+                                    <th>Dimensión</th>
+                                    <th>Estado Actual</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>Extra Small</td>
+                                    <td><code>.col-</code></td>
+                                    <td>&lt; 576px</td>
+                                    <td><span id="xs-status" class="badge bg-secondary">No activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Small</td>
+                                    <td><code>.col-sm-</code></td>
+                                    <td>≥ 576px</td>
+                                    <td><span id="sm-status" class="badge bg-secondary">No activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Medium</td>
+                                    <td><code>.col-md-</code></td>
+                                    <td>≥ 768px</td>
+                                    <td><span id="md-status" class="badge bg-secondary">No activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Large</td>
+                                    <td><code>.col-lg-</code></td>
+                                    <td>≥ 992px</td>
+                                    <td><span id="lg-status" class="badge bg-secondary">No activo</span></td>
+                                </tr>
+                                <tr>
+                                    <td>Extra Large</td>
+                                    <td><code>.col-xl-</code></td>
+                                    <td>≥ 1200px</td>
+                                    <td><span id="xl-status" class="badge bg-secondary">No activo</span></td>
+                                </tr>
+                                <tr class="table-warning">
+                                    <td><strong>Extra Extra Large (NUEVO)</strong></td>
+                                    <td><code>.col-xxl-</code></td>
+                                    <td>≥ 1400px</td>
+                                    <td><span id="xxl-status" class="badge bg-warning">No activo</span></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Grid responsive demo -->
+            <div class="row g-3 mt-4">
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
+                    <div class="breakpoint-demo bg-primary text-white">
+                        <small>col-xxl-1</small>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-6 col-md-4 col-lg-3 col-xl-2 col-xxl-1">
+                    <div class="breakpoint-demo bg-secondary text-white">
+                        <small>col-xxl-1</small>
+                    </div>
+                </div>
+                <div class="col-12 col-sm-12 col-md-4 col-lg-6 col-xl-8 col-xxl-10">
+                    <div class="breakpoint-demo bg-success text-white">
+                        <small>col-xxl-10</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="bg-dark text-light py-4">
+        <div class="container text-center">
+            <p class="mb-0">
+                Bootstrap 5.3+ Demo - Desarrollo Web Profesional
+            </p>
+            <small class="text-muted">
+                Redimensiona la ventana para ver los breakpoints en acción
+            </small>
+        </div>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- Bootstrap Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+
+    <script>
+        // Toggle de modo oscuro
+        const themeToggle = document.getElementById('themeToggle');
+        const themeIcon = document.getElementById('themeIcon');
+        const themeText = document.getElementById('themeText');
+        const htmlElement = document.documentElement;
+
+        themeToggle.addEventListener('click', () => {
+            const currentTheme = htmlElement.getAttribute('data-bs-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            
+            htmlElement.setAttribute('data-bs-theme', newTheme);
+            
+            if (newTheme === 'dark') {
+                themeIcon.className = 'bi bi-sun';
+                themeText.textContent = 'Modo Claro';
+            } else {
+                themeIcon.className = 'bi bi-moon-stars';
+                themeText.textContent = 'Modo Oscuro';
+            }
+            
+            // Guardar preferencia en localStorage
+            localStorage.setItem('theme', newTheme);
+        });
+
+        // Cargar tema guardado
+        const savedTheme = localStorage.getItem('theme') || 'light';
+        htmlElement.setAttribute('data-bs-theme', savedTheme);
+        if (savedTheme === 'dark') {
+            themeIcon.className = 'bi bi-sun';
+            themeText.textContent = 'Modo Claro';
+        }
+
+        // Actualizar información de breakpoints en tiempo real
+        function updateBreakpointStatus() {
+            const width = window.innerWidth;
+            document.getElementById('currentResolution').textContent = `${width}px`;
+            
+            // Reset all badges
+            const badges = ['xs', 'sm', 'md', 'lg', 'xl', 'xxl'];
+            badges.forEach(bp => {
+                document.getElementById(`${bp}-status`).className = 'badge bg-secondary';
+                document.getElementById(`${bp}-status`).textContent = 'No activo';
+            });
+            
+            // Set active breakpoint
+            if (width >= 1400) {
+                document.getElementById('xxl-status').className = 'badge bg-warning';
+                document.getElementById('xxl-status').textContent = 'ACTIVO';
+            } else if (width >= 1200) {
+                document.getElementById('xl-status').className = 'badge bg-success';
+                document.getElementById('xl-status').textContent = 'ACTIVO';
+            } else if (width >= 992) {
+                document.getElementById('lg-status').className = 'badge bg-info';
+                document.getElementById('lg-status').textContent = 'ACTIVO';
+            } else if (width >= 768) {
+                document.getElementById('md-status').className = 'badge bg-primary';
+                document.getElementById('md-status').textContent = 'ACTIVO';
+            } else if (width >= 576) {
+                document.getElementById('sm-status').className = 'badge bg-warning';
+                document.getElementById('sm-status').textContent = 'ACTIVO';
+            } else {
+                document.getElementById('xs-status').className = 'badge bg-danger';
+                document.getElementById('xs-status').textContent = 'ACTIVO';
+            }
+        }
+
+        // Funciones de demostración
+        function demonstrateDarkMode() {
+            themeToggle.click();
+            setTimeout(() => {
+                alert('¡El modo oscuro se activa instantáneamente sin JavaScript adicional!');
+            }, 300);
+        }
+
+        function demonstrateCustomVars() {
+            // Cambiar color primario temporalmente
+            document.documentElement.style.setProperty('--bs-primary', '#e11d48');
+            setTimeout(() => {
+                document.documentElement.style.setProperty('--bs-primary', '#6366f1');
+            }, 2000);
+            alert('¡Las variables CSS permiten personalización en tiempo real!');
+        }
+
+        // Event listeners
+        window.addEventListener('resize', updateBreakpointStatus);
+        window.addEventListener('load', updateBreakpointStatus);
+    </script>
+</body>
+</html>

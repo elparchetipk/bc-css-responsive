@@ -1,0 +1,682 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootcamp CSS Responsive - Tu Futuro Digital Comienza Hoy</title>
+    <style>
+        /* ==========================================
+           Variables y Reset CSS
+           ========================================== */
+        :root {
+            --primary-color: #3b82f6;
+            --primary-dark: #1e40af;
+            --accent-color: #f59e0b;
+            --success-color: #10b981;
+            --text-color: #1f2937;
+            --text-light: #6b7280;
+            --white: #ffffff;
+            --bg-light: #f8fafc;
+            --bg-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+            --shadow-hover: 0 20px 40px rgba(0, 0, 0, 0.15);
+            --border-radius: 16px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            overflow-x: hidden;
+        }
+
+        /* ==========================================
+           Utilidades de Layout
+           ========================================== */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 1rem;
+        }
+
+        .section {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 2rem 0;
+        }
+
+        .text-center { text-align: center; }
+        .text-white { color: var(--white); }
+
+        /* ==========================================
+           Hero Section - Impacto Inicial
+           ========================================== */
+        .hero {
+            background: var(--bg-gradient);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="gradient"><stop offset="0%" stop-color="rgba(255,255,255,0.1)"/><stop offset="100%" stop-color="rgba(255,255,255,0)"/></radialGradient></defs><circle cx="200" cy="200" r="100" fill="url(%23gradient)"/><circle cx="800" cy="300" r="150" fill="url(%23gradient)"/><circle cx="400" cy="700" r="120" fill="url(%23gradient)"/></svg>') no-repeat center;
+            background-size: cover;
+            opacity: 0.3;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: clamp(2.5rem, 8vw, 4.5rem);
+            font-weight: 900;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--white) 0%, #e2e8f0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            line-height: 1.1;
+        }
+
+        .hero-subtitle {
+            font-size: clamp(1.25rem, 4vw, 2rem);
+            margin-bottom: 2rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        .hero-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin: 3rem 0;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            transition: var(--transition);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            background: rgba(255, 255, 255, 0.15);
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 900;
+            color: var(--accent-color);
+            display: block;
+        }
+
+        .stat-label {
+            font-size: 1rem;
+            opacity: 0.9;
+        }
+
+        /* ==========================================
+           Sección de Transformación
+           ========================================== */
+        .transformation {
+            background: var(--white);
+            padding: 5rem 0;
+        }
+
+        .section-title {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 800;
+            margin-bottom: 1rem;
+            background: linear-gradient(135deg, var(--primary-color) 0%, var(--primary-dark) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .journey-timeline {
+            display: grid;
+            gap: 3rem;
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .timeline-item {
+            display: grid;
+            grid-template-columns: auto 1fr;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .timeline-day {
+            background: var(--primary-color);
+            color: var(--white);
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.1rem;
+            position: relative;
+        }
+
+        .timeline-day::after {
+            content: '';
+            position: absolute;
+            top: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 2px;
+            height: 80px;
+            background: var(--primary-color);
+            opacity: 0.3;
+        }
+
+        .timeline-item:last-child .timeline-day::after {
+            display: none;
+        }
+
+        .timeline-content {
+            background: var(--bg-light);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            border-left: 4px solid var(--primary-color);
+        }
+
+        .timeline-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--primary-color);
+        }
+
+        .timeline-description {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* ==========================================
+           Sección de Beneficios
+           ========================================== */
+        .benefits {
+            background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+            padding: 5rem 0;
+        }
+
+        .benefits-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+
+        .benefit-card {
+            background: var(--white);
+            padding: 2.5rem;
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .benefit-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+        }
+
+        .benefit-card:hover {
+            transform: translateY(-10px);
+            box-shadow: var(--shadow-hover);
+        }
+
+        .benefit-icon {
+            font-size: 3rem;
+            margin-bottom: 1.5rem;
+            display: block;
+        }
+
+        .benefit-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-color);
+        }
+
+        .benefit-description {
+            color: var(--text-light);
+            line-height: 1.7;
+        }
+
+        /* ==========================================
+           Sección de Llamada a la Acción
+           ========================================== */
+        .cta {
+            background: var(--primary-dark);
+            color: var(--white);
+            padding: 5rem 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(255, 255, 255, 0.03) 10px,
+                rgba(255, 255, 255, 0.03) 20px
+            );
+            animation: slide 20s linear infinite;
+        }
+
+        @keyframes slide {
+            0% { transform: translateX(-100px) translateY(-100px); }
+            100% { transform: translateX(100px) translateY(100px); }
+        }
+
+        .cta-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .cta-title {
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+        }
+
+        .cta-subtitle {
+            font-size: 1.25rem;
+            margin-bottom: 3rem;
+            opacity: 0.9;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .cta-button {
+            display: inline-block;
+            background: var(--accent-color);
+            color: var(--white);
+            padding: 1.25rem 3rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: var(--transition);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .cta-button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: var(--transition);
+        }
+
+        .cta-button:hover::before {
+            left: 100%;
+        }
+
+        .cta-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 30px rgba(245, 158, 11, 0.4);
+        }
+
+        /* ==========================================
+           Animaciones de Entrada
+           ========================================== */
+        .fade-in {
+            opacity: 0;
+            transform: translateY(30px);
+            animation: fadeInUp 0.8s ease-out forwards;
+        }
+
+        .fade-in:nth-child(1) { animation-delay: 0.1s; }
+        .fade-in:nth-child(2) { animation-delay: 0.2s; }
+        .fade-in:nth-child(3) { animation-delay: 0.3s; }
+        .fade-in:nth-child(4) { animation-delay: 0.4s; }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ==========================================
+           Responsive Design
+           ========================================== */
+        @media (max-width: 768px) {
+            .timeline-item {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+            
+            .timeline-day::after {
+                display: none;
+            }
+            
+            .hero-stats {
+                grid-template-columns: 1fr;
+                gap: 1rem;
+            }
+            
+            .stat-card {
+                padding: 1.5rem;
+            }
+            
+            .benefits-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* ==========================================
+           Cursor personalizado para interactividad
+           ========================================== */
+        .interactive {
+            cursor: pointer;
+            user-select: none;
+        }
+
+        .interactive:active {
+            transform: scale(0.98);
+        }
+    </style>
+</head>
+<body>
+    <!-- Hero Section - Impacto Inicial -->
+    <section class="hero section">
+        <div class="container">
+            <div class="hero-content text-center text-white">
+                <h1 class="hero-title fade-in">
+                    Tu Futuro Digital<br>
+                    <span style="color: var(--accent-color);">Comienza Hoy</span>
+                </h1>
+                
+                <p class="hero-subtitle fade-in">
+                    Bootcamp Intensivo de CSS Responsive: De Principiante a Profesional en 10 Días
+                </p>
+                
+                <div class="hero-stats fade-in">
+                    <div class="stat-card interactive">
+                        <span class="stat-number">58%</span>
+                        <span class="stat-label">del tráfico web es móvil</span>
+                    </div>
+                    <div class="stat-card interactive">
+                        <span class="stat-number">10</span>
+                        <span class="stat-label">días para transformarte</span>
+                    </div>
+                    <div class="stat-card interactive">
+                        <span class="stat-number">∞</span>
+                        <span class="stat-label">oportunidades te esperan</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Transformación -->
+    <section class="transformation section">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-title">Tu Viaje de Transformación</h2>
+                <p class="section-subtitle">
+                    En solo 10 días, pasarás de conceptos básicos a crear interfaces profesionales 
+                    que funcionan perfectamente en cualquier dispositivo
+                </p>
+            </div>
+            
+            <div class="journey-timeline">
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">1-2</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Fundamentos Sólidos</h3>
+                        <p class="timeline-description">
+                            Dominarás HTML5 semántico, CSS Grid, Flexbox y los principios fundamentales 
+                            del diseño responsive. Tu primer proyecto funcionará en móvil, tablet y desktop.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">3-5</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Responsive Avanzado</h3>
+                        <p class="timeline-description">
+                            Implementarás media queries profesionales, tipografía fluida y optimización 
+                            de imágenes. Crearás layouts que se adaptan inteligentemente a cualquier pantalla.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">6-7</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Frameworks Modernos</h3>
+                        <p class="timeline-description">
+                            Dominarás Bootstrap 5.3+ y TailwindCSS v4.0, las herramientas que usan 
+                            los profesionales para desarrollar más rápido y con mejor calidad.
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="timeline-item fade-in">
+                    <div class="timeline-day">8-10</div>
+                    <div class="timeline-content">
+                        <h3 class="timeline-title">Maestría Profesional</h3>
+                        <p class="timeline-description">
+                            Implementarás CSS moderno (Container Queries, CSS Nesting), optimización 
+                            de performance y completarás un portfolio que impresionará a cualquier empleador.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Beneficios -->
+    <section class="benefits section">
+        <div class="container">
+            <div class="text-center">
+                <h2 class="section-title">¿Por Qué Este Bootcamp Cambiará Tu Vida?</h2>
+                <p class="section-subtitle">
+                    No es solo un curso, es tu puerta de entrada al mundo profesional del desarrollo frontend
+                </p>
+            </div>
+            
+            <div class="benefits-grid">
+                <div class="benefit-card fade-in">
+                    <span class="benefit-icon">🚀</span>
+                    <h3 class="benefit-title">Empleabilidad Inmediata</h3>
+                    <p class="benefit-description">
+                        Las empresas buscan desesperadamente desarrolladores que dominen CSS responsive. 
+                        Con estas habilidades, tendrás acceso a trabajos remotos de $30,000 a $80,000 anuales.
+                    </p>
+                </div>
+                
+                <div class="benefit-card fade-in">
+                    <span class="benefit-icon">💰</span>
+                    <h3 class="benefit-title">Freelancing Lucrativo</h3>
+                    <p class="benefit-description">
+                        Un sitio web responsive se cotiza entre $500 y $5,000. Después del bootcamp, 
+                        podrás trabajar desde cualquier lugar del mundo con clientes internacionales.
+                    </p>
+                </div>
+                
+                <div class="benefit-card fade-in">
+                    <span class="benefit-icon">🎯</span>
+                    <h3 class="benefit-title">Portfolio Impresionante</h3>
+                    <p class="benefit-description">
+                        Terminarás con 5-7 proyectos profesionales que demuestran tu maestría. 
+                        Tu portfolio será tu mejor carta de presentación para cualquier oportunidad.
+                    </p>
+                </div>
+                
+                <div class="benefit-card fade-in">
+                    <span class="benefit-icon">🌟</span>
+                    <h3 class="benefit-title">Tecnologías de Vanguardia</h3>
+                    <p class="benefit-description">
+                        Aprenderás las últimas versiones de Bootstrap 5.3+ y TailwindCSS v4.0, 
+                        además de CSS moderno que muchos desarrolladores aún no conocen.
+                    </p>
+                </div>
+                
+                <div class="benefit-card fade-in">
+                    <span class="benefit-icon">🤝</span>
+                    <h3 class="benefit-title">Red Profesional</h3>
+                    <p class="benefit-description">
+                        Conectarás con otros desarrolladores ambiciosos. Muchas oportunidades laborales 
+                        nacen de las conexiones que haces durante el aprendizaje intensivo.
+                    </p>
+                </div>
+                
+                <div class="benefit-card fade-in">
+                    <span class="benefit-icon">🧠</span>
+                    <h3 class="benefit-title">Mentalidad Profesional</h3>
+                    <p class="benefit-description">
+                        No solo aprenderás código, desarrollarás la mentalidad de resolución de problemas 
+                        y las mejores prácticas que distinguen a los profesionales de los aficionados.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Llamada a la Acción -->
+    <section class="cta section">
+        <div class="container">
+            <div class="cta-content text-center">
+                <h2 class="cta-title">
+                    El Momento es Ahora
+                </h2>
+                <p class="cta-subtitle">
+                    Cada día que postpones aprender estas habilidades es un día menos de oportunidades. 
+                    El mercado digital no espera. Tu futuro profesional comienza con tu primer línea de código.
+                </p>
+                <a href="#" class="cta-button interactive" onclick="startBootcamp()">
+                    ¡Comencemos Juntos Este Viaje! 🚀
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <script>
+        // Función para iniciar el bootcamp (simulada)
+        function startBootcamp() {
+            alert('¡Excelente decisión! Tu viaje hacia la maestría en CSS Responsive comienza ahora. ¡Prepárate para transformar tu futuro digital!');
+        }
+
+        // Animaciones de scroll mejoradas
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.style.animationPlayState = 'running';
+                }
+            });
+        }, observerOptions);
+
+        // Observar todos los elementos con animación
+        document.querySelectorAll('.fade-in').forEach(el => {
+            observer.observe(el);
+        });
+
+        // Efecto de partículas en el hover de las estadísticas
+        document.querySelectorAll('.stat-card').forEach(card => {
+            card.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-10px) scale(1.02)';
+            });
+            
+            card.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(-5px) scale(1)';
+            });
+        });
+
+        // Contador animado para las estadísticas
+        function animateNumbers() {
+            const statNumbers = document.querySelectorAll('.stat-number');
+            
+            statNumbers.forEach(stat => {
+                const finalNumber = stat.textContent;
+                if (finalNumber === '∞') return; // Skip infinity symbol
+                
+                const target = parseInt(finalNumber);
+                const increment = target / 50;
+                let current = 0;
+                
+                const timer = setInterval(() => {
+                    current += increment;
+                    if (current >= target) {
+                        stat.textContent = finalNumber;
+                        clearInterval(timer);
+                    } else {
+                        stat.textContent = Math.floor(current);
+                    }
+                }, 50);
+            });
+        }
+
+        // Iniciar animación de números cuando se carga la página
+        window.addEventListener('load', () => {
+            setTimeout(animateNumbers, 1000);
+        });
+    </script>
+</body>
+</html>

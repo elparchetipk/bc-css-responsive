@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Imágenes Responsive Avanzadas</title>
+    <style>
+        /* === CONFIGURACIÓN BASE === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --spacing-xs: clamp(0.25rem, 1vw, 0.5rem);
+            --spacing-sm: clamp(0.5rem, 2vw, 1rem);
+            --spacing-md: clamp(1rem, 3vw, 1.5rem);
+            --spacing-lg: clamp(1.5rem, 4vw, 2rem);
+            --spacing-xl: clamp(2rem, 5vw, 3rem);
+            
+            --font-size-sm: clamp(0.875rem, 2vw, 1rem);
+            --font-size-base: clamp(1rem, 2.5vw, 1.125rem);
+            --font-size-lg: clamp(1.125rem, 3vw, 1.25rem);
+            --font-size-xl: clamp(1.25rem, 3.5vw, 1.5rem);
+            --font-size-2xl: clamp(1.5rem, 4vw, 2rem);
+        }
+
+        body {
+            font-family: system-ui, -apple-system, sans-serif;
+            line-height: 1.6;
+            color: #2d3748;
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            padding: var(--spacing-md);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            background: linear-gradient(135deg, #1976d2, #42a5f5);
+            color: white;
+            padding: var(--spacing-xl);
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: var(--font-size-2xl);
+            margin-bottom: var(--spacing-sm);
+            font-weight: 700;
+        }
+
+        .content {
+            padding: var(--spacing-lg);
+        }
+
+        .section {
+            margin-bottom: var(--spacing-xl);
+            padding-bottom: var(--spacing-lg);
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--spacing-md);
+            color: #1976d2;
+        }
+
+        .section-description {
+            font-size: var(--font-size-base);
+            margin-bottom: var(--spacing-lg);
+            color: #4a5568;
+            line-height: 1.7;
+        }
+
+        /* === TÉCNICA 1: SRCSET CON DESCRIPTORES W === */
+        .responsive-img-basic {
+            width: 100%;
+            height: auto;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .responsive-img-basic:hover {
+            transform: scale(1.02);
+        }
+
+        .img-container {
+            margin: var(--spacing-md) 0;
+            overflow: hidden;
+            border-radius: 12px;
+        }
+
+        /* === TÉCNICA 2: PICTURE ELEMENT === */
+        .art-direction-demo {
+            width: 100%;
+            height: auto;
+            display: block;
+            border-radius: 12px;
+        }
+
+        /* === TÉCNICA 3: BACKGROUND IMAGES RESPONSIVE === */
+        .hero-section {
+            height: clamp(300px, 50vh, 500px);
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            text-align: center;
+            border-radius: 12px;
+            margin: var(--spacing-md) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.4);
+            z-index: 1;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            padding: var(--spacing-lg);
+        }
+
+        .hero-title {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        /* === GRID DE IMÁGENES RESPONSIVE === */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--spacing-md);
+            margin: var(--spacing-lg) 0;
+        }
+
+        .grid-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 12px;
+            aspect-ratio: 4/3;
+        }
+
+        .grid-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover img {
+            transform: scale(1.1);
+        }
+
+        .grid-overlay {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.8));
+            color: white;
+            padding: var(--spacing-md);
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+
+        .grid-item:hover .grid-overlay {
+            transform: translateY(0);
+        }
+
+        /* === CÓDIGO DE EJEMPLO === */
+        .code-block {
+            background: #1a202c;
+            color: #e2e8f0;
+            padding: var(--spacing-md);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: var(--font-size-sm);
+            overflow-x: auto;
+            margin: var(--spacing-md) 0;
+        }
+
+        .code-comment {
+            color: #68d391;
+        }
+
+        /* === INDICADORES DE RENDIMIENTO === */
+        .performance-indicator {
+            background: #f0fff4;
+            border: 1px solid #68d391;
+            border-radius: 8px;
+            padding: var(--spacing-sm);
+            margin: var(--spacing-sm) 0;
+            font-size: var(--font-size-sm);
+        }
+
+        .performance-indicator.warning {
+            background: #fffbf0;
+            border-color: #f6ad55;
+        }
+
+        .performance-indicator.error {
+            background: #fed7d7;
+            border-color: #fc8181;
+        }
+
+        /* === BREAKPOINT INDICATOR === */
+        .current-breakpoint {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(25, 118, 210, 0.9);
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: bold;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+        }
+
+        .current-breakpoint::before {
+            content: "📱 Mobile";
+        }
+
+        @media (min-width: 480px) {
+            .current-breakpoint::before { content: "📱 Mobile L"; }
+        }
+
+        @media (min-width: 768px) {
+            .current-breakpoint::before { content: "💻 Tablet"; }
+        }
+
+        @media (min-width: 1024px) {
+            .current-breakpoint::before { content: "🖥️ Desktop"; }
+        }
+
+        @media (min-width: 1440px) {
+            .current-breakpoint::before { content: "🖥️ Large Desktop"; }
+        }
+
+        /* === LAZY LOADING ANIMATION === */
+        .lazy-loading {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .lazy-loading.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <div class="current-breakpoint"></div>
+
+    <div class="container">
+        <header class="header">
+            <h1>Imágenes Responsive: Técnicas Avanzadas</h1>
+            <p>Optimización visual para la era multi-dispositivo</p>
+        </header>
+
+        <div class="content">
+            <!-- === TÉCNICA 1: SRCSET BÁSICO === -->
+            <section class="section">
+                <h2 class="section-title">1. Srcset con Descriptores de Ancho (w)</h2>
+                <p class="section-description">
+                    Esta técnica permite al navegador elegir la imagen más apropiada basándose en el ancho de la pantalla y la densidad de píxeles. Es como tener múltiples versiones de la misma imagen y dejar que el navegador sea inteligente sobre cuál usar.
+                </p>
+
+                <div class="img-container">
+                    <img 
+                        class="responsive-img-basic"
+                        src="https://picsum.photos/400/300?random=1"
+                        srcset="
+                            https://picsum.photos/400/300?random=1 400w,
+                            https://picsum.photos/800/600?random=1 800w,
+                            https://picsum.photos/1200/900?random=1 1200w,
+                            https://picsum.photos/1600/1200?random=1 1600w
+                        "
+                        sizes="
+                            (max-width: 480px) 100vw,
+                            (max-width: 768px) 80vw,
+                            (max-width: 1024px) 60vw,
+                            50vw
+                        "
+                        alt="Imagen responsive con srcset - se adapta al ancho de pantalla"
+                        loading="lazy"
+                    >
+                </div>
+
+                <div class="code-block">
+<span class="code-comment">/* Sintaxis srcset con descriptores w */</span>
+&lt;img 
+    src="imagen-400.jpg"
+    srcset="
+        imagen-400.jpg 400w,    <span class="code-comment">/* Imagen de 400px de ancho */</span>
+        imagen-800.jpg 800w,    <span class="code-comment">/* Imagen de 800px de ancho */</span>
+        imagen-1200.jpg 1200w,  <span class="code-comment">/* Imagen de 1200px de ancho */</span>
+        imagen-1600.jpg 1600w   <span class="code-comment">/* Imagen de 1600px de ancho */</span>
+    "
+    sizes="
+        (max-width: 480px) 100vw,  <span class="code-comment">/* En móvil: ancho completo */</span>
+        (max-width: 768px) 80vw,   <span class="code-comment">/* En tablet: 80% del viewport */</span>
+        50vw                       <span class="code-comment">/* En desktop: 50% del viewport */</span>
+    "
+    alt="Descripción accesible"
+&gt;
+                </div>
+
+                <div class="performance-indicator">
+                    💡 <strong>Beneficio:</strong> Ahorro del 60-80% en datos en dispositivos móviles al servir imágenes del tamaño apropiado.
+                </div>
+            </section>
+
+            <!-- === TÉCNICA 2: PICTURE ELEMENT === -->
+            <section class="section">
+                <h2 class="section-title">2. Element Picture para Art Direction</h2>
+                <p class="section-description">
+                    El elemento picture permite servir imágenes completamente diferentes según el contexto. Es como tener un director de arte que elige la mejor composición para cada pantalla.
+                </p>
+
+                <picture>
+                    <source 
+                        media="(max-width: 767px)" 
+                        srcset="https://picsum.photos/400/600?random=2"
+                    >
+                    <source 
+                        media="(max-width: 1023px)" 
+                        srcset="https://picsum.photos/800/400?random=2"
+                    >
+                    <img 
+                        class="art-direction-demo"
+                        src="https://picsum.photos/1200/400?random=2" 
+                        alt="Imagen con art direction - composición diferente por dispositivo"
+                    >
+                </picture>
+
+                <div class="code-block">
+<span class="code-comment">/* Element picture para diferentes composiciones */</span>
+&lt;picture&gt;
+    <span class="code-comment">/* Móvil: imagen vertical (portrait) */</span>
+    &lt;source 
+        media="(max-width: 767px)" 
+        srcset="imagen-movil-vertical.jpg"
+    &gt;
+    
+    <span class="code-comment">/* Tablet: imagen cuadrada */</span>
+    &lt;source 
+        media="(max-width: 1023px)" 
+        srcset="imagen-tablet-cuadrada.jpg"
+    &gt;
+    
+    <span class="code-comment">/* Desktop: imagen panorámica */</span>
+    &lt;img 
+        src="imagen-desktop-panoramica.jpg" 
+        alt="Misma imagen, diferentes composiciones"
+    &gt;
+&lt;/picture&gt;
+                </div>
+
+                <div class="performance-indicator warning">
+                    ⚠️ <strong>Importante:</strong> Usa picture solo cuando necesites diferentes composiciones, no solo diferentes tamaños.
+                </div>
+            </section>
+
+            <!-- === TÉCNICA 3: BACKGROUND IMAGES === -->
+            <section class="section">
+                <h2 class="section-title">3. Background Images Responsive</h2>
+                <p class="section-description">
+                    Para imágenes de fondo, usamos CSS y media queries para cargar diferentes imágenes según el dispositivo.
+                </p>
+
+                <div class="hero-section" style="
+                    background-image: url('https://picsum.photos/400/300?random=3');
+                ">
+                    <div class="hero-content">
+                        <h3 class="hero-title">Hero Section Responsive</h3>
+                        <p>Esta imagen de fondo cambia según tu dispositivo</p>
+                    </div>
+                </div>
+
+                <div class="code-block">
+<span class="code-comment">/* CSS para background images responsive */</span>
+.hero-section {
+    <span class="code-comment">/* Móvil: imagen pequeña */</span>
+    background-image: url('hero-mobile.jpg');
+}
+
+@media (min-width: 768px) {
+    .hero-section {
+        <span class="code-comment">/* Tablet: imagen mediana */</span>
+        background-image: url('hero-tablet.jpg');
+    }
+}
+
+@media (min-width: 1024px) {
+    .hero-section {
+        <span class="code-comment">/* Desktop: imagen grande */</span>
+        background-image: url('hero-desktop.jpg');
+    }
+}
+
+<span class="code-comment">/* Propiedades esenciales para backgrounds responsive */</span>
+.hero-section {
+    background-size: cover;      <span class="code-comment">/* Cubre todo el contenedor */</span>
+    background-position: center; <span class="code-comment">/* Centrada */</span>
+    background-repeat: no-repeat;<span class="code-comment">/* Sin repetición */</span>
+}
+                </div>
+            </section>
+
+            <!-- === TÉCNICA 4: GRID DE IMÁGENES === -->
+            <section class="section">
+                <h2 class="section-title">4. Grid Responsive de Imágenes</h2>
+                <p class="section-description">
+                    Combinando CSS Grid con imágenes responsive para crear galerías que se adaptan automáticamente.
+                </p>
+
+                <div class="image-grid">
+                    <div class="grid-item">
+                        <img 
+                            src="https://picsum.photos/300/225?random=4" 
+                            srcset="
+                                https://picsum.photos/300/225?random=4 300w,
+                                https://picsum.photos/600/450?random=4 600w
+                            "
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            alt="Imagen de galería 1"
+                        >
+                        <div class="grid-overlay">
+                            <h4>Imagen Optimizada</h4>
+                            <p>Hover para ver el efecto</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-item">
+                        <img 
+                            src="https://picsum.photos/300/225?random=5" 
+                            srcset="
+                                https://picsum.photos/300/225?random=5 300w,
+                                https://picsum.photos/600/450?random=5 600w
+                            "
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            alt="Imagen de galería 2"
+                        >
+                        <div class="grid-overlay">
+                            <h4>Carga Inteligente</h4>
+                            <p>Solo la resolución necesaria</p>
+                        </div>
+                    </div>
+                    
+                    <div class="grid-item">
+                        <img 
+                            src="https://picsum.photos/300/225?random=6" 
+                            srcset="
+                                https://picsum.photos/300/225?random=6 300w,
+                                https://picsum.photos/600/450?random=6 600w
+                            "
+                            sizes="(max-width: 768px) 100vw, 33vw"
+                            alt="Imagen de galería 3"
+                        >
+                        <div class="grid-overlay">
+                            <h4>Performance Óptimo</h4>
+                            <p>Lazy loading incluido</p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="code-block">
+<span class="code-comment">/* Grid responsive con imágenes optimizadas */</span>
+.image-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+}
+
+.grid-item {
+    aspect-ratio: 4/3;  <span class="code-comment">/* Proporción consistente */</span>
+    overflow: hidden;
+}
+
+.grid-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;  <span class="code-comment">/* Mantiene proporción sin distorsión */</span>
+}
+                </div>
+            </section>
+
+            <!-- === MEJORES PRÁCTICAS === -->
+            <section class="section">
+                <h2 class="section-title">5. Mejores Prácticas y Optimizaciones</h2>
+                
+                <div class="performance-indicator">
+                    ✅ <strong>Lazy Loading:</strong> Usa <code>loading="lazy"</code> para cargar imágenes solo cuando sean visibles.
+                </div>
+                
+                <div class="performance-indicator">
+                    ✅ <strong>Alt Text:</strong> Siempre incluye texto alternativo descriptivo para accesibilidad.
+                </div>
+                
+                <div class="performance-indicator">
+                    ✅ <strong>Formatos Modernos:</strong> Considera WebP y AVIF para mejor compresión.
+                </div>
+                
+                <div class="performance-indicator warning">
+                    ⚠️ <strong>Fallbacks:</strong> Siempre incluye un src como fallback para navegadores antiguos.
+                </div>
+
+                <div class="code-block">
+<span class="code-comment">/* Ejemplo completo con todas las mejores prácticas */</span>
+&lt;picture&gt;
+    <span class="code-comment">/* Formato moderno para navegadores compatibles */</span>
+    &lt;source 
+        type="image/avif" 
+        srcset="imagen-optimizada.avif"
+    &gt;
+    &lt;source 
+        type="image/webp" 
+        srcset="imagen-optimizada.webp"
+    &gt;
+    
+    <span class="code-comment">/* Fallback en JPEG con srcset responsive */</span>
+    &lt;img 
+        src="imagen-fallback.jpg"
+        srcset="
+            imagen-400.jpg 400w,
+            imagen-800.jpg 800w,
+            imagen-1200.jpg 1200w
+        "
+        sizes="(max-width: 768px) 100vw, 50vw"
+        alt="Descripción detallada de la imagen"
+        loading="lazy"
+        decoding="async"
+    &gt;
+&lt;/picture&gt;
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <script>
+        // Simulación de lazy loading con intersection observer
+        const images = document.querySelectorAll('img[loading="lazy"]');
+        
+        if ('IntersectionObserver' in window) {
+            const imageObserver = new IntersectionObserver((entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const img = entry.target;
+                        img.classList.add('loaded');
+                        observer.unobserve(img);
+                    }
+                });
+            });
+
+            images.forEach(img => {
+                img.classList.add('lazy-loading');
+                imageObserver.observe(img);
+            });
+        }
+
+        // Debug: Mostrar qué imagen se está cargando
+        images.forEach(img => {
+            img.addEventListener('load', function() {
+                console.log(`Imagen cargada: ${this.currentSrc || this.src} - Ancho natural: ${this.naturalWidth}px`);
+            });
+        });
+    </script>
+</body>
+</html>

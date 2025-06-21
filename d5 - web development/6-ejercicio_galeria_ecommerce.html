@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechStore - Galería de Productos</title>
+    <style>
+        :root {
+            --primary: #1a73e8;
+            --secondary: #34a853;
+            --accent: #ea4335;
+            --background: #f8f9fa;
+            --surface: #ffffff;
+            --text-primary: #202124;
+            --text-secondary: #5f6368;
+            --border: #dadce0;
+            
+            /* Espaciado fluido */
+            --space-xs: clamp(0.25rem, 1vw, 0.5rem);
+            --space-sm: clamp(0.5rem, 2vw, 1rem);
+            --space-md: clamp(1rem, 3vw, 1.5rem);
+            --space-lg: clamp(1.5rem, 4vw, 2rem);
+            --space-xl: clamp(2rem, 5vw, 3rem);
+            
+            /* Tipografía */
+            --font-sm: clamp(0.875rem, 2vw, 1rem);
+            --font-base: clamp(1rem, 2.5vw, 1.125rem);
+            --font-lg: clamp(1.125rem, 3vw, 1.25rem);
+            --font-xl: clamp(1.25rem, 3.5vw, 1.5rem);
+            --font-2xl: clamp(1.5rem, 4vw, 2rem);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Google Sans', system-ui, sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        /* === HEADER === */
+        .header {
+            background: var(--surface);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: var(--space-md) 0;
+            margin-bottom: var(--space-xl);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+        }
+
+        .logo {
+            font-size: var(--font-2xl);
+            font-weight: 700;
+            color: var(--primary);
+        }
+
+        .breadcrumb {
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+        }
+
+        /* === INSTRUCCIONES DEL EJERCICIO === */
+        .exercise-instructions {
+            background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            margin-bottom: var(--space-xl);
+            border-left: 4px solid var(--primary);
+        }
+
+        .instructions-title {
+            font-size: var(--font-xl);
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: var(--space-md);
+        }
+
+        .requirements-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--space-md);
+            margin-top: var(--space-md);
+        }
+
+        .requirement-card {
+            background: rgba(255,255,255,0.8);
+            padding: var(--space-md);
+            border-radius: 8px;
+            border: 1px solid var(--border);
+        }
+
+        .requirement-title {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: var(--space-xs);
+        }
+
+        /* === GALERÍA DE PRODUCTOS === */
+        .products-section {
+            margin-bottom: var(--space-xl);
+        }
+
+        .section-title {
+            font-size: var(--font-2xl);
+            font-weight: 600;
+            margin-bottom: var(--space-lg);
+            text-align: center;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-lg);
+        }
+
+        .product-card {
+            background: var(--surface);
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--border);
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+        }
+
+        /* === AQUÍ ES DONDE TRABAJARÁS === */
+        .product-image-container {
+            position: relative;
+            /* TODO: Definir aspect-ratio apropiado */
+            /* TODO: Configurar overflow */
+            background: #f5f5f5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .product-image {
+            /* TODO: Completar estilos para imagen responsive */
+            width: 100%;
+            height: 100%;
+            /* TODO: object-fit para mantener proporción */
+            transition: transform 0.3s ease;
+            border-radius: 0;
+        }
+
+        .product-card:hover .product-image {
+            transform: scale(1.05);
+        }
+
+        .image-placeholder {
+            color: var(--text-secondary);
+            font-size: var(--font-lg);
+            text-align: center;
+        }
+
+        .product-badge {
+            position: absolute;
+            top: var(--space-sm);
+            right: var(--space-sm);
+            background: var(--accent);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 16px;
+            font-size: var(--font-sm);
+            font-weight: 600;
+        }
+
+        .product-content {
+            padding: var(--space-lg);
+        }
+
+        .product-title {
+            font-size: var(--font-lg);
+            font-weight: 600;
+            margin-bottom: var(--space-sm);
+            color: var(--text-primary);
+        }
+
+        .product-description {
+            font-size: var(--font-sm);
+            color: var(--text-secondary);
+            margin-bottom: var(--space-md);
+            line-height: 1.5;
+        }
+
+        .product-price {
+            font-size: var(--font-xl);
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: var(--space-md);
+        }
+
+        .product-price .original {
+            text-decoration: line-through;
+            color: var(--text-secondary);
+            font-weight: 400;
+            font-size: var(--font-base);
+            margin-right: var(--space-xs);
+        }
+
+        .product-actions {
+            display: flex;
+            gap: var(--space-sm);
+        }
+
+        .btn {
+            padding: var(--space-sm) var(--space-md);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border: none;
+            font-size: var(--font-sm);
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1557b0;
+            transform: translateY(-1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-secondary:hover {
+            background: var(--primary);
+            color: white;
+        }
+
+        /* === CÓDIGO DE EJEMPLO PARA MOSTRAR === */
+        .code-examples {
+            background: var(--surface);
+            border-radius: 12px;
+            padding: var(--space-lg);
+            margin-top: var(--space-xl);
+        }
+
+        .code-block {
+            background: #1a1a1a;
+            color: #e6e6e6;
+            padding: var(--space-md);
+            border-radius: 8px;
+            font-family: 'Fira Code', monospace;
+            font-size: var(--font-sm);
+            overflow-x: auto;
+            margin: var(--space-sm) 0;
+        }
+
+        .code-comment {
+            color: #7dd3fc;
+        }
+
+        .code-keyword {
+            color: #fbbf24;
+        }
+
+        /* === DEVICE INDICATOR === */
+        .device-indicator {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            background: var(--primary);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            z-index: 1000;
+        }
+
+        .device-indicator::before {
+            content: "📱 " attr(data-device);
+        }
+
+        /* === RESPONSIVE BREAKPOINTS === */
+        @media (max-width: 767px) {
+            .device-indicator::before { content: "📱 Mobile"; }
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (min-width: 768px) and (max-width: 1023px) {
+            .device-indicator::before { content: "💻 Tablet"; }
+            .products-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (min-width: 1024px) {
+            .device-indicator::before { content: "🖥️ Desktop"; }
+            .products-grid {
+                grid-template-columns: repeat(3, 1fr);
+            }
+        }
+
+        @media (min-width: 1440px) {
+            .device-indicator::before { content: "🖥️ Large Desktop"; }
+            .products-grid {
+                grid-template-columns: repeat(4, 1fr);
+            }
+        }
+
+        /* === SOLUCIÓN PARCIAL PARA GUÍA === */
+        .solution-hint {
+            background: #f0f9ff;
+            border: 1px solid #0ea5e9;
+            border-radius: 8px;
+            padding: var(--space-md);
+            margin: var(--space-md) 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="device-indicator" data-device="Mobile"></div>
+
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">TechStore</div>
+                <div class="breadcrumb">Inicio > Productos > Electrónicos</div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container">
+        <!-- Instrucciones del ejercicio -->
+        <section class="exercise-instructions">
+            <h2 class="instructions-title">🎯 Tu Misión: Optimizar Galería E-commerce</h2>
+            <p style="font-size: var(--font-base); margin-bottom: var(--space-md);">
+                Completa la implementación de imágenes responsive para esta galería de productos. Los usuarios deben tener una experiencia perfecta desde móvil hasta desktop 4K.
+            </p>
+            
+            <div class="requirements-grid">
+                <div class="requirement-card">
+                    <div class="requirement-title">📸 Imágenes Responsive</div>
+                    <p style="font-size: var(--font-sm);">Implementa srcset y sizes para cargar la resolución óptima según el dispositivo.</p>
+                </div>
+                
+                <div class="requirement-card">
+                    <div class="requirement-title">🎨 Art Direction</div>
+                    <p style="font-size: var(--font-sm);">Usa picture element para mostrar diferentes composiciones en móvil vs desktop.</p>
+                </div>
+                
+                <div class="requirement-card">
+                    <div class="requirement-title">⚡ Performance</div>
+                    <p style="font-size: var(--font-sm);">Implementa lazy loading y optimizaciones para carga rápida.</p>
+                </div>
+                
+                <div class="requirement-card">
+                    <div class="requirement-title">♿ Accesibilidad</div>
+                    <p style="font-size: var(--font-sm);">Texto alternativo descriptivo y aspect-ratio para evitar layout shift.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Galería de productos -->
+        <section class="products-section">
+            <h2 class="section-title">Productos Destacados</h2>
+            
+            <div class="products-grid">
+                <!-- Producto 1: Smartphone -->
+                <article class="product-card">
+                    <div class="product-image-container">
+                        <!-- TODO: Reemplaza esto con picture element optimizado -->
+                        <div class="image-placeholder">
+                            📱<br>
+                            <small>Aquí va tu implementación<br>de imagen responsive</small>
+                        </div>
+                        <!-- 
+                        HINT: Usa picture element con:
+                        - Móvil: imagen cuadrada 400x400
+                        - Desktop: imagen rectangular 600x400
+                        - Múltiples resoluciones con srcset
+                        - loading="lazy"
+                        -->
+                        <span class="product-badge">Nuevo</span>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Smartphone Pro Max 128GB</h3>
+                        <p class="product-description">
+                            Último modelo con cámara de 108MP, pantalla AMOLED de 6.7" y batería de larga duración. Perfecto para fotografía profesional.
+                        </p>
+                        <div class="product-price">
+                            <span class="original">$1,299</span>
+                            $999
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">Agregar al Carrito</button>
+                            <button class="btn btn-secondary">Ver Detalles</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Producto 2: Laptop -->
+                <article class="product-card">
+                    <div class="product-image-container">
+                        <div class="image-placeholder">
+                            💻<br>
+                            <small>Implementa srcset<br>con descriptores w</small>
+                        </div>
+                        <span class="product-badge" style="background: var(--secondary);">Oferta</span>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Laptop Gaming RTX 4070</h3>
+                        <p class="product-description">
+                            Laptop para gaming con procesador Intel i7, 32GB RAM, SSD 1TB y tarjeta gráfica RTX 4070. Rendimiento extremo garantizado.
+                        </p>
+                        <div class="product-price">
+                            <span class="original">$2,199</span>
+                            $1,799
+                        </div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">Agregar al Carrito</button>
+                            <button class="btn btn-secondary">Comparar</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Producto 3: Auriculares -->
+                <article class="product-card">
+                    <div class="product-image-container">
+                        <div class="image-placeholder">
+                            🎧<br>
+                            <small>Usa diferentes formatos:<br>WebP + JPEG fallback</small>
+                        </div>
+                        <span class="product-badge" style="background: var(--primary);">Premium</span>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Auriculares Noise Cancelling Pro</h3>
+                        <p class="product-description">
+                            Cancelación de ruido activa, sonido Hi-Res, 30 horas de batería y conexión Bluetooth 5.3. La mejor experiencia de audio.
+                        </p>
+                        <div class="product-price">$349</div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">Agregar al Carrito</button>
+                            <button class="btn btn-secondary">Escuchar Demo</button>
+                        </div>
+                    </div>
+                </article>
+
+                <!-- Producto 4: Smartwatch -->
+                <article class="product-card">
+                    <div class="product-image-container">
+                        <div class="image-placeholder">
+                            ⌚<br>
+                            <small>Background image<br>responsive con CSS</small>
+                        </div>
+                    </div>
+                    <div class="product-content">
+                        <h3 class="product-title">Smartwatch Health Monitor</h3>
+                        <p class="product-description">
+                            Monitoreo de salud 24/7, GPS integrado, resistente al agua hasta 50m y batería de 7 días. Tu compañero de bienestar.
+                        </p>
+                        <div class="product-price">$299</div>
+                        <div class="product-actions">
+                            <button class="btn btn-primary">Agregar al Carrito</button>
+                            <button class="btn btn-secondary">Ver Compatibilidad</button>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </section>
+
+        <!-- Ejemplos de código -->
+        <section class="code-examples">
+            <h3 style="font-size: var(--font-xl); margin-bottom: var(--space-md);">📝 Ejemplos de Implementación</h3>
+            
+            <div class="solution-hint">
+                <strong>💡 Pista:</strong> Para el primer producto (smartphone), necesitas diferentes composiciones para móvil y desktop.
+            </div>
+
+            <h4 style="margin-bottom: var(--space-sm);">Ejemplo 1: Picture Element con Art Direction</h4>
+            <div class="code-block">
+<span class="code-comment">/* Para el producto smartphone */</span>
+&lt;<span class="code-keyword">picture</span>&gt;
+  <span class="code-comment">&lt;!-- Móvil: imagen cuadrada --&gt;</span>
+  &lt;<span class="code-keyword">source</span> 
+    media="(max-width: 767px)" 
+    srcset="<span class="code-keyword">https://picsum.photos/400/400?random=1</span>"
+  &gt;
+  <span class="code-comment">&lt;!-- Desktop: imagen rectangular --&gt;</span>
+  &lt;<span class="code-keyword">img</span> 
+    class="product-image"
+    src="<span class="code-keyword">https://picsum.photos/600/400?random=1</span>" 
+    srcset="
+      https://picsum.photos/600/400?random=1 600w,
+      https://picsum.photos/1200/800?random=1 1200w
+    "
+    sizes="<span class="code-keyword">(max-width: 768px) 100vw, 33vw</span>"
+    alt="<span class="code-keyword">Smartphone Pro Max mostrando pantalla de inicio</span>"
+    loading="<span class="code-keyword">lazy</span>"
+  &gt;
+&lt;/<span class="code-keyword">picture</span>&gt;
+            </div>
+
+            <h4 style="margin-bottom: var(--space-sm);">Ejemplo 2: CSS Optimizado para Imágenes</h4>
+            <div class="code-block">
+<span class="code-comment">/* Estilos para contenedor de imagen */</span>
+.<span class="code-keyword">product-image-container</span> {
+  aspect-ratio: <span class="code-keyword">4/3</span>; <span class="code-comment">/* Evita layout shift */</span>
+  overflow: <span class="code-keyword">hidden</span>;
+  position: <span class="code-keyword">relative</span>;
+}
+
+.<span class="code-keyword">product-image</span> {
+  width: <span class="code-keyword">100%</span>;
+  height: <span class="code-keyword">100%</span>;
+  object-fit: <span class="code-keyword">cover</span>; <span class="code-comment">/* Mantiene proporción */</span>
+  transition: <span class="code-keyword">transform 0.3s ease</span>;
+}
+
+<span class="code-comment">/* Efecto hover */</span>
+.<span class="code-keyword">product-card</span>:hover .<span class="code-keyword">product-image</span> {
+  transform: <span class="code-keyword">scale(1.05)</span>;
+}
+            </div>
+
+            <div style="background: #e8f5e8; padding: var(--space-md); border-radius: 8px; margin-top: var(--space-md);">
+                <strong>🎯 Tu Tarea:</strong>
+                <ol style="margin-left: 20px; margin-top: var(--space-xs);">
+                    <li>Reemplaza los placeholders con implementaciones picture/img apropiadas</li>
+                    <li>Asegúrate de que cada producto use una estrategia diferente (picture, srcset, background)</li>
+                    <li>Incluye lazy loading y alt text descriptivo</li>
+                    <li>Testa en diferentes tamaños de ventana</li>
+                </ol>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        // Simulación de carga de imágenes
+        const imageContainers = document.querySelectorAll('.product-image-container');
+        
+        imageContainers.forEach((container, index) => {
+            const placeholder = container.querySelector('.image-placeholder');
+            if (placeholder) {
+                // Simular carga después de 2 segundos
+                setTimeout(() => {
+                    placeholder.style.opacity = '0.5';
+                    placeholder.innerHTML = `
+                        <div style="text-align: center;">
+                            ⏳<br>
+                            <small>Cargando imagen optimizada...</small>
+                        </div>
+                    `;
+                }, 1000 + (index * 500));
+            }
+        });
+
+        // Logging para ayuda en desarrollo
+        console.log(`
+🚀 GUÍA PARA COMPLETAR EL EJERCICIO:
+
+1. PRODUCTO 1 (Smartphone):
+   - Usa <picture> element
+   - Móvil: imagen cuadrada (mejor para scroll vertical)
+   - Desktop: imagen rectangular (aprovecha espacio horizontal)
+
+2. PRODUCTO 2 (Laptop):
+   - Usa <img> con srcset y descriptores w
+   - Múltiples resoluciones: 400w, 800w, 1200w
+   - sizes attribute apropiado
+
+3. PRODUCTO 3 (Auriculares):
+   - Implementa formatos modernos (WebP + fallback)
+   - Usa <picture> para diferentes formatos
+
+4. PRODUCTO 4 (Smartwatch):
+   - Background image responsive con CSS
+   - Media queries para diferentes resoluciones
+
+URLs de ejemplo:
+- https://picsum.photos/400/400?random=X (cuadrada)
+- https://picsum.photos/600/400?random=X (rectangular)
+- https://picsum.photos/800/600?random=X (alta resolución)
+
+¡Manos a la obra! 🎨
+        `);
+
+        // Verificar implementación
+        function checkImplementation() {
+            const pictures = document.querySelectorAll('picture');
+            const imagesWithSrcset = document.querySelectorAll('img[srcset]');
+            const lazyImages = document.querySelectorAll('img[loading="lazy"]');
+            
+            console.log(`
+📊 ESTADO DE TU IMPLEMENTACIÓN:
+• Picture elements: ${pictures.length}
+• Imágenes con srcset: ${imagesWithSrcset.length}
+• Imágenes con lazy loading: ${lazyImages.length}
+
+${pictures.length > 0 ? '✅' : '❌'} Picture elements implementados
+${imagesWithSrcset.length > 0 ? '✅' : '❌'} Srcset implementado
+${lazyImages.length > 0 ? '✅' : '❌'} Lazy loading implementado
+            `);
+        }
+
+        // Verificar cada 5 segundos
+        setInterval(checkImplementation, 5000);
+        
+        // Verificación inicial
+        setTimeout(checkImplementation, 2000);
+    </script>
+</body>
+</html>

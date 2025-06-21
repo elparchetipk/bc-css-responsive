@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard: Grid + Flexbox Integration</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: #f8fafc;
+            color: #2d3748;
+            overflow-x: hidden;
+        }
+
+        /* === LAYOUT PRINCIPAL CON CSS GRID === */
+        .dashboard-layout {
+            display: grid;
+            grid-template-areas: 
+                "sidebar header"
+                "sidebar main";
+            grid-template-columns: 280px 1fr;
+            grid-template-rows: 70px 1fr;
+            height: 100vh;
+            gap: 0;
+        }
+
+        /* === HEADER CON FLEXBOX === */
+        .dashboard-header {
+            grid-area: header;
+            background: white;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 0 30px;
+            
+            /* FLEXBOX PARA ORGANIZAR CONTENIDO DEL HEADER */
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .header-search {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex: 1;
+            max-width: 500px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 10px 15px 10px 40px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            background: #f7fafc;
+            position: relative;
+        }
+
+        .search-container {
+            position: relative;
+            flex: 1;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #718096;
+        }
+
+        .header-actions {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .notification-btn {
+            position: relative;
+            background: #f7fafc;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .notification-btn:hover {
+            background: #edf2f7;
+        }
+
+        .notification-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #f56565;
+            color: white;
+            border-radius: 50%;
+            width: 18px;
+            height: 18px;
+            font-size: 0.7rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+
+        .user-profile:hover {
+            background: #f7fafc;
+        }
+
+        .user-avatar {
+            width: 35px;
+            height: 35px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+        }
+
+        /* === SIDEBAR CON FLEXBOX === */
+        .dashboard-sidebar {
+            grid-area: sidebar;
+            background: #2d3748;
+            color: white;
+            
+            /* FLEXBOX PARA ORGANIZAR CONTENIDO DEL SIDEBAR */
+            display: flex;
+            flex-direction: column;
+        }
+
+        .sidebar-header {
+            padding: 25px;
+            border-bottom: 1px solid #4a5568;
+            
+            /* FLEXBOX PARA LOGO + TEXTO */
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo {
+            width: 40px;
+            height: 40px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-nav {
+            flex: 1;
+            padding: 20px 0;
+            
+            /* FLEXBOX PARA NAVEGACIÓN VERTICAL */
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .nav-section {
+            margin-bottom: 25px;
+        }
+
+        .nav-section-title {
+            color: #a0aec0;
+            font-size: 0.8rem;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            padding: 0 25px;
+            margin-bottom: 10px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 25px;
+            color: #cbd5e0;
+            text-decoration: none;
+            transition: all 0.2s ease;
+            border-right: 3px solid transparent;
+        }
+
+        .nav-item:hover {
+            background: rgba(255,255,255,0.1);
+            color: white;
+        }
+
+        .nav-item.active {
+            background: rgba(102, 126, 234, 0.2);
+            border-right-color: #667eea;
+            color: white;
+        }
+
+        .nav-icon {
+            width: 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        /* === ÁREA PRINCIPAL CON GRID INTERNO + FLEXBOX === */
+        .dashboard-main {
+            grid-area: main;
+            padding: 30px;
+            overflow-y: auto;
+            
+            /* GRID PARA ORGANIZAR WIDGETS */
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 25px;
+            grid-auto-rows: min-content;
+        }
+
+        /* === WIDGETS CON FLEXBOX INTERNO === */
+        .widget {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            border: 1px solid #e2e8f0;
+            
+            /* FLEXBOX PARA CONTENIDO DEL WIDGET */
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .widget-header {
+            /* FLEXBOX PARA TÍTULO + ACCIONES */
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .widget-title {
+            font-size: 1.2rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .widget-action {
+            background: #f7fafc;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            color: #4a5568;
+            cursor: pointer;
+            font-size: 0.85rem;
+            transition: background 0.2s ease;
+        }
+
+        .widget-action:hover {
+            background: #edf2f7;
+        }
+
+        /* === WIDGET ESPECÍFICOS === */
+
+        /* Stats Widget */
+        .stats-widget {
+            grid-column: span 2;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .stat-item {
+            background: #f7fafc;
+            padding: 20px;
+            border-radius: 8px;
+            
+            /* FLEXBOX PARA ORGANIZAR STAT */
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #2d3748;
+        }
+
+        .stat-label {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .stat-change {
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .stat-positive {
+            color: #48bb78;
+        }
+
+        .stat-negative {
+            color: #f56565;
+        }
+
+        /* Chart Widget */
+        .chart-widget {
+            min-height: 300px;
+        }
+
+        .chart-placeholder {
+            flex: 1;
+            background: linear-gradient(135deg, #f7fafc, #edf2f7);
+            border-radius: 8px;
+            border: 2px dashed #cbd5e0;
+            
+            /* FLEXBOX PARA CENTRAR CONTENIDO */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            color: #718096;
+        }
+
+        /* Recent Activity Widget */
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 15px;
+            background: #f7fafc;
+            border-radius: 8px;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            color: white;
+        }
+
+        .activity-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .activity-text {
+            color: #2d3748;
+            font-weight: 500;
+        }
+
+        .activity-time {
+            color: #718096;
+            font-size: 0.85rem;
+        }
+
+        /* Quick Actions Widget */
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .quick-action {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            
+            /* FLEXBOX PARA CENTRAR CONTENIDO */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .quick-action:hover {
+            background: #edf2f7;
+            transform: translateY(-2px);
+        }
+
+        .action-icon {
+            font-size: 1.5rem;
+        }
+
+        .action-text {
+            font-weight: 600;
+            color: #2d3748;
+        }
+
+        /* === RESPONSIVE DESIGN === */
+        @media (max-width: 1024px) {
+            .dashboard-layout {
+                grid-template-areas: 
+                    "header"
+                    "main";
+                grid-template-columns: 1fr;
+                grid-template-rows: 70px 1fr;
+            }
+
+            .dashboard-sidebar {
+                position: fixed;
+                left: -280px;
+                top: 0;
+                bottom: 0;
+                z-index: 1000;
+                transition: left 0.3s ease;
+            }
+
+            .dashboard-sidebar.open {
+                left: 0;
+            }
+
+            .stats-widget {
+                grid-column: span 1;
+            }
+
+            .dashboard-main {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .header-search {
+                display: none;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+
+            .dashboard-main {
+                padding: 20px;
+                gap: 20px;
+            }
+        }
+
+        /* === OVERLAY PARA MÓVIL === */
+        .sidebar-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            z-index: 999;
+        }
+
+        .sidebar-overlay.show {
+            display: block;
+        }
+
+        /* === BOTÓN MENÚ MÓVIL === */
+        .mobile-menu-btn {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 6px;
+            color: #4a5568;
+        }
+
+        .mobile-menu-btn:hover {
+            background: #f7fafc;
+        }
+
+        @media (max-width: 1024px) {
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* === CÓDIGO EXPLICATIVO === */
+        .code-explanation {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #2d3748;
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            max-width: 300px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            font-family: 'Courier New', monospace;
+            font-size: 0.8rem;
+            z-index: 2000;
+        }
+
+        .code-explanation h4 {
+            color: #ffd700;
+            margin-bottom: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-layout">
+        <!-- HEADER: Flexbox para organización horizontal -->
+        <header class="dashboard-header">
+            <button class="mobile-menu-btn" onclick="toggleSidebar()">☰</button>
+            
+            <div class="header-search">
+                <div class="search-container">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Buscar en dashboard...">
+                </div>
+            </div>
+
+            <div class="header-actions">
+                <button class="notification-btn">
+                    🔔
+                    <span class="notification-badge">3</span>
+                </button>
+                
+                <div class="user-profile">
+                    <div class="user-avatar">AD</div>
+                    <div>
+                        <div style="font-weight: 600; font-size: 0.9rem;">Ana Díaz</div>
+                        <div style="color: #718096; font-size: 0.8rem;">Admin</div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- SIDEBAR: Flexbox para navegación vertical -->
+        <aside class="dashboard-sidebar" id="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">📊</div>
+                <div>
+                    <div style="font-weight: bold;">DashPro</div>
+                    <div style="font-size: 0.8rem; color: #a0aec0;">Analytics Platform</div>
+                </div>
+            </div>
+
+            <nav class="sidebar-nav">
+                <div class="nav-section">
+                    <div class="nav-section-title">Principal</div>
+                    <a href="#" class="nav-item active">
+                        <span class="nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📈</span>
+                        Analytics
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">👥</span>
+                        Usuarios
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Gestión</div>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📦</span>
+                        Productos
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">💳</span>
+                        Ventas
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">📋</span>
+                        Reportes
+                    </a>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Sistema</div>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">⚙️</span>
+                        Configuración
+                    </a>
+                    <a href="#" class="nav-item">
+                        <span class="nav-icon">❓</span>
+                        Ayuda
+                    </a>
+                </div>
+            </nav>
+        </aside>
+
+        <!-- MAIN: Grid para widgets + Flexbox dentro de cada widget -->
+        <main class="dashboard-main">
+            
+            <!-- Widget de Estadísticas: Grid interno + Flexbox -->
+            <div class="widget stats-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Estadísticas Generales</h3>
+                    <button class="widget-action">Ver todo</button>
+                </div>
+                
+                <div class="stats-grid">
+                    <div class="stat-item">
+                        <div class="stat-value">12,847</div>
+                        <div class="stat-label">Usuarios Activos</div>
+                        <div class="stat-change stat-positive">+12% vs mes anterior</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">$89,432</div>
+                        <div class="stat-label">Ingresos</div>
+                        <div class="stat-change stat-positive">+8.5% vs mes anterior</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">94.2%</div>
+                        <div class="stat-label">Tasa de Conversión</div>
+                        <div class="stat-change stat-negative">-2.1% vs mes anterior</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value">2.4s</div>
+                        <div class="stat-label">Tiempo de Carga</div>
+                        <div class="stat-change stat-positive">-0.3s vs mes anterior</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget de Gráfico: Flexbox para estructura -->
+            <div class="widget chart-widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Tendencias de Ventas</h3>
+                    <button class="widget-action">30 días</button>
+                </div>
+                
+                <div class="chart-placeholder">
+                    <div style="font-size: 3rem;">📈</div>
+                    <div>Gráfico de Tendencias</div>
+                    <div style="font-size: 0.8rem; color: #a0aec0;">Datos de los últimos 30 días</div>
+                </div>
+            </div>
+
+            <!-- Widget de Actividad Reciente: Flexbox para lista -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Actividad Reciente</h3>
+                    <button class="widget-action">Ver todas</button>
+                </div>
+                
+                <div class="activity-list">
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: #48bb78;">✅</div>
+                        <div class="activity-content">
+                            <div class="activity-text">Nuevo usuario registrado</div>
+                            <div class="activity-time">Hace 5 minutos</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: #667eea;">💳</div>
+                        <div class="activity-content">
+                            <div class="activity-text">Pago procesado: $249.99</div>
+                            <div class="activity-time">Hace 12 minutos</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: #f56565;">⚠️</div>
+                        <div class="activity-content">
+                            <div class="activity-text">Error en servidor API</div>
+                            <div class="activity-time">Hace 25 minutos</div>
+                        </div>
+                    </div>
+                    <div class="activity-item">
+                        <div class="activity-icon" style="background: #ed8936;">📦</div>
+                        <div class="activity-content">
+                            <div class="activity-text">Producto actualizado</div>
+                            <div class="activity-time">Hace 1 hora</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget de Acciones Rápidas: Grid + Flexbox -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Acciones Rápidas</h3>
+                </div>
+                
+                <div class="quick-actions">
+                    <div class="quick-action">
+                        <div class="action-icon">➕</div>
+                        <div class="action-text">Crear Usuario</div>
+                    </div>
+                    <div class="quick-action">
+                        <div class="action-icon">📊</div>
+                        <div class="action-text">Generar Reporte</div>
+                    </div>
+                    <div class="quick-action">
+                        <div class="action-icon">📧</div>
+                        <div class="action-text">Enviar Email</div>
+                    </div>
+                    <div class="quick-action">
+                        <div class="action-icon">⚙️</div>
+                        <div class="action-text">Configurar</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Widget de Progreso: Flexbox para barras -->
+            <div class="widget">
+                <div class="widget-header">
+                    <h3 class="widget-title">Objetivos del Mes</h3>
+                    <button class="widget-action">Editar</button>
+                </div>
+                
+                <div style="display: flex; flex-direction: column; gap: 20px;">
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600;">Ventas</span>
+                            <span style="color: #718096;">75%</span>
+                        </div>
+                        <div style="background: #e2e8f0; height: 8px; border-radius: 4px;">
+                            <div style="background: #48bb78; height: 100%; width: 75%; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600;">Usuarios Nuevos</span>
+                            <span style="color: #718096;">60%</span>
+                        </div>
+                        <div style="background: #e2e8f0; height: 8px; border-radius: 4px;">
+                            <div style="background: #667eea; height: 100%; width: 60%; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                    
+                    <div>
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
+                            <span style="font-weight: 600;">Retención</span>
+                            <span style="color: #718096;">90%</span>
+                        </div>
+                        <div style="background: #e2e8f0; height: 8px; border-radius: 4px;">
+                            <div style="background: #f56565; height: 100%; width: 90%; border-radius: 4px;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Overlay para móvil -->
+    <div class="sidebar-overlay" id="sidebar-overlay" onclick="toggleSidebar()"></div>
+
+    <!-- Explicación de código -->
+    <div class="code-explanation">
+        <h4>🧠 Integración Grid + Flexbox</h4>
+        <p><strong>Grid:</strong> Layout principal (sidebar + header + main)</p>
+        <p><strong>Flexbox:</strong> Organización interna de cada área</p>
+        <p>Esta es la arquitectura que usan aplicaciones como Gmail, Notion y Slack.</p>
+    </div>
+
+    <script>
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const overlay = document.getElementById('sidebar-overlay');
+            
+            sidebar.classList.toggle('open');
+            overlay.classList.toggle('show');
+        }
+
+        // Cerrar sidebar al hacer clic en overlay
+        document.getElementById('sidebar-overlay').addEventListener('click', toggleSidebar);
+
+        // Navegación activa
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.addEventListener('click', (e) => {
+                e.preventDefault();
+                document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+                item.classList.add('active');
+            });
+        });
+
+        // Simulación de datos en tiempo real
+        function updateStats() {
+            const statValues = document.querySelectorAll('.stat-value');
+            statValues.forEach(stat => {
+                const currentValue = stat.textContent;
+                // Aquí se actualizarían los valores reales
+            });
+        }
+
+        // Actualizar stats cada 5 segundos (simulación)
+        setInterval(updateStats, 5000);
+    </script>
+</body>
+</html>

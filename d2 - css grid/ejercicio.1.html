@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+</head>
+<style>
+/* CSS Grid Implementation */
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 24px;
+    padding: 20px;
+}
+
+.card {
+    background: white;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    transition: transform 0.2s ease;
+}
+
+.card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.2);
+}
+
+/* La card destacada ocupa más espacio */
+.card--featured {
+    grid-column: span 2;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+}
+
+/* Responsive: En móvil, todas las cards ocupan el ancho completo */
+@media (max-width: 600px) {
+    .card--featured {
+        grid-column: span 1;
+    }
+}
+</style>
+<body>
+  <!-- HTML Structure -->
+  <div class="cards-grid">
+    <div class="card card--featured">Card Destacada</div>
+    <div class="card">Card Normal</div>
+    <div class="card">Card Normal</div>
+    <div class="card">Card Normal</div>
+    <div class="card">Card Normal</div>
+    <div class="card">Card Normal</div>
+  </div>
+  
+</body>
+</html>

@@ -1,0 +1,802 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema Híbrido: Container Queries + Frameworks</title>
+    
+    <!-- Bootstrap 5.3 CDN -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    
+    <style>
+        /* =================================================================
+           SISTEMA HÍBRIDO: BOOTSTRAP + CONTAINER QUERIES + CSS MODERNO
+           ================================================================= */
+        
+        @layer reset, framework-overrides, custom-components, container-queries;
+        
+        /* Sobrescritura controlada de Bootstrap */
+        @layer framework-overrides {
+            :root {
+                /* Extendemos las variables de Bootstrap con nuestras propias variables */
+                --bs-border-radius-lg: 1rem;
+                --bs-border-radius-xl: 1.25rem;
+                
+                /* Nuevas variables para container queries */
+                --container-sm: 400px;
+                --container-md: 600px;
+                --container-lg: 800px;
+                --container-xl: 1000px;
+                
+                /* Tokens de espaciado avanzados */
+                --space-xs: 0.25rem;
+                --space-sm: 0.5rem;
+                --space-md: 1rem;
+                --space-lg: 1.5rem;
+                --space-xl: 2rem;
+                --space-2xl: 3rem;
+            }
+            
+            /* Mejorar el sistema de grid de Bootstrap con container queries */
+            .container-fluid {
+                container-type: inline-size;
+                container-name: main-layout;
+            }
+            
+            .row {
+                container-type: inline-size;
+                container-name: row-container;
+            }
+            
+            .col, [class*="col-"] {
+                container-type: inline-size;
+                container-name: column-container;
+            }
+        }
+        
+        /* =================================================================
+           COMPONENTE HÍBRIDO: CARD DASHBOARD
+           ================================================================= */
+        
+        @layer custom-components {
+            .dashboard-card {
+                /* Aprovechamos las clases de Bootstrap como base */
+                @extend .card, .h-100, .shadow-sm;
+                
+                /* Agregamos nuestras mejoras con CSS moderno */
+                container-type: inline-size;
+                container-name: dashboard-card;
+                border: none;
+                border-radius: var(--bs-border-radius-xl);
+                transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+                
+                /* CSS Nesting para una mejor organización */
+                &:hover {
+                    transform: translateY(-4px);
+                    box-shadow: 0 20px 40px rgba(0,0,0,0.1) !important;
+                }
+                
+                & .dashboard-card-header {
+                    background: transparent;
+                    border-bottom: 1px solid rgba(0,0,0,0.08);
+                    padding: var(--space-lg);
+                    
+                    & .card-title {
+                        margin-bottom: 0;
+                        font-weight: 600;
+                        color: var(--bs-gray-800);
+                        
+                        & .title-icon {
+                            width: 24px;
+                            height: 24px;
+                            margin-right: var(--space-sm);
+                            opacity: 0.8;
+                        }
+                    }
+                    
+                    & .card-subtitle {
+                        color: var(--bs-gray-600);
+                        font-size: 0.875rem;
+                        margin-bottom: 0;
+                        margin-top: var(--space-xs);
+                    }
+                }
+                
+                & .dashboard-card-body {
+                    padding: var(--space-lg);
+                    
+                    & .metric-value {
+                        font-size: 2.5rem;
+                        font-weight: 700;
+                        color: var(--bs-primary);
+                        line-height: 1;
+                        margin-bottom: var(--space-sm);
+                        
+                        & .metric-unit {
+                            font-size: 1rem;
+                            color: var(--bs-gray-600);
+                            font-weight: 400;
+                        }
+                    }
+                    
+                    & .metric-change {
+                        display: flex;
+                        align-items: center;
+                        gap: var(--space-xs);
+                        font-size: 0.875rem;
+                        font-weight: 500;
+                        
+                        &.positive {
+                            color: var(--bs-success);
+                        }
+                        
+                        &.negative {
+                            color: var(--bs-danger);
+                        }
+                        
+                        & .change-icon {
+                            font-size: 0.75rem;
+                        }
+                    }
+                    
+                    & .chart-container {
+                        margin-top: var(--space-lg);
+                        height: 150px;
+                        background: var(--bs-light);
+                        border-radius: var(--bs-border-radius);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: var(--bs-gray-600);
+                        position: relative;
+                        overflow: hidden;
+                        
+                        /* Simulación de gráfico con CSS */
+                        &::before {
+                            content: '';
+                            position: absolute;
+                            bottom: 0;
+                            left: 0;
+                            width: 100%;
+                            height: 60%;
+                            background: linear-gradient(45deg, 
+                                var(--bs-primary) 0%, 
+                                var(--bs-info) 50%, 
+                                var(--bs-success) 100%);
+                            opacity: 0.1;
+                            clip-path: polygon(0 100%, 15% 85%, 30% 90%, 45% 70%, 60% 75%, 75% 60%, 90% 65%, 100% 50%, 100% 100%);
+                        }
+                    }
+                }
+                
+                & .dashboard-card-footer {
+                    background: transparent;
+                    border-top: 1px solid rgba(0,0,0,0.08);
+                    padding: var(--space-md) var(--space-lg);
+                    
+                    & .action-buttons {
+                        display: flex;
+                        gap: var(--space-sm);
+                        
+                        & .btn {
+                            font-size: 0.875rem;
+                            padding: var(--space-sm) var(--space-md);
+                            border-radius: var(--bs-border-radius);
+                        }
+                    }
+                }
+            }
+            
+            /* =============================================================
+               CONTAINER QUERIES APLICADAS AL DASHBOARD CARD
+               ============================================================= */
+            
+            /* Layout compacto (menos de 300px) - Widget pequeño */
+            @container dashboard-card (max-width: 299px) {
+                .dashboard-card {
+                    & .dashboard-card-header {
+                        padding: var(--space-md);
+                        
+                        & .card-title {
+                            font-size: 1rem;
+                            
+                            & .title-icon {
+                                display: none; /* Ocultamos iconos en espacio muy limitado */
+                            }
+                        }
+                        
+                        & .card-subtitle {
+                            display: none; /* Ocultamos subtítulo para ahorrar espacio */
+                        }
+                    }
+                    
+                    & .dashboard-card-body {
+                        padding: var(--space-md);
+                        text-align: center;
+                        
+                        & .metric-value {
+                            font-size: 1.75rem;
+                        }
+                        
+                        & .chart-container {
+                            height: 80px;
+                            margin-top: var(--space-sm);
+                        }
+                    }
+                    
+                    & .dashboard-card-footer {
+                        padding: var(--space-sm) var(--space-md);
+                        
+                        & .action-buttons {
+                            justify-content: center;
+                            
+                            & .btn {
+                                font-size: 0.75rem;
+                                padding: var(--space-xs) var(--space-sm);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Layout estándar (300px - 499px) - Card normal */
+            @container dashboard-card (min-width: 300px) and (max-width: 499px) {
+                .dashboard-card {
+                    & .metric-value {
+                        font-size: 2rem;
+                    }
+                    
+                    & .chart-container {
+                        height: 120px;
+                    }
+                }
+            }
+            
+            /* Layout expandido (500px - 699px) - Card con más detalles */
+            @container dashboard-card (min-width: 500px) and (max-width: 699px) {
+                .dashboard-card {
+                    & .dashboard-card-body {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr;
+                        gap: var(--space-lg);
+                        align-items: start;
+                        
+                        & .metrics-section {
+                            /* Métricas a la izquierda */
+                        }
+                        
+                        & .chart-container {
+                            margin-top: 0;
+                            height: 180px;
+                            /* Gráfico a la derecha */
+                        }
+                    }
+                }
+            }
+            
+            /* Layout premium (700px+) - Dashboard card completo */
+            @container dashboard-card (min-width: 700px) {
+                .dashboard-card {
+                    & .dashboard-card-header {
+                        & .card-title {
+                            font-size: 1.5rem;
+                        }
+                        
+                        /* Agregamos acciones en el header para cards grandes */
+                        & .header-actions {
+                            display: flex;
+                            gap: var(--space-sm);
+                            margin-left: auto;
+                            
+                            & .btn {
+                                font-size: 0.75rem;
+                                padding: var(--space-xs) var(--space-sm);
+                            }
+                        }
+                    }
+                    
+                    & .dashboard-card-body {
+                        display: grid;
+                        grid-template-columns: 200px 1fr;
+                        gap: var(--space-xl);
+                        
+                        & .metrics-section {
+                            & .additional-metrics {
+                                margin-top: var(--space-lg);
+                                padding-top: var(--space-lg);
+                                border-top: 1px solid rgba(0,0,0,0.08);
+                                
+                                & .mini-metric {
+                                    display: flex;
+                                    justify-content: space-between;
+                                    margin-bottom: var(--space-sm);
+                                    font-size: 0.875rem;
+                                    
+                                    & .label {
+                                        color: var(--bs-gray-600);
+                                    }
+                                    
+                                    & .value {
+                                        font-weight: 600;
+                                        color: var(--bs-gray-800);
+                                    }
+                                }
+                            }
+                        }
+                        
+                        & .chart-container {
+                            height: 250px;
+                            margin-top: 0;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           COMPONENTE ADAPTATIVO: NAVIGATION CARD
+           ================================================================= */
+        
+        @layer custom-components {
+            .nav-card {
+                container-type: inline-size;
+                container-name: nav-card;
+                background: white;
+                border-radius: var(--bs-border-radius-lg);
+                box-shadow: var(--bs-box-shadow-sm);
+                padding: var(--space-lg);
+                
+                & .nav-list {
+                    list-style: none;
+                    margin: 0;
+                    padding: 0;
+                    display: flex;
+                    flex-direction: column;
+                    gap: var(--space-sm);
+                    
+                    & .nav-item {
+                        & .nav-link {
+                            display: flex;
+                            align-items: center;
+                            gap: var(--space-sm);
+                            padding: var(--space-sm) var(--space-md);
+                            border-radius: var(--bs-border-radius);
+                            text-decoration: none;
+                            color: var(--bs-gray-700);
+                            transition: all 0.2s ease;
+                            
+                            & .nav-icon {
+                                width: 20px;
+                                height: 20px;
+                                opacity: 0.7;
+                            }
+                            
+                            & .nav-text {
+                                font-weight: 500;
+                            }
+                            
+                            & .nav-badge {
+                                margin-left: auto;
+                                background: var(--bs-primary);
+                                color: white;
+                                padding: 0.125rem 0.5rem;
+                                border-radius: 1rem;
+                                font-size: 0.75rem;
+                            }
+                            
+                            &:hover {
+                                background: var(--bs-primary);
+                                color: white;
+                                transform: translateX(4px);
+                                
+                                & .nav-icon {
+                                    opacity: 1;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Container queries para el componente de navegación */
+            @container nav-card (min-width: 250px) {
+                .nav-card {
+                    & .nav-list {
+                        & .nav-item {
+                            & .nav-link {
+                                & .nav-text {
+                                    /* En contenedores amplios, mostramos texto completo */
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            @container nav-card (max-width: 249px) {
+                .nav-card {
+                    padding: var(--space-md);
+                    
+                    & .nav-list {
+                        align-items: center;
+                        
+                        & .nav-item {
+                            & .nav-link {
+                                justify-content: center;
+                                padding: var(--space-md);
+                                
+                                & .nav-text {
+                                    display: none; /* Ocultamos texto en contenedores estrechos */
+                                }
+                                
+                                & .nav-badge {
+                                    position: absolute;
+                                    top: -4px;
+                                    right: -4px;
+                                    margin-left: 0;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           UTILIDADES PARA DEMOSTRACIÓN
+           ================================================================= */
+        
+        @layer utilities {
+            .demo-container {
+                border: 2px dashed var(--bs-border-color);
+                border-radius: var(--bs-border-radius-lg);
+                padding: var(--space-lg);
+                margin-bottom: var(--space-xl);
+                background: var(--bs-light);
+                
+                & .demo-label {
+                    background: var(--bs-primary);
+                    color: white;
+                    padding: var(--space-xs) var(--space-md);
+                    border-radius: var(--bs-border-radius);
+                    font-size: 0.875rem;
+                    font-weight: 600;
+                    margin-bottom: var(--space-lg);
+                    display: inline-block;
+                }
+            }
+            
+            .info-panel {
+                background: linear-gradient(135deg, #e3f2fd 0%, #f3e5f5 100%);
+                border: 1px solid var(--bs-primary);
+                border-radius: var(--bs-border-radius-lg);
+                padding: var(--space-xl);
+                margin-bottom: var(--space-xl);
+                
+                & h3 {
+                    color: var(--bs-primary);
+                    margin-bottom: var(--space-lg);
+                    font-weight: 600;
+                }
+                
+                & code {
+                    background: rgba(var(--bs-primary-rgb), 0.1);
+                    padding: var(--space-xs) var(--space-sm);
+                    border-radius: var(--bs-border-radius-sm);
+                    font-family: 'Courier New', monospace;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <h1 class="display-4 mb-4 text-center">🔄 Sistema Híbrido: Container Queries + Bootstrap</h1>
+        
+        <div class="info-panel">
+            <h3>🧬 Concepto: Evolución, no Revolución</h3>
+            <p>Este sistema híbrido combina lo mejor de Bootstrap (sistema de grid probado, componentes base, utilidades) con las capacidades modernas de CSS (container queries, nesting, :has()). No reemplazamos Bootstrap, lo extendemos y mejoramos.</p>
+            
+            <p><strong>Ventajas del enfoque híbrido:</strong></p>
+            <p>🎯 Aprovechamos el ecosistema y la madurez de Bootstrap</p>
+            <p>⚡ Agregamos capacidades adaptativas avanzadas con container queries</p>
+            <p>🔧 Mantenemos compatibilidad con equipos que ya conocen Bootstrap</p>
+            <p>🚀 Preparamos el camino hacia el futuro del CSS</p>
+        </div>
+        
+        <!-- Demo Grid: Dashboard Cards en diferentes tamaños -->
+        <div class="row g-4 mb-5">
+            <div class="col-12">
+                <h2 class="h3 mb-3">📊 Dashboard Cards Adaptativos</h2>
+                <p class="text-muted mb-4">Cada card se adapta automáticamente según el espacio disponible en su columna. Redimensiona la ventana para ver cómo se comportan.</p>
+            </div>
+            
+            <!-- Widget pequeño -->
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="demo-container" style="max-width: 280px;">
+                    <span class="demo-label">Widget Pequeño (< 300px)</span>
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h5 class="card-title">
+                                <span class="title-icon">💰</span>
+                                Ventas
+                            </h5>
+                            <p class="card-subtitle">Últimas 24 horas</p>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="metrics-section">
+                                <div class="metric-value">
+                                    $24.5<span class="metric-unit">K</span>
+                                </div>
+                                <div class="metric-change positive">
+                                    <span class="change-icon">↗</span>
+                                    <span>+12.5%</span>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                📈 Gráfico
+                            </div>
+                        </div>
+                        <div class="dashboard-card-footer">
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm">Ver</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card estándar -->
+            <div class="col-6 col-md-4 col-lg-3">
+                <div class="demo-container" style="max-width: 400px;">
+                    <span class="demo-label">Card Estándar (300-499px)</span>
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h5 class="card-title">
+                                <span class="title-icon">👥</span>
+                                Usuarios
+                            </h5>
+                            <p class="card-subtitle">Activos este mes</p>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="metrics-section">
+                                <div class="metric-value">
+                                    1.2<span class="metric-unit">K</span>
+                                </div>
+                                <div class="metric-change positive">
+                                    <span class="change-icon">↗</span>
+                                    <span>+8.2%</span>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                📊 Gráfico de Usuarios
+                            </div>
+                        </div>
+                        <div class="dashboard-card-footer">
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm">Detalles</button>
+                                <button class="btn btn-outline-secondary btn-sm">Exportar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card expandido -->
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="demo-container" style="max-width: 600px;">
+                    <span class="demo-label">Card Expandido (500-699px)</span>
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header">
+                            <h5 class="card-title">
+                                <span class="title-icon">📈</span>
+                                Conversiones
+                            </h5>
+                            <p class="card-subtitle">Tasa de conversión semanal</p>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="metrics-section">
+                                <div class="metric-value">
+                                    3.47<span class="metric-unit">%</span>
+                                </div>
+                                <div class="metric-change negative">
+                                    <span class="change-icon">↘</span>
+                                    <span>-2.1%</span>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                📉 Gráfico de Conversiones (Layout Lado a Lado)
+                            </div>
+                        </div>
+                        <div class="dashboard-card-footer">
+                            <div class="action-buttons">
+                                <button class="btn btn-primary btn-sm">Analizar</button>
+                                <button class="btn btn-outline-secondary btn-sm">Configurar</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Card premium -->
+            <div class="col-12">
+                <div class="demo-container" style="min-width: 800px;">
+                    <span class="demo-label">Card Premium (700px+)</span>
+                    <div class="dashboard-card">
+                        <div class="dashboard-card-header d-flex align-items-center">
+                            <div>
+                                <h5 class="card-title">
+                                    <span class="title-icon">🎯</span>
+                                    Rendimiento General
+                                </h5>
+                                <p class="card-subtitle">Dashboard ejecutivo completo</p>
+                            </div>
+                            <div class="header-actions">
+                                <button class="btn btn-outline-secondary">⚙️</button>
+                                <button class="btn btn-outline-secondary">📊</button>
+                                <button class="btn btn-outline-secondary">⬇️</button>
+                            </div>
+                        </div>
+                        <div class="dashboard-card-body">
+                            <div class="metrics-section">
+                                <div class="metric-value">
+                                    $847.2<span class="metric-unit">K</span>
+                                </div>
+                                <div class="metric-change positive">
+                                    <span class="change-icon">↗</span>
+                                    <span>+15.8% vs mes anterior</span>
+                                </div>
+                                
+                                <div class="additional-metrics">
+                                    <div class="mini-metric">
+                                        <span class="label">Ingresos Totales</span>
+                                        <span class="value">$847.2K</span>
+                                    </div>
+                                    <div class="mini-metric">
+                                        <span class="label">Costo de Adquisición</span>
+                                        <span class="value">$24.50</span>
+                                    </div>
+                                    <div class="mini-metric">
+                                        <span class="label">Valor de Vida</span>
+                                        <span class="value">$342.80</span>
+                                    </div>
+                                    <div class="mini-metric">
+                                        <span class="label">ROI</span>
+                                        <span class="value">14.2x</span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="chart-container">
+                                📊 Gráfico Ejecutivo Completo con Múltiples Métricas
+                            </div>
+                        </div>
+                        <div class="dashboard-card-footer">
+                            <div class="action-buttons">
+                                <button class="btn btn-primary">Ver Reporte Completo</button>
+                                <button class="btn btn-outline-secondary">Programar Reunión</button>
+                                <button class="btn btn-outline-secondary">Exportar Datos</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Demo: Navegación Adaptativa -->
+        <div class="row g-4">
+            <div class="col-12">
+                <h2 class="h3 mb-3">🧭 Navegación Adaptativa</h2>
+                <p class="text-muted mb-4">Componente de navegación que se transforma entre versión completa e iconos según el espacio disponible.</p>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="demo-container" style="max-width: 200px;">
+                    <span class="demo-label">Nav Compacta (< 250px)</span>
+                    <div class="nav-card">
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">🏠</span>
+                                    <span class="nav-text">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">📊</span>
+                                    <span class="nav-text">Analíticas</span>
+                                    <span class="nav-badge">3</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">👥</span>
+                                    <span class="nav-text">Usuarios</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">⚙️</span>
+                                    <span class="nav-text">Configuración</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-6 col-lg-4">
+                <div class="demo-container" style="max-width: 300px;">
+                    <span class="demo-label">Nav Completa (250px+)</span>
+                    <div class="nav-card">
+                        <ul class="nav-list">
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">🏠</span>
+                                    <span class="nav-text">Dashboard</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">📊</span>
+                                    <span class="nav-text">Analíticas</span>
+                                    <span class="nav-badge">3</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">👥</span>
+                                    <span class="nav-text">Usuarios</span>
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a href="#" class="nav-link">
+                                    <span class="nav-icon">⚙️</span>
+                                    <span class="nav-text">Configuración</span>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Bootstrap JavaScript -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // Debugging de container queries en tiempo real
+        const dashboardCards = document.querySelectorAll('.dashboard-card');
+        const navCards = document.querySelectorAll('.nav-card');
+        
+        function observeContainer(elements, name) {
+            elements.forEach((element, index) => {
+                const observer = new ResizeObserver(entries => {
+                    for (let entry of entries) {
+                        const width = Math.round(entry.contentRect.width);
+                        
+                        let layout;
+                        if (name === 'dashboard') {
+                            if (width >= 700) layout = '🎯 Premium';
+                            else if (width >= 500) layout = '🖥️ Expandido';
+                            else if (width >= 300) layout = '💻 Estándar';
+                            else layout = '📱 Compacto';
+                        } else {
+                            if (width >= 250) layout = '📋 Completa';
+                            else layout = '🎯 Solo iconos';
+                        }
+                        
+                        console.log(`${name} card ${index + 1}: ${width}px - ${layout}`);
+                    }
+                });
+                
+                observer.observe(element);
+            });
+        }
+        
+        observeContainer(dashboardCards, 'dashboard');
+        observeContainer(navCards, 'nav');
+    </script>
+</body>
+</html>

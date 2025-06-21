@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Breadcrumbs Transformables con Container Queries</title>
+    <style>
+        /* =================================================================
+           SISTEMA BASE: TOKENS Y FUNDAMENTOS PARA BREADCRUMBS
+           ================================================================= */
+        
+        @layer reset, tokens, base, breadcrumb-components, adaptive-states, interactions;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+        
+        @layer tokens {
+            :root {
+                /* Tokens específicos para sistemas de breadcrumbs */
+                --breadcrumb-bg: #ffffff;
+                --breadcrumb-bg-alt: #f8fafc;
+                --breadcrumb-border: #e2e8f0;
+                --breadcrumb-text: #374151;
+                --breadcrumb-text-muted: #6b7280;
+                --breadcrumb-text-active: #3b82f6;
+                --breadcrumb-separator: #9ca3af;
+                
+                /* Tokens de espaciado para breadcrumbs */
+                --breadcrumb-padding-xs: 0.25rem;
+                --breadcrumb-padding-sm: 0.5rem;
+                --breadcrumb-padding-md: 0.75rem;
+                --breadcrumb-padding-lg: 1rem;
+                --breadcrumb-padding-xl: 1.5rem;
+                
+                /* Tokens de tipografía para diferentes estados */
+                --breadcrumb-font-xs: 0.75rem;
+                --breadcrumb-font-sm: 0.875rem;
+                --breadcrumb-font-md: 1rem;
+                --breadcrumb-font-lg: 1.125rem;
+                
+                /* Tokens de spacing entre elementos */
+                --breadcrumb-gap-sm: 0.5rem;
+                --breadcrumb-gap-md: 0.75rem;
+                --breadcrumb-gap-lg: 1rem;
+                
+                /* Tokens para animaciones de transformación */
+                --breadcrumb-transition: 0.2s ease-in-out;
+                --breadcrumb-transition-slow: 0.3s ease-in-out;
+                
+                /* Tokens de colores para estados especiales */
+                --breadcrumb-hover: #f3f4f6;
+                --breadcrumb-focus: #dbeafe;
+                --breadcrumb-current: #1e40af;
+                
+                /* Tokens para elementos colapsados */
+                --breadcrumb-collapsed-bg: #f3f4f6;
+                --breadcrumb-collapsed-border: #d1d5db;
+                --breadcrumb-ellipsis: #9ca3af;
+            }
+        }
+        
+        @layer base {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                background: #f9fafb;
+                color: var(--breadcrumb-text);
+                padding: 2rem;
+            }
+            
+            .demo-container {
+                background: white;
+                border: 2px dashed var(--breadcrumb-border);
+                border-radius: 0.75rem;
+                padding: var(--breadcrumb-padding-xl);
+                margin-bottom: var(--breadcrumb-padding-xl);
+                
+                /* Cada demo container es un contexto de container query */
+                container-type: inline-size;
+                container-name: breadcrumb-container;
+            }
+            
+            .demo-label {
+                background: var(--breadcrumb-text-active);
+                color: white;
+                padding: var(--breadcrumb-padding-sm) var(--breadcrumb-padding-md);
+                border-radius: 0.5rem;
+                font-size: var(--breadcrumb-font-sm);
+                font-weight: 600;
+                margin-bottom: var(--breadcrumb-padding-lg);
+                display: inline-block;
+            }
+        }
+        
+        /* =================================================================
+           COMPONENTE PRINCIPAL: BREADCRUMBS TRANSFORMABLES
+           ================================================================= */
+        
+        @layer breadcrumb-components {
+            .breadcrumb-nav {
+                /* El componente breadcrumb es su propio contexto de container query */
+                container-type: inline-size;
+                container-name: breadcrumb-nav;
+                
+                background: var(--breadcrumb-bg);
+                border: 1px solid var(--breadcrumb-border);
+                border-radius: 0.75rem;
+                padding: var(--breadcrumb-padding-md) var(--breadcrumb-padding-lg);
+                box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+                
+                /* Layout por defecto: horizontal con wrap para espacios pequeños */
+                & .breadcrumb-list {
+                    list-style: none;
+                    display: flex;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: var(--breadcrumb-gap-sm);
+                    margin: 0;
+                    
+                    & .breadcrumb-item {
+                        display: flex;
+                        align-items: center;
+                        font-size: var(--breadcrumb-font-sm);
+                        
+                        /* Estilos para enlaces de breadcrumb */
+                        & .breadcrumb-link {
+                            color: var(--breadcrumb-text-muted);
+                            text-decoration: none;
+                            padding: var(--breadcrumb-padding-xs) var(--breadcrumb-padding-sm);
+                            border-radius: 0.375rem;
+                            transition: all var(--breadcrumb-transition);
+                            position: relative;
+                            
+                            /* Efectos de interacción */
+                            &:hover {
+                                color: var(--breadcrumb-text-active);
+                                background: var(--breadcrumb-hover);
+                            }
+                            
+                            &:focus {
+                                outline: 2px solid var(--breadcrumb-text-active);
+                                outline-offset: 2px;
+                                background: var(--breadcrumb-focus);
+                            }
+                        }
+                        
+                        /* Elemento actual (no enlace) */
+                        & .breadcrumb-current {
+                            color: var(--breadcrumb-current);
+                            font-weight: 600;
+                            padding: var(--breadcrumb-padding-xs) var(--breadcrumb-padding-sm);
+                        }
+                        
+                        /* Separadores entre elementos */
+                        & .breadcrumb-separator {
+                            color: var(--breadcrumb-separator);
+                            margin: 0 var(--breadcrumb-gap-sm);
+                            font-size: var(--breadcrumb-font-xs);
+                            user-select: none;
+                        }
+                        
+                        /* Icono para el home */
+                        & .breadcrumb-icon {
+                            margin-right: var(--breadcrumb-padding-xs);
+                            font-size: var(--breadcrumb-font-sm);
+                            opacity: 0.7;
+                        }
+                        
+                        /* Elementos que se pueden colapsar */
+                        &.collapsible {
+                            /* Estos elementos pueden ocultarse en espacios reducidos */
+                        }
+                        
+                        /* Estado colapsado con ellipsis */
+                        &.collapsed {
+                            & .breadcrumb-text {
+                                display: none;
+                            }
+                            
+                            &::after {
+                                content: '...';
+                                color: var(--breadcrumb-ellipsis);
+                                font-weight: 600;
+                                padding: var(--breadcrumb-padding-xs) var(--breadcrumb-padding-sm);
+                                background: var(--breadcrumb-collapsed-bg);
+                                border: 1px solid var(--breadcrumb-collapsed-border);
+                                border-radius: 0.375rem;
+                                cursor: pointer;
+                                transition: all var(--breadcrumb-transition);
+                            }
+                            
+                            &:hover::after {
+                                background: var(--breadcrumb-text-active);
+                                color: white;
+                                border-color: var(--breadcrumb-text-active);
+                            }
+                        }
+                    }
+                }
+                
+                /* Información contextual opcional */
+                & .breadcrumb-meta {
+                    margin-top: var(--breadcrumb-padding-sm);
+                    font-size: var(--breadcrumb-font-xs);
+                    color: var(--breadcrumb-text-muted);
+                    display: none; /* Oculto por defecto, se muestra en espacios amplios */
+                    
+                    & .meta-item {
+                        display: inline-flex;
+                        align-items: center;
+                        margin-right: var(--breadcrumb-gap-md);
+                        
+                        & .meta-icon {
+                            margin-right: var(--breadcrumb-padding-xs);
+                            opacity: 0.6;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           ESTADOS ADAPTATIVOS CON CONTAINER QUERIES
+           ================================================================= */
+        
+        @layer adaptive-states {
+            /* Estado Móvil Extremo: < 300px - Solo home y current */
+            @container breadcrumb-nav (max-width: 299px) {
+                .breadcrumb-nav {
+                    padding: var(--breadcrumb-padding-sm) var(--breadcrumb-padding-md);
+                    
+                    & .breadcrumb-list {
+                        & .breadcrumb-item {
+                            font-size: var(--breadcrumb-font-xs);
+                            
+                            /* Solo mostramos el home y el current */
+                            &:not(:first-child):not(:last-child) {
+                                display: none;
+                            }
+                            
+                            /* El penúltimo se convierte en ellipsis si hay más de 2 elementos */
+                            &:nth-last-child(2) {
+                                &::after {
+                                    content: '…';
+                                    color: var(--breadcrumb-ellipsis);
+                                    margin: 0 var(--breadcrumb-gap-sm);
+                                }
+                                
+                                & .breadcrumb-link,
+                                & .breadcrumb-text {
+                                    display: none;
+                                }
+                            }
+                            
+                            & .breadcrumb-separator {
+                                margin: 0 var(--breadcrumb-padding-xs);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Móvil: 300px - 499px - Home, ellipsis, current */
+            @container breadcrumb-nav (min-width: 300px) and (max-width: 499px) {
+                .breadcrumb-nav {
+                    & .breadcrumb-list {
+                        & .breadcrumb-item {
+                            /* Ocultamos elementos intermedios, mantenemos primero y último */
+                            &:nth-child(n+2):nth-last-child(n+2) {
+                                display: none;
+                                
+                                /* Excepción: mostramos el penúltimo como ellipsis */
+                                &:nth-last-child(2) {
+                                    display: flex;
+                                    
+                                    &::after {
+                                        content: '⋯';
+                                        color: var(--breadcrumb-ellipsis);
+                                        font-weight: 600;
+                                        padding: var(--breadcrumb-padding-xs);
+                                        background: var(--breadcrumb-collapsed-bg);
+                                        border-radius: 0.25rem;
+                                        cursor: help;
+                                    }
+                                    
+                                    & .breadcrumb-link,
+                                    & .breadcrumb-text {
+                                        display: none;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Tablet: 500px - 799px - Mostrar más elementos pero con texto truncado */
+            @container breadcrumb-nav (min-width: 500px) and (max-width: 799px) {
+                .breadcrumb-nav {
+                    & .breadcrumb-list {
+                        gap: var(--breadcrumb-gap-md);
+                        
+                        & .breadcrumb-item {
+                            font-size: var(--breadcrumb-font-sm);
+                            
+                            /* Mostramos todos los elementos pero con texto truncado */
+                            & .breadcrumb-link,
+                            & .breadcrumb-current {
+                                max-width: 120px;
+                                white-space: nowrap;
+                                overflow: hidden;
+                                text-overflow: ellipsis;
+                            }
+                            
+                            & .breadcrumb-separator {
+                                margin: 0 var(--breadcrumb-gap-sm);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Desktop: 800px - 1199px - Breadcrumbs completos */
+            @container breadcrumb-nav (min-width: 800px) and (max-width: 1199px) {
+                .breadcrumb-nav {
+                    padding: var(--breadcrumb-padding-lg) var(--breadcrumb-padding-xl);
+                    
+                    & .breadcrumb-list {
+                        gap: var(--breadcrumb-gap-lg);
+                        
+                        & .breadcrumb-item {
+                            font-size: var(--breadcrumb-font-md);
+                            
+                            /* Mostramos todos los elementos sin truncar */
+                            & .breadcrumb-link,
+                            & .breadcrumb-current {
+                                max-width: none;
+                                padding: var(--breadcrumb-padding-sm) var(--breadcrumb-padding-md);
+                            }
+                            
+                            & .breadcrumb-icon {
+                                font-size: var(--breadcrumb-font-md);
+                                margin-right: var(--breadcrumb-padding-sm);
+                            }
+                            
+                            & .breadcrumb-separator {
+                                margin: 0 var(--breadcrumb-gap-md);
+                                font-size: var(--breadcrumb-font-sm);
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Desktop Premium: 1200px+ - Con metadatos y características avanzadas */
+            @container breadcrumb-nav (min-width: 1200px) {
+                .breadcrumb-nav {
+                    padding: var(--breadcrumb-padding-xl);
+                    
+                    & .breadcrumb-list {
+                        gap: var(--breadcrumb-gap-lg);
+                        
+                        & .breadcrumb-item {
+                            font-size: var(--breadcrumb-font-md);
+                            
+                            & .breadcrumb-link {
+                                padding: var(--breadcrumb-padding-md) var(--breadcrumb-padding-lg);
+                                border-radius: 0.5rem;
+                                
+                                /* En el estado premium, agregamos información adicional al hover */
+                                &::after {
+                                    content: attr(data-tooltip);
+                                    position: absolute;
+                                    bottom: calc(100% + 0.5rem);
+                                    left: 50%;
+                                    transform: translateX(-50%);
+                                    background: var(--breadcrumb-text);
+                                    color: white;
+                                    padding: var(--breadcrumb-padding-sm) var(--breadcrumb-padding-md);
+                                    border-radius: 0.375rem;
+                                    font-size: var(--breadcrumb-font-xs);
+                                    white-space: nowrap;
+                                    opacity: 0;
+                                    visibility: hidden;
+                                    transition: all var(--breadcrumb-transition);
+                                    z-index: 10;
+                                }
+                                
+                                &:hover::after {
+                                    opacity: 1;
+                                    visibility: visible;
+                                }
+                            }
+                            
+                            & .breadcrumb-current {
+                                font-size: var(--breadcrumb-font-lg);
+                                padding: var(--breadcrumb-padding-md) var(--breadcrumb-padding-lg);
+                            }
+                            
+                            & .breadcrumb-separator {
+                                font-size: var(--breadcrumb-font-md);
+                                margin: 0 var(--breadcrumb-gap-lg);
+                                
+                                /* Separadores más elegantes en el estado premium */
+                                &::after {
+                                    content: '';
+                                    display: inline-block;
+                                    width: 1px;
+                                    height: 20px;
+                                    background: var(--breadcrumb-separator);
+                                    margin-left: var(--breadcrumb-gap-md);
+                                    opacity: 0.3;
+                                }
+                            }
+                        }
+                    }
+                    
+                    /* En el estado premium, mostramos metadatos */
+                    & .breadcrumb-meta {
+                        display: block;
+                        margin-top: var(--breadcrumb-padding-md);
+                        padding-top: var(--breadcrumb-padding-md);
+                        border-top: 1px solid var(--breadcrumb-border);
+                        
+                        & .meta-item {
+                            & .meta-icon {
+                                font-size: var(--breadcrumb-font-sm);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           INTERACCIONES Y ESTADOS ESPECIALES
+           ================================================================= */
+        
+        @layer interactions {
+            /* Animaciones para elementos que aparecen/desaparecen */
+            .breadcrumb-item {
+                transition: all var(--breadcrumb-transition-slow);
+                
+                &.fade-out {
+                    opacity: 0;
+                    transform: scale(0.95);
+                }
+                
+                &.fade-in {
+                    animation: fadeIn var(--breadcrumb-transition-slow) ease-out;
+                }
+            }
+            
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: scale(0.95) translateY(-10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: scale(1) translateY(0);
+                }
+            }
+            
+            /* Estados de focus mejorados */
+            .breadcrumb-link:focus-visible {
+                outline: 2px solid var(--breadcrumb-text-active);
+                outline-offset: 2px;
+                box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+            }
+            
+            /* Efectos especiales para elementos colapsados */
+            .breadcrumb-item.collapsed {
+                position: relative;
+                
+                &:hover {
+                    z-index: 10;
+                    
+                    /* Tooltip que muestra el contenido completo */
+                    &::before {
+                        content: attr(data-full-text);
+                        position: absolute;
+                        bottom: calc(100% + 0.5rem);
+                        left: 50%;
+                        transform: translateX(-50%);
+                        background: var(--breadcrumb-text);
+                        color: white;
+                        padding: var(--breadcrumb-padding-sm) var(--breadcrumb-padding-md);
+                        border-radius: 0.375rem;
+                        font-size: var(--breadcrumb-font-xs);
+                        white-space: nowrap;
+                        z-index: 20;
+                        animation: fadeIn 0.2s ease-out;
+                    }
+                }
+            }
+            
+            /* Utilidades de demostración */
+            .demo-controls {
+                background: white;
+                border: 1px solid var(--breadcrumb-border);
+                border-radius: 0.75rem;
+                padding: var(--breadcrumb-padding-xl);
+                margin-bottom: var(--breadcrumb-padding-xl);
+                
+                & .control-group {
+                    margin-bottom: var(--breadcrumb-padding-lg);
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    & label {
+                        display: block;
+                        font-weight: 600;
+                        margin-bottom: var(--breadcrumb-padding-sm);
+                        color: var(--breadcrumb-text);
+                    }
+                    
+                    & input[type="range"] {
+                        width: 100%;
+                        margin-bottom: var(--breadcrumb-padding-sm);
+                    }
+                    
+                    & .current-value {
+                        font-family: 'Courier New', monospace;
+                        background: var(--breadcrumb-bg-alt);
+                        padding: var(--breadcrumb-padding-xs) var(--breadcrumb-padding-sm);
+                        border-radius: 0.25rem;
+                        font-size: var(--breadcrumb-font-xs);
+                        color: var(--breadcrumb-text-muted);
+                    }
+                }
+            }
+            
+            .info-panel {
+                background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+                border: 1px solid var(--breadcrumb-text-active);
+                border-radius: 0.75rem;
+                padding: var(--breadcrumb-padding-xl);
+                margin-bottom: var(--breadcrumb-padding-xl);
+                
+                & h3 {
+                    color: #1e40af;
+                    margin-bottom: var(--breadcrumb-padding-lg);
+                    font-weight: 600;
+                }
+                
+                & p {
+                    margin-bottom: var(--breadcrumb-padding-sm);
+                    line-height: 1.6;
+                }
+                
+                & code {
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    font-family: 'Courier New', monospace;
+                    font-size: var(--breadcrumb-font-xs);
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1400px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: #1e293b;">🍞 Breadcrumbs Transformables: Navegación Que Se Adapta</h1>
+        
+        <div class="info-panel">
+            <h3>🎯 Concepto: Navegación Contextual Inteligente</h3>
+            <p>Las breadcrumbs transformables demuestran cómo un componente de navegación puede adaptarse inteligentemente al espacio disponible sin perder funcionalidad. En lugar de simplemente truncar texto o romper el layout, el componente evoluciona su presentación según el contexto.</p>
+            
+            <p><strong>Los cinco estados adaptativos de las breadcrumbs:</strong></p>
+            <p>📱 <strong>Móvil Extremo (&lt; 300px):</strong> Solo home y página actual, todo lo demás se oculta</p>
+            <p>📱 <strong>Móvil (&gt;= 300px):</strong> Home, elipsis para elementos intermedios, y página actual</p>
+            <p>💻 <strong>Tablet (500px-799px):</strong> Todos los elementos visibles pero con texto truncado</p>
+            <p>🖥️ <strong>Desktop (800px-1199px):</strong> Breadcrumbs completos sin truncar</p>
+            <p>🎯 <strong>Desktop Premium (1200px+):</strong> Breadcrumbs premium con tooltips y metadatos</p>
+        </div>
+        
+        <div class="demo-controls">
+            <div class="control-group">
+                <label for="breadcrumb-width">Ancho del Contenedor:</label>
+                <input type="range" id="breadcrumb-width" min="250" max="1400" value="800" step="25">
+                <div class="current-value" id="width-display">800px</div>
+            </div>
+        </div>
+        
+        <!-- Demostración: Breadcrumb Simple -->
+        <div class="demo-container" id="demo-container-1">
+            <div class="demo-label">Breadcrumb Navegación Básica</div>
+            <nav class="breadcrumb-nav">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Ir al inicio">
+                            <span class="breadcrumb-icon">🏠</span>
+                            <span class="breadcrumb-text">Inicio</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Sección de productos" data-full-text="Productos">
+                            <span class="breadcrumb-text">Productos</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Categoría de electrónicos" data-full-text="Electrónicos">
+                            <span class="breadcrumb-text">Electrónicos</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="breadcrumb-current">Smartphones</span>
+                    </li>
+                </ol>
+                
+                <div class="breadcrumb-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon">📍</span>
+                        <span>Página 2 de 3</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">📊</span>
+                        <span>847 productos</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🕒</span>
+                        <span>Actualizado hace 5 min</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Demostración: Breadcrumb Complejo -->
+        <div class="demo-container" id="demo-container-2">
+            <div class="demo-label">Breadcrumb Navegación Profunda</div>
+            <nav class="breadcrumb-nav">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Ir al panel principal">
+                            <span class="breadcrumb-icon">🏠</span>
+                            <span class="breadcrumb-text">Dashboard</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Gestión de usuarios del sistema" data-full-text="Administración">
+                            <span class="breadcrumb-text">Administración</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Panel de control de usuarios" data-full-text="Gestión de Usuarios">
+                            <span class="breadcrumb-text">Gestión de Usuarios</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Configuración de permisos" data-full-text="Permisos y Roles">
+                            <span class="breadcrumb-text">Permisos y Roles</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Políticas de seguridad avanzadas" data-full-text="Políticas de Seguridad">
+                            <span class="breadcrumb-text">Políticas de Seguridad</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="breadcrumb-current">Configuración Avanzada de Autenticación</span>
+                    </li>
+                </ol>
+                
+                <div class="breadcrumb-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon">🔒</span>
+                        <span>Área restringida</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">👤</span>
+                        <span>Admin requerido</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">📝</span>
+                        <span>Última mod: 2 días</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🔄</span>
+                        <span>Auto-sync activo</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        
+        <!-- Demostración: Breadcrumb E-commerce -->
+        <div class="demo-container" id="demo-container-3">
+            <div class="demo-label">Breadcrumb E-commerce Contextual</div>
+            <nav class="breadcrumb-nav">
+                <ol class="breadcrumb-list">
+                    <li class="breadcrumb-item">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Volver a la tienda principal">
+                            <span class="breadcrumb-icon">🛍️</span>
+                            <span class="breadcrumb-text">Tienda</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Explorar categoría de ropa" data-full-text="Ropa y Accesorios">
+                            <span class="breadcrumb-text">Ropa y Accesorios</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Ver colección para mujeres" data-full-text="Mujer">
+                            <span class="breadcrumb-text">Mujer</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item collapsible">
+                        <a href="#" class="breadcrumb-link" data-tooltip="Explorar zapatos de mujer" data-full-text="Zapatos">
+                            <span class="breadcrumb-text">Zapatos</span>
+                        </a>
+                        <span class="breadcrumb-separator">›</span>
+                    </li>
+                    <li class="breadcrumb-item">
+                        <span class="breadcrumb-current">Zapatillas Deportivas Nike Air Max 270</span>
+                    </li>
+                </ol>
+                
+                <div class="breadcrumb-meta">
+                    <div class="meta-item">
+                        <span class="meta-icon">⭐</span>
+                        <span>4.8/5 (2,847 reseñas)</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">📦</span>
+                        <span>Stock: 23 unidades</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">🚚</span>
+                        <span>Envío gratis</span>
+                    </div>
+                    <div class="meta-item">
+                        <span class="meta-icon">💫</span>
+                        <span>Producto destacado</span>
+                    </div>
+                </div>
+            </nav>
+        </div>
+        
+        <div class="info-panel">
+            <h3>🔍 Análisis Técnico: Inteligencia Adaptativa en Acción</h3>
+            <p>Las breadcrumbs transformables utilizan múltiples estrategias según el espacio disponible. En espacios muy limitados, implementan una estrategia de <strong>priorización por extremos</strong>, mostrando solo el inicio y el destino actual. En espacios medianos, usan <strong>colapso inteligente</strong> con indicadores visuales de contenido oculto.</p>
+            
+            <p>La técnica de <code>container-type: inline-size</code> permite que cada instancia de breadcrumbs se comporte independientemente según su contexto específico. Los tooltips aparecen solo cuando hay espacio suficiente para ser útiles, y los metadatos contextuales se revelan gradualmente conforme aumenta el espacio disponible.</p>
+            
+            <p><strong>Técnicas clave implementadas:</strong></p>
+            <p>🎭 <strong>Revelación Progresiva:</strong> La información se revela según la capacidad del contexto</p>
+            <p>📐 <strong>Truncamiento Inteligente:</strong> El texto se trunca semánticamente, no arbitrariamente</p>
+            <p>🔄 <strong>Transformaciones Fluidas:</strong> Los cambios de estado son visualmente coherentes</p>
+            <p>♿ <strong>Accesibilidad Preservada:</strong> La navegación funcional se mantiene en todos los estados</p>
+            
+            <p>Esta aproximación elimina la necesidad de JavaScript para detectar overflow o calcular espacios disponibles. El navegador gestiona automáticamente las transformaciones basándose en el espacio real disponible para el componente.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Control del ancho de los contenedores
+        const breadcrumbWidthSlider = document.getElementById('breadcrumb-width');
+        const widthDisplay = document.getElementById('width-display');
+        const demoContainers = document.querySelectorAll('.demo-container');
+        
+        // Función para actualizar el ancho de todos los contenedores
+        function updateBreadcrumbWidth() {
+            const width = breadcrumbWidthSlider.value + 'px';
+            
+            demoContainers.forEach(container => {
+                container.style.width = width;
+            });
+            
+            widthDisplay.textContent = width;
+        }
+        
+        // Event listener para el slider
+        breadcrumbWidthSlider.addEventListener('input', updateBreadcrumbWidth);
+        
+        // Configuración inicial
+        updateBreadcrumbWidth();
+        
+        // Observador para debugging y análisis de comportamiento
+        const breadcrumbNavs = document.querySelectorAll('.breadcrumb-nav');
+        
+        breadcrumbNavs.forEach((nav, index) => {
+            const observer = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    const width = Math.round(entry.contentRect.width);
+                    
+                    // Determinar qué estado está activo
+                    let estado;
+                    if (width < 300) {
+                        estado = '📱 Móvil Extremo';
+                    } else if (width < 500) {
+                        estado = '📱 Móvil';
+                    } else if (width < 800) {
+                        estado = '💻 Tablet';
+                    } else if (width < 1200) {
+                        estado = '🖥️ Desktop';
+                    } else {
+                        estado = '🎯 Desktop Premium';
+                    }
+                    
+                    console.log(`Breadcrumb ${index + 1}: ${width}px - Estado: ${estado}`);
+                }
+            });
+            
+            observer.observe(nav);
+        });
+        
+        // Funcionalidad adicional: simular click en elementos colapsados
+        document.addEventListener('click', function(event) {
+            if (event.target.classList.contains('collapsed')) {
+                // Simular expansión temporal del elemento
+                event.preventDefault();
+                const item = event.target;
+                const originalText = item.getAttribute('data-full-text');
+                
+                if (originalText) {
+                    // Mostrar tooltip con información completa
+                    console.log(`Elemento expandido: ${originalText}`);
+                    
+                    // En una implementación real, aquí podrías mostrar un menú desplegable
+                    // o navegar a una página de vista expandida de breadcrumbs
+                }
+            }
+        });
+        
+        // Efectos de teclado para accesibilidad
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'ArrowRight') {
+                // Navegar al siguiente breadcrumb
+                const focused = document.activeElement;
+                if (focused.classList.contains('breadcrumb-link')) {
+                    const nextItem = focused.closest('.breadcrumb-item').nextElementSibling;
+                    if (nextItem) {
+                        const nextLink = nextItem.querySelector('.breadcrumb-link');
+                        if (nextLink) {
+                            nextLink.focus();
+                        }
+                    }
+                }
+            } else if (event.key === 'ArrowLeft') {
+                // Navegar al breadcrumb anterior
+                const focused = document.activeElement;
+                if (focused.classList.contains('breadcrumb-link')) {
+                    const prevItem = focused.closest('.breadcrumb-item').previousElementSibling;
+                    if (prevItem) {
+                        const prevLink = prevItem.querySelector('.breadcrumb-link');
+                        if (prevLink) {
+                            prevLink.focus();
+                        }
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

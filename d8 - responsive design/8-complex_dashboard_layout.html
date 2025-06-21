@@ -1,0 +1,1847 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Empresarial Adaptativo - Sistema Complejo</title>
+    <style>
+        /* =================================================================
+           SISTEMA DE CAPAS: ARQUITECTURA ESCALABLE PARA DASHBOARDS COMPLEJOS
+           ================================================================= */
+        
+        @layer reset, design-tokens, layout-foundation, navigation-systems, content-components, dashboard-behaviors, responsive-orchestration;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+            
+            html {
+                scroll-behavior: smooth;
+            }
+        }
+        
+        /* =================================================================
+           DESIGN TOKENS: EL VOCABULARIO DE NUESTRO SISTEMA DE DISEÑO
+           ================================================================= */
+        
+        @layer design-tokens {
+            :root {
+                /* 
+                   Estos tokens no son solo variables CSS, sino el vocabulario semántico
+                   de nuestro sistema de diseño. Cada token captura una decisión de diseño
+                   específica que puede evolucionar independientemente.
+                */
+                
+                /* Paleta de colores semántica para dashboard empresarial */
+                --dashboard-bg-primary: #ffffff;
+                --dashboard-bg-secondary: #f8fafc;
+                --dashboard-bg-tertiary: #f1f5f9;
+                --dashboard-border-primary: #e2e8f0;
+                --dashboard-border-secondary: #cbd5e1;
+                --dashboard-text-primary: #0f172a;
+                --dashboard-text-secondary: #475569;
+                --dashboard-text-muted: #64748b;
+                --dashboard-accent-primary: #3b82f6;
+                --dashboard-accent-secondary: #10b981;
+                --dashboard-accent-warning: #f59e0b;
+                --dashboard-accent-danger: #ef4444;
+                
+                /* Sistema de espaciado progresivo */
+                --space-2xs: 0.125rem;  /* 2px - Para detalles finos */
+                --space-xs: 0.25rem;    /* 4px - Separación mínima */
+                --space-sm: 0.5rem;     /* 8px - Espaciado compacto */
+                --space-md: 1rem;       /* 16px - Espaciado estándar */
+                --space-lg: 1.5rem;     /* 24px - Espaciado generoso */
+                --space-xl: 2rem;       /* 32px - Separación de secciones */
+                --space-2xl: 3rem;      /* 48px - Separación mayor */
+                --space-3xl: 4rem;      /* 64px - Separación extrema */
+                
+                /* Tipografía escalable para diferentes densidades de información */
+                --font-2xs: 0.625rem;   /* 10px - Metadatos */
+                --font-xs: 0.75rem;     /* 12px - Etiquetas pequeñas */
+                --font-sm: 0.875rem;    /* 14px - Texto de apoyo */
+                --font-md: 1rem;        /* 16px - Texto base */
+                --font-lg: 1.125rem;    /* 18px - Títulos menores */
+                --font-xl: 1.25rem;     /* 20px - Títulos de sección */
+                --font-2xl: 1.5rem;     /* 24px - Títulos principales */
+                --font-3xl: 1.875rem;   /* 30px - Encabezados */
+                
+                /* Elevación y sombras para jerarquía visual */
+                --shadow-xs: 0 1px 2px rgba(0,0,0,0.05);
+                --shadow-sm: 0 1px 3px rgba(0,0,0,0.1);
+                --shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+                --shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+                --shadow-xl: 0 20px 25px rgba(0,0,0,0.1);
+                --shadow-2xl: 0 25px 50px rgba(0,0,0,0.25);
+                
+                /* Radio de bordes para diferentes niveles de componentes */
+                --radius-sm: 0.25rem;   /* 4px - Elementos pequeños */
+                --radius-md: 0.5rem;    /* 8px - Componentes estándar */
+                --radius-lg: 0.75rem;   /* 12px - Tarjetas y paneles */
+                --radius-xl: 1rem;      /* 16px - Contenedores principales */
+                --radius-2xl: 1.5rem;   /* 24px - Elementos destacados */
+                
+                /* Transiciones estandarizadas para coherencia */
+                --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+                --transition-medium: 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                --transition-slow: 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+                
+                /* Z-index sistema para layering correcto */
+                --z-base: 0;
+                --z-dropdown: 1000;
+                --z-sticky: 1010;
+                --z-overlay: 1020;
+                --z-modal: 1030;
+                --z-tooltip: 1040;
+                
+                /* Anchos de contenedor para diferentes breakpoints de layout */
+                --container-sm: 640px;
+                --container-md: 768px;
+                --container-lg: 1024px;
+                --container-xl: 1280px;
+                --container-2xl: 1536px;
+            }
+            
+            /* Tokens específicos para modo oscuro (preparado para el futuro) */
+            @media (prefers-color-scheme: dark) {
+                :root {
+                    --dashboard-bg-primary: #0f172a;
+                    --dashboard-bg-secondary: #1e293b;
+                    --dashboard-bg-tertiary: #334155;
+                    --dashboard-text-primary: #f1f5f9;
+                    --dashboard-text-secondary: #cbd5e1;
+                    --dashboard-text-muted: #94a3b8;
+                }
+            }
+        }
+        
+        /* =================================================================
+           LAYOUT FOUNDATION: LA ESTRUCTURA BASE DE NUESTRO DASHBOARD
+           ================================================================= */
+        
+        @layer layout-foundation {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+                line-height: 1.6;
+                background: var(--dashboard-bg-secondary);
+                color: var(--dashboard-text-primary);
+                font-size: var(--font-md);
+                
+                /* Prevenir scroll horizontal en demostraciones */
+                overflow-x: hidden;
+            }
+            
+            /*
+               El contenedor principal del dashboard actúa como el director de orquesta,
+               coordinando todos los subsistemas adaptativos.
+            */
+            .dashboard-shell {
+                /* 
+                   Container queries en el nivel más alto permiten que todo el dashboard
+                   responda al espacio disponible, no solo al viewport
+                */
+                container-type: inline-size;
+                container-name: dashboard-shell;
+                
+                min-height: 100vh;
+                display: grid;
+                background: var(--dashboard-bg-primary);
+                
+                /*
+                   Grid template areas que se reconfiguran según el espacio disponible.
+                   Esta es la estructura base que luego adaptan las container queries.
+                */
+                grid-template-areas:
+                    "sidebar header"
+                    "sidebar breadcrumb"
+                    "sidebar content";
+                
+                /* Configuración inicial para móvil: sidebar colapsado */
+                grid-template-columns: 0fr 1fr;
+                grid-template-rows: auto auto 1fr;
+                
+                transition: grid-template-columns var(--transition-medium);
+            }
+            
+            /*
+               Estados del sidebar que controlan la visibilidad y comportamiento
+               del panel de navegación lateral
+            */
+            .dashboard-shell.sidebar-open {
+                grid-template-columns: auto 1fr;
+            }
+            
+            .dashboard-shell.sidebar-mini {
+                grid-template-columns: 4rem 1fr;
+            }
+            
+            .dashboard-shell.sidebar-full {
+                grid-template-columns: 16rem 1fr;
+            }
+        }
+        
+        /* =================================================================
+           NAVIGATION SYSTEMS: INTEGRACIÓN DE TODOS NUESTROS COMPONENTES DE NAVEGACIÓN
+           ================================================================= */
+        
+        @layer navigation-systems {
+            /*
+               SIDEBAR NAVIGATION: El corazón del sistema de navegación
+               Se adapta desde completamente oculto hasta barra lateral completa
+            */
+            .dashboard-sidebar {
+                grid-area: sidebar;
+                background: var(--dashboard-bg-primary);
+                border-right: 1px solid var(--dashboard-border-primary);
+                
+                /* Container query context para adaptación interna */
+                container-type: inline-size;
+                container-name: dashboard-sidebar;
+                
+                /* Estados de visibilidad controlados por JavaScript y container queries */
+                overflow: hidden;
+                transition: all var(--transition-medium);
+                
+                & .sidebar-header {
+                    padding: var(--space-lg);
+                    border-bottom: 1px solid var(--dashboard-border-primary);
+                    background: var(--dashboard-bg-secondary);
+                    
+                    & .brand-logo {
+                        display: flex;
+                        align-items: center;
+                        gap: var(--space-md);
+                        color: var(--dashboard-text-primary);
+                        text-decoration: none;
+                        font-weight: 700;
+                        font-size: var(--font-lg);
+                        
+                        & .logo-icon {
+                            width: 32px;
+                            height: 32px;
+                            background: var(--dashboard-accent-primary);
+                            color: white;
+                            border-radius: var(--radius-md);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: var(--font-lg);
+                            flex-shrink: 0;
+                        }
+                        
+                        & .brand-text {
+                            transition: opacity var(--transition-fast);
+                        }
+                    }
+                    
+                    & .sidebar-toggle {
+                        position: absolute;
+                        top: var(--space-lg);
+                        right: var(--space-lg);
+                        background: none;
+                        border: none;
+                        padding: var(--space-sm);
+                        color: var(--dashboard-text-secondary);
+                        cursor: pointer;
+                        border-radius: var(--radius-sm);
+                        transition: all var(--transition-fast);
+                        
+                        &:hover {
+                            background: var(--dashboard-bg-tertiary);
+                            color: var(--dashboard-text-primary);
+                        }
+                    }
+                }
+                
+                & .sidebar-navigation {
+                    padding: var(--space-lg);
+                    height: calc(100vh - 80px);
+                    overflow-y: auto;
+                    
+                    & .nav-section {
+                        margin-bottom: var(--space-xl);
+                        
+                        & .section-title {
+                            font-size: var(--font-xs);
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.05em;
+                            color: var(--dashboard-text-muted);
+                            margin-bottom: var(--space-md);
+                            padding: 0 var(--space-md);
+                        }
+                        
+                        & .nav-list {
+                            list-style: none;
+                            
+                            & .nav-item {
+                                margin-bottom: var(--space-2xs);
+                                
+                                & .nav-link {
+                                    display: flex;
+                                    align-items: center;
+                                    gap: var(--space-md);
+                                    padding: var(--space-md);
+                                    color: var(--dashboard-text-secondary);
+                                    text-decoration: none;
+                                    border-radius: var(--radius-md);
+                                    transition: all var(--transition-fast);
+                                    position: relative;
+                                    
+                                    & .nav-icon {
+                                        width: 20px;
+                                        height: 20px;
+                                        display: flex;
+                                        align-items: center;
+                                        justify-content: center;
+                                        font-size: var(--font-md);
+                                        flex-shrink: 0;
+                                    }
+                                    
+                                    & .nav-text {
+                                        flex: 1;
+                                        font-weight: 500;
+                                        transition: opacity var(--transition-fast);
+                                    }
+                                    
+                                    & .nav-badge {
+                                        background: var(--dashboard-accent-primary);
+                                        color: white;
+                                        font-size: var(--font-2xs);
+                                        font-weight: 600;
+                                        padding: var(--space-2xs) var(--space-xs);
+                                        border-radius: var(--radius-sm);
+                                        min-width: 18px;
+                                        text-align: center;
+                                        transition: opacity var(--transition-fast);
+                                    }
+                                    
+                                    &:hover {
+                                        background: var(--dashboard-bg-tertiary);
+                                        color: var(--dashboard-text-primary);
+                                        transform: translateX(2px);
+                                    }
+                                    
+                                    &.active {
+                                        background: var(--dashboard-accent-primary);
+                                        color: white;
+                                        
+                                        &::before {
+                                            content: '';
+                                            position: absolute;
+                                            left: -var(--space-lg);
+                                            top: 50%;
+                                            transform: translateY(-50%);
+                                            width: 3px;
+                                            height: 24px;
+                                            background: var(--dashboard-accent-secondary);
+                                            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /*
+               HEADER NAVIGATION: Barra superior con mega menú y controles globales
+            */
+            .dashboard-header {
+                grid-area: header;
+                background: var(--dashboard-bg-primary);
+                border-bottom: 1px solid var(--dashboard-border-primary);
+                padding: var(--space-md) var(--space-lg);
+                
+                container-type: inline-size;
+                container-name: dashboard-header;
+                
+                display: flex;
+                align-items: center;
+                gap: var(--space-lg);
+                
+                & .header-left {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-md);
+                    
+                    & .mobile-menu-toggle {
+                        display: none; /* Se muestra solo en móvil via container queries */
+                        background: none;
+                        border: none;
+                        padding: var(--space-sm);
+                        color: var(--dashboard-text-secondary);
+                        cursor: pointer;
+                        border-radius: var(--radius-sm);
+                        
+                        &:hover {
+                            background: var(--dashboard-bg-tertiary);
+                        }
+                    }
+                    
+                    & .page-title {
+                        font-size: var(--font-xl);
+                        font-weight: 700;
+                        color: var(--dashboard-text-primary);
+                    }
+                }
+                
+                & .header-center {
+                    flex: 1;
+                    display: flex;
+                    justify-content: center;
+                    
+                    & .global-search {
+                        position: relative;
+                        max-width: 400px;
+                        width: 100%;
+                        
+                        & .search-input {
+                            width: 100%;
+                            padding: var(--space-md) var(--space-lg);
+                            padding-left: 3rem;
+                            border: 1px solid var(--dashboard-border-primary);
+                            border-radius: var(--radius-lg);
+                            background: var(--dashboard-bg-secondary);
+                            color: var(--dashboard-text-primary);
+                            font-size: var(--font-sm);
+                            transition: all var(--transition-fast);
+                            
+                            &:focus {
+                                outline: none;
+                                border-color: var(--dashboard-accent-primary);
+                                box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+                            }
+                            
+                            &::placeholder {
+                                color: var(--dashboard-text-muted);
+                            }
+                        }
+                        
+                        & .search-icon {
+                            position: absolute;
+                            left: var(--space-md);
+                            top: 50%;
+                            transform: translateY(-50%);
+                            color: var(--dashboard-text-muted);
+                            font-size: var(--font-sm);
+                            pointer-events: none;
+                        }
+                    }
+                }
+                
+                & .header-right {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-md);
+                    
+                    & .header-action {
+                        position: relative;
+                        background: none;
+                        border: none;
+                        padding: var(--space-sm);
+                        color: var(--dashboard-text-secondary);
+                        cursor: pointer;
+                        border-radius: var(--radius-md);
+                        transition: all var(--transition-fast);
+                        
+                        &:hover {
+                            background: var(--dashboard-bg-tertiary);
+                            color: var(--dashboard-text-primary);
+                        }
+                        
+                        & .action-badge {
+                            position: absolute;
+                            top: 2px;
+                            right: 2px;
+                            width: 8px;
+                            height: 8px;
+                            background: var(--dashboard-accent-danger);
+                            border-radius: 50%;
+                            border: 2px solid var(--dashboard-bg-primary);
+                        }
+                    }
+                    
+                    & .user-profile {
+                        display: flex;
+                        align-items: center;
+                        gap: var(--space-sm);
+                        padding: var(--space-sm) var(--space-md);
+                        border-radius: var(--radius-lg);
+                        cursor: pointer;
+                        transition: all var(--transition-fast);
+                        
+                        &:hover {
+                            background: var(--dashboard-bg-tertiary);
+                        }
+                        
+                        & .avatar {
+                            width: 32px;
+                            height: 32px;
+                            background: linear-gradient(135deg, var(--dashboard-accent-primary), var(--dashboard-accent-secondary));
+                            color: white;
+                            border-radius: 50%;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-weight: 600;
+                            font-size: var(--font-sm);
+                        }
+                        
+                        & .user-info {
+                            & .user-name {
+                                font-weight: 600;
+                                font-size: var(--font-sm);
+                                color: var(--dashboard-text-primary);
+                            }
+                            
+                            & .user-role {
+                                font-size: var(--font-xs);
+                                color: var(--dashboard-text-muted);
+                            }
+                        }
+                        
+                        & .dropdown-arrow {
+                            color: var(--dashboard-text-muted);
+                            font-size: var(--font-xs);
+                            transition: transform var(--transition-fast);
+                        }
+                    }
+                }
+            }
+            
+            /*
+               BREADCRUMB NAVIGATION: Navegación contextual que se adapta
+            */
+            .dashboard-breadcrumb {
+                grid-area: breadcrumb;
+                background: var(--dashboard-bg-secondary);
+                border-bottom: 1px solid var(--dashboard-border-primary);
+                padding: var(--space-md) var(--space-lg);
+                
+                container-type: inline-size;
+                container-name: dashboard-breadcrumb;
+                
+                & .breadcrumb-nav {
+                    display: flex;
+                    align-items: center;
+                    gap: var(--space-sm);
+                    font-size: var(--font-sm);
+                    
+                    & .breadcrumb-item {
+                        display: flex;
+                        align-items: center;
+                        gap: var(--space-sm);
+                        
+                        & .breadcrumb-link {
+                            color: var(--dashboard-text-muted);
+                            text-decoration: none;
+                            padding: var(--space-xs) var(--space-sm);
+                            border-radius: var(--radius-sm);
+                            transition: all var(--transition-fast);
+                            
+                            &:hover {
+                                color: var(--dashboard-accent-primary);
+                                background: var(--dashboard-bg-tertiary);
+                            }
+                        }
+                        
+                        & .breadcrumb-separator {
+                            color: var(--dashboard-text-muted);
+                            font-size: var(--font-xs);
+                        }
+                        
+                        & .breadcrumb-current {
+                            color: var(--dashboard-text-primary);
+                            font-weight: 500;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           CONTENT COMPONENTS: COMPONENTES ADAPTATIVOS DE CONTENIDO
+           ================================================================= */
+        
+        @layer content-components {
+            /*
+               MAIN CONTENT AREA: El área principal que contiene todos los componentes de contenido
+            */
+            .dashboard-content {
+                grid-area: content;
+                padding: var(--space-lg);
+                overflow-y: auto;
+                
+                container-type: inline-size;
+                container-name: dashboard-content;
+                
+                & .content-header {
+                    margin-bottom: var(--space-xl);
+                    
+                    & .page-header {
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        margin-bottom: var(--space-lg);
+                        
+                        & .header-content {
+                            & .page-title {
+                                font-size: var(--font-2xl);
+                                font-weight: 700;
+                                color: var(--dashboard-text-primary);
+                                margin-bottom: var(--space-xs);
+                            }
+                            
+                            & .page-description {
+                                color: var(--dashboard-text-secondary);
+                                font-size: var(--font-md);
+                            }
+                        }
+                        
+                        & .header-actions {
+                            display: flex;
+                            gap: var(--space-md);
+                            
+                            & .action-button {
+                                padding: var(--space-md) var(--space-lg);
+                                background: var(--dashboard-accent-primary);
+                                color: white;
+                                border: none;
+                                border-radius: var(--radius-md);
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all var(--transition-fast);
+                                
+                                &:hover {
+                                    background: #2563eb;
+                                    transform: translateY(-1px);
+                                    box-shadow: var(--shadow-md);
+                                }
+                                
+                                &.secondary {
+                                    background: var(--dashboard-bg-primary);
+                                    color: var(--dashboard-text-primary);
+                                    border: 1px solid var(--dashboard-border-primary);
+                                    
+                                    &:hover {
+                                        background: var(--dashboard-bg-tertiary);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    /*
+                       TAB NAVIGATION: Sistema de pestañas integrado en el contenido
+                    */
+                    & .content-tabs {
+                        container-type: inline-size;
+                        container-name: content-tabs;
+                        
+                        & .tab-list {
+                            display: flex;
+                            border-bottom: 1px solid var(--dashboard-border-primary);
+                            list-style: none;
+                            overflow-x: auto;
+                            scroll-behavior: smooth;
+                            
+                            &::-webkit-scrollbar {
+                                display: none;
+                            }
+                            
+                            & .tab-item {
+                                flex-shrink: 0;
+                                
+                                & .tab-button {
+                                    background: none;
+                                    border: none;
+                                    padding: var(--space-md) var(--space-lg);
+                                    color: var(--dashboard-text-secondary);
+                                    font-size: var(--font-md);
+                                    font-weight: 500;
+                                    cursor: pointer;
+                                    border-bottom: 2px solid transparent;
+                                    transition: all var(--transition-fast);
+                                    white-space: nowrap;
+                                    
+                                    &:hover {
+                                        color: var(--dashboard-text-primary);
+                                        background: var(--dashboard-bg-tertiary);
+                                    }
+                                    
+                                    &.active {
+                                        color: var(--dashboard-accent-primary);
+                                        border-bottom-color: var(--dashboard-accent-primary);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                /*
+                   METRICS GRID: Grid adaptativo para métricas y KPIs
+                */
+                & .metrics-grid {
+                    display: grid;
+                    gap: var(--space-lg);
+                    margin-bottom: var(--space-xl);
+                    
+                    /* Grid que se adapta según el espacio disponible */
+                    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+                    
+                    & .metric-card {
+                        background: var(--dashboard-bg-primary);
+                        border: 1px solid var(--dashboard-border-primary);
+                        border-radius: var(--radius-lg);
+                        padding: var(--space-lg);
+                        transition: all var(--transition-fast);
+                        
+                        container-type: inline-size;
+                        container-name: metric-card;
+                        
+                        &:hover {
+                            box-shadow: var(--shadow-lg);
+                            transform: translateY(-2px);
+                        }
+                        
+                        & .metric-header {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            margin-bottom: var(--space-lg);
+                            
+                            & .metric-title {
+                                font-size: var(--font-sm);
+                                font-weight: 600;
+                                color: var(--dashboard-text-secondary);
+                                text-transform: uppercase;
+                                letter-spacing: 0.05em;
+                            }
+                            
+                            & .metric-icon {
+                                width: 40px;
+                                height: 40px;
+                                border-radius: var(--radius-md);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                font-size: var(--font-lg);
+                                
+                                &.revenue {
+                                    background: linear-gradient(135deg, #10b981, #059669);
+                                    color: white;
+                                }
+                                
+                                &.users {
+                                    background: linear-gradient(135deg, #3b82f6, #2563eb);
+                                    color: white;
+                                }
+                                
+                                &.orders {
+                                    background: linear-gradient(135deg, #f59e0b, #d97706);
+                                    color: white;
+                                }
+                                
+                                &.conversion {
+                                    background: linear-gradient(135deg, #8b5cf6, #7c3aed);
+                                    color: white;
+                                }
+                            }
+                        }
+                        
+                        & .metric-value {
+                            font-size: var(--font-3xl);
+                            font-weight: 800;
+                            color: var(--dashboard-text-primary);
+                            margin-bottom: var(--space-sm);
+                            
+                            & .value-unit {
+                                font-size: var(--font-lg);
+                                font-weight: 600;
+                                color: var(--dashboard-text-muted);
+                            }
+                        }
+                        
+                        & .metric-change {
+                            display: flex;
+                            align-items: center;
+                            gap: var(--space-xs);
+                            
+                            & .change-indicator {
+                                font-size: var(--font-xs);
+                                font-weight: 600;
+                                
+                                &.positive {
+                                    color: var(--dashboard-accent-secondary);
+                                }
+                                
+                                &.negative {
+                                    color: var(--dashboard-accent-danger);
+                                }
+                            }
+                            
+                            & .change-text {
+                                font-size: var(--font-sm);
+                                color: var(--dashboard-text-muted);
+                            }
+                        }
+                        
+                        & .metric-chart {
+                            margin-top: var(--space-lg);
+                            height: 60px;
+                            background: linear-gradient(135deg, var(--dashboard-bg-secondary), var(--dashboard-bg-tertiary));
+                            border-radius: var(--radius-md);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: var(--dashboard-text-muted);
+                            font-size: var(--font-sm);
+                        }
+                    }
+                }
+                
+                /*
+                   DASHBOARD WIDGETS: Componentes modulares de contenido
+                */
+                & .dashboard-widgets {
+                    display: grid;
+                    gap: var(--space-lg);
+                    grid-template-columns: 2fr 1fr;
+                    
+                    & .widget {
+                        background: var(--dashboard-bg-primary);
+                        border: 1px solid var(--dashboard-border-primary);
+                        border-radius: var(--radius-lg);
+                        overflow: hidden;
+                        
+                        container-type: inline-size;
+                        container-name: dashboard-widget;
+                        
+                        & .widget-header {
+                            padding: var(--space-lg);
+                            border-bottom: 1px solid var(--dashboard-border-primary);
+                            background: var(--dashboard-bg-secondary);
+                            
+                            & .widget-title {
+                                font-size: var(--font-lg);
+                                font-weight: 600;
+                                color: var(--dashboard-text-primary);
+                            }
+                            
+                            & .widget-description {
+                                color: var(--dashboard-text-secondary);
+                                font-size: var(--font-sm);
+                                margin-top: var(--space-xs);
+                            }
+                        }
+                        
+                        & .widget-content {
+                            padding: var(--space-lg);
+                            min-height: 300px;
+                            
+                            & .chart-placeholder {
+                                height: 250px;
+                                background: linear-gradient(135deg, var(--dashboard-bg-secondary), var(--dashboard-bg-tertiary));
+                                border-radius: var(--radius-md);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: var(--dashboard-text-muted);
+                                font-size: var(--font-md);
+                            }
+                            
+                            & .data-table {
+                                & .table-header {
+                                    display: grid;
+                                    grid-template-columns: 2fr 1fr 1fr;
+                                    gap: var(--space-md);
+                                    padding: var(--space-md);
+                                    background: var(--dashboard-bg-tertiary);
+                                    border-radius: var(--radius-sm);
+                                    margin-bottom: var(--space-md);
+                                    
+                                    & .header-cell {
+                                        font-size: var(--font-xs);
+                                        font-weight: 600;
+                                        text-transform: uppercase;
+                                        letter-spacing: 0.05em;
+                                        color: var(--dashboard-text-muted);
+                                    }
+                                }
+                                
+                                & .table-row {
+                                    display: grid;
+                                    grid-template-columns: 2fr 1fr 1fr;
+                                    gap: var(--space-md);
+                                    padding: var(--space-md);
+                                    border-bottom: 1px solid var(--dashboard-border-primary);
+                                    transition: background var(--transition-fast);
+                                    
+                                    &:hover {
+                                        background: var(--dashboard-bg-tertiary);
+                                    }
+                                    
+                                    &:last-child {
+                                        border-bottom: none;
+                                    }
+                                    
+                                    & .cell {
+                                        font-size: var(--font-sm);
+                                        color: var(--dashboard-text-primary);
+                                        
+                                        &.muted {
+                                            color: var(--dashboard-text-muted);
+                                        }
+                                        
+                                        &.success {
+                                            color: var(--dashboard-accent-secondary);
+                                            font-weight: 600;
+                                        }
+                                        
+                                        &.warning {
+                                            color: var(--dashboard-accent-warning);
+                                            font-weight: 600;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           RESPONSIVE ORCHESTRATION: CONTAINER QUERIES QUE COORDINAN TODO EL SISTEMA
+           ================================================================= */
+        
+        @layer responsive-orchestration {
+            /*
+               MOBILE LAYOUT: < 768px
+               En móvil, priorizamos la simplicidad y el acceso directo al contenido
+            */
+            @container dashboard-shell (max-width: 767px) {
+                .dashboard-shell {
+                    grid-template-areas:
+                        "header"
+                        "breadcrumb" 
+                        "content";
+                    grid-template-columns: 1fr;
+                    grid-template-rows: auto auto 1fr;
+                    
+                    /* El sidebar se convierte en overlay en móvil */
+                    & .dashboard-sidebar {
+                        position: fixed;
+                        top: 0;
+                        left: 0;
+                        height: 100vh;
+                        width: 280px;
+                        z-index: var(--z-overlay);
+                        transform: translateX(-100%);
+                        transition: transform var(--transition-medium);
+                        box-shadow: var(--shadow-2xl);
+                        
+                        &.mobile-open {
+                            transform: translateX(0);
+                        }
+                    }
+                    
+                    /* Header adaptaciones para móvil */
+                    & .dashboard-header {
+                        & .header-left {
+                            & .mobile-menu-toggle {
+                                display: block;
+                            }
+                            
+                            & .page-title {
+                                font-size: var(--font-lg);
+                            }
+                        }
+                        
+                        & .header-center {
+                            display: none; /* Ocultamos búsqueda en móvil para ahorrar espacio */
+                        }
+                        
+                        & .header-right {
+                            & .user-info {
+                                display: none; /* Solo avatar en móvil */
+                            }
+                        }
+                    }
+                    
+                    /* Breadcrumbs simplificados */
+                    & .dashboard-breadcrumb {
+                        & .breadcrumb-nav {
+                            & .breadcrumb-item:not(:first-child):not(:last-child) {
+                                display: none; /* Solo home y current en móvil */
+                            }
+                        }
+                    }
+                    
+                    /* Contenido optimizado para móvil */
+                    & .dashboard-content {
+                        padding: var(--space-md);
+                        
+                        & .metrics-grid {
+                            grid-template-columns: 1fr; /* Una sola columna en móvil */
+                        }
+                        
+                        & .dashboard-widgets {
+                            grid-template-columns: 1fr; /* Stack vertical en móvil */
+                        }
+                        
+                        & .content-header {
+                            & .page-header {
+                                flex-direction: column;
+                                align-items: flex-start;
+                                gap: var(--space-md);
+                                
+                                & .header-actions {
+                                    width: 100%;
+                                    
+                                    & .action-button {
+                                        flex: 1;
+                                        text-align: center;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /*
+               TABLET LAYOUT: 768px - 1023px
+               Híbrido entre móvil y desktop, con algunos elementos colapsados
+            */
+            @container dashboard-shell (min-width: 768px) and (max-width: 1023px) {
+                .dashboard-shell {
+                    &.sidebar-open {
+                        grid-template-columns: 4rem 1fr; /* Sidebar mini en tablet */
+                    }
+                    
+                    /* Sidebar en modo mini por defecto */
+                    & .dashboard-sidebar {
+                        & .sidebar-header {
+                            & .brand-text {
+                                opacity: 0;
+                            }
+                        }
+                        
+                        & .sidebar-navigation {
+                            & .nav-section {
+                                & .section-title {
+                                    opacity: 0;
+                                }
+                                
+                                & .nav-link {
+                                    justify-content: center;
+                                    
+                                    & .nav-text,
+                                    & .nav-badge {
+                                        opacity: 0;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    /* Header con búsqueda reducida */
+                    & .dashboard-header {
+                        & .header-center {
+                            & .global-search {
+                                max-width: 300px;
+                            }
+                        }
+                    }
+                    
+                    /* Métricas en dos columnas */
+                    & .dashboard-content {
+                        & .metrics-grid {
+                            grid-template-columns: repeat(2, 1fr);
+                        }
+                    }
+                }
+            }
+            
+            /*
+               DESKTOP LAYOUT: 1024px - 1279px
+               Layout estándar de desktop con sidebar completo
+            */
+            @container dashboard-shell (min-width: 1024px) and (max-width: 1279px) {
+                .dashboard-shell {
+                    &.sidebar-open {
+                        grid-template-columns: 16rem 1fr;
+                    }
+                    
+                    /* Métricas en grid de 3 columnas */
+                    & .dashboard-content {
+                        & .metrics-grid {
+                            grid-template-columns: repeat(3, 1fr);
+                        }
+                    }
+                }
+            }
+            
+            /*
+               WIDE DESKTOP LAYOUT: 1280px+
+               Layout expandido que aprovecha al máximo el espacio disponible
+            */
+            @container dashboard-shell (min-width: 1280px) {
+                .dashboard-shell {
+                    &.sidebar-open {
+                        grid-template-columns: 18rem 1fr; /* Sidebar más ancho */
+                    }
+                    
+                    /* Header con elementos adicionales */
+                    & .dashboard-header {
+                        & .header-center {
+                            & .global-search {
+                                max-width: 500px;
+                            }
+                        }
+                    }
+                    
+                    /* Métricas en grid de 4 columnas */
+                    & .dashboard-content {
+                        padding: var(--space-xl);
+                        
+                        & .metrics-grid {
+                            grid-template-columns: repeat(4, 1fr);
+                        }
+                        
+                        /* Widgets con layout más complejo */
+                        & .dashboard-widgets {
+                            grid-template-columns: 2fr 1fr;
+                            
+                            & .widget {
+                                & .widget-content {
+                                    & .chart-placeholder {
+                                        height: 350px;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            
+            /*
+               ULTRA-WIDE LAYOUT: 1600px+
+               Para configuraciones de múltiples monitores
+            */
+            @container dashboard-shell (min-width: 1600px) {
+                .dashboard-shell {
+                    max-width: 1600px;
+                    margin: 0 auto;
+                    box-shadow: var(--shadow-2xl);
+                    
+                    & .dashboard-content {
+                        & .dashboard-widgets {
+                            grid-template-columns: 1fr 1fr 1fr; /* Tres columnas en ultra-wide */
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           UTILITY CLASSES Y ESTADOS ESPECIALES
+           ================================================================= */
+        
+        @layer utilities {
+            /* Backdrop para overlay en móvil */
+            .sidebar-backdrop {
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                background: rgba(0,0,0,0.5);
+                z-index: calc(var(--z-overlay) - 1);
+                opacity: 0;
+                visibility: hidden;
+                transition: all var(--transition-medium);
+                
+                &.active {
+                    opacity: 1;
+                    visibility: visible;
+                }
+            }
+            
+            /* Estados de loading */
+            .loading {
+                position: relative;
+                
+                &::after {
+                    content: '';
+                    position: absolute;
+                    top: 50%;
+                    left: 50%;
+                    transform: translate(-50%, -50%);
+                    width: 24px;
+                    height: 24px;
+                    border: 2px solid var(--dashboard-border-primary);
+                    border-top: 2px solid var(--dashboard-accent-primary);
+                    border-radius: 50%;
+                    animation: spin 1s linear infinite;
+                }
+            }
+            
+            @keyframes spin {
+                0% { transform: translate(-50%, -50%) rotate(0deg); }
+                100% { transform: translate(-50%, -50%) rotate(360deg); }
+            }
+            
+            /* Animaciones de entrada */
+            .fade-in {
+                animation: fadeIn 0.3s ease-out;
+            }
+            
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            /* Utilidades de demostración */
+            .demo-controls {
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--dashboard-bg-primary);
+                border: 1px solid var(--dashboard-border-primary);
+                border-radius: var(--radius-lg);
+                padding: var(--space-lg);
+                box-shadow: var(--shadow-xl);
+                z-index: var(--z-tooltip);
+                
+                & .control-group {
+                    margin-bottom: var(--space-md);
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    & label {
+                        display: block;
+                        font-weight: 600;
+                        font-size: var(--font-sm);
+                        color: var(--dashboard-text-primary);
+                        margin-bottom: var(--space-xs);
+                    }
+                    
+                    & input[type="range"] {
+                        width: 200px;
+                        margin-bottom: var(--space-xs);
+                    }
+                    
+                    & .current-value {
+                        font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
+                        background: var(--dashboard-bg-tertiary);
+                        padding: var(--space-xs) var(--space-sm);
+                        border-radius: var(--radius-sm);
+                        font-size: var(--font-xs);
+                        color: var(--dashboard-text-muted);
+                    }
+                    
+                    & button {
+                        width: 100%;
+                        padding: var(--space-sm) var(--space-md);
+                        background: var(--dashboard-accent-primary);
+                        color: white;
+                        border: none;
+                        border-radius: var(--radius-md);
+                        font-weight: 600;
+                        cursor: pointer;
+                        transition: background var(--transition-fast);
+                        
+                        &:hover {
+                            background: #2563eb;
+                        }
+                    }
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Controles de demostración -->
+    <div class="demo-controls">
+        <div class="control-group">
+            <label for="dashboard-width">Ancho del Dashboard:</label>
+            <input type="range" id="dashboard-width" min="320" max="1800" value="1200" step="20">
+            <div class="current-value" id="width-display">1200px</div>
+        </div>
+        
+        <div class="control-group">
+            <button id="toggle-sidebar">Toggle Sidebar</button>
+        </div>
+        
+        <div class="control-group">
+            <button id="toggle-tab">Cambiar Pestaña</button>
+        </div>
+    </div>
+    
+    <!-- Backdrop para móvil -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop"></div>
+    
+    <!-- Dashboard Shell Principal -->
+    <div class="dashboard-shell sidebar-open" id="dashboard-shell">
+        <!-- Sidebar Navigation -->
+        <aside class="dashboard-sidebar" id="dashboard-sidebar">
+            <div class="sidebar-header">
+                <a href="#" class="brand-logo">
+                    <div class="logo-icon">🚀</div>
+                    <span class="brand-text">DashPro</span>
+                </a>
+                <button class="sidebar-toggle" id="sidebar-toggle">
+                    ×
+                </button>
+            </div>
+            
+            <nav class="sidebar-navigation">
+                <div class="nav-section">
+                    <div class="section-title">Principal</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link active">
+                                <span class="nav-icon">📊</span>
+                                <span class="nav-text">Dashboard</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📈</span>
+                                <span class="nav-text">Analytics</span>
+                                <span class="nav-badge">3</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">👥</span>
+                                <span class="nav-text">Usuarios</span>
+                                <span class="nav-badge">127</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📋</span>
+                                <span class="nav-text">Proyectos</span>
+                                <span class="nav-badge">8</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="section-title">Gestión</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">🛍️</span>
+                                <span class="nav-text">Productos</span>
+                                <span class="nav-badge">1.2K</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📦</span>
+                                <span class="nav-text">Inventario</span>
+                                <span class="nav-badge">47</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">💰</span>
+                                <span class="nav-text">Facturación</span>
+                                <span class="nav-badge">12</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">📊</span>
+                                <span class="nav-text">Reportes</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <div class="nav-section">
+                    <div class="section-title">Configuración</div>
+                    <ul class="nav-list">
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">⚙️</span>
+                                <span class="nav-text">Preferencias</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">🔒</span>
+                                <span class="nav-text">Seguridad</span>
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a href="#" class="nav-link">
+                                <span class="nav-icon">❓</span>
+                                <span class="nav-text">Ayuda</span>
+                                <span class="nav-badge">2</span>
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+        </aside>
+        
+        <!-- Header Navigation -->
+        <header class="dashboard-header">
+            <div class="header-left">
+                <button class="mobile-menu-toggle" id="mobile-menu-toggle">
+                    ☰
+                </button>
+                <h1 class="page-title">Panel Principal</h1>
+            </div>
+            
+            <div class="header-center">
+                <div class="global-search">
+                    <span class="search-icon">🔍</span>
+                    <input type="text" class="search-input" placeholder="Buscar en todo el sistema...">
+                </div>
+            </div>
+            
+            <div class="header-right">
+                <button class="header-action">
+                    <span>🔔</span>
+                    <span class="action-badge"></span>
+                </button>
+                <button class="header-action">
+                    <span>💬</span>
+                    <span class="action-badge"></span>
+                </button>
+                <div class="user-profile">
+                    <div class="avatar">JD</div>
+                    <div class="user-info">
+                        <div class="user-name">Juan Pérez</div>
+                        <div class="user-role">Administrador</div>
+                    </div>
+                    <span class="dropdown-arrow">▼</span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- Breadcrumb Navigation -->
+        <nav class="dashboard-breadcrumb">
+            <div class="breadcrumb-nav">
+                <div class="breadcrumb-item">
+                    <a href="#" class="breadcrumb-link">🏠 Inicio</a>
+                    <span class="breadcrumb-separator">›</span>
+                </div>
+                <div class="breadcrumb-item">
+                    <a href="#" class="breadcrumb-link">Dashboard</a>
+                    <span class="breadcrumb-separator">›</span>
+                </div>
+                <div class="breadcrumb-item">
+                    <span class="breadcrumb-current">Panel Principal</span>
+                </div>
+            </div>
+        </nav>
+        
+        <!-- Main Content Area -->
+        <main class="dashboard-content">
+            <div class="content-header">
+                <div class="page-header">
+                    <div class="header-content">
+                        <h1 class="page-title">Dashboard Ejecutivo</h1>
+                        <p class="page-description">Vista general de las métricas principales y rendimiento del sistema</p>
+                    </div>
+                    <div class="header-actions">
+                        <button class="action-button secondary">📊 Exportar</button>
+                        <button class="action-button">📈 Nuevo Reporte</button>
+                    </div>
+                </div>
+                
+                <div class="content-tabs">
+                    <ul class="tab-list">
+                        <li class="tab-item">
+                            <button class="tab-button active" data-tab="overview">Resumen General</button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button" data-tab="performance">Rendimiento</button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button" data-tab="analytics">Analytics Avanzado</button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button" data-tab="reports">Reportes</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <!-- Metrics Grid -->
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Ingresos Totales</span>
+                        <div class="metric-icon revenue">💰</div>
+                    </div>
+                    <div class="metric-value">
+                        $847.2<span class="value-unit">K</span>
+                    </div>
+                    <div class="metric-change">
+                        <span class="change-indicator positive">↗ +15.8%</span>
+                        <span class="change-text">vs mes anterior</span>
+                    </div>
+                    <div class="metric-chart">📈 Gráfico de Tendencia</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Usuarios Activos</span>
+                        <div class="metric-icon users">👥</div>
+                    </div>
+                    <div class="metric-value">
+                        24.7<span class="value-unit">K</span>
+                    </div>
+                    <div class="metric-change">
+                        <span class="change-indicator positive">↗ +8.2%</span>
+                        <span class="change-text">vs semana anterior</span>
+                    </div>
+                    <div class="metric-chart">📊 Gráfico de Usuarios</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Pedidos Procesados</span>
+                        <div class="metric-icon orders">📦</div>
+                    </div>
+                    <div class="metric-value">
+                        1,247
+                    </div>
+                    <div class="metric-change">
+                        <span class="change-indicator negative">↘ -2.1%</span>
+                        <span class="change-text">vs día anterior</span>
+                    </div>
+                    <div class="metric-chart">📉 Gráfico de Pedidos</div>
+                </div>
+                
+                <div class="metric-card">
+                    <div class="metric-header">
+                        <span class="metric-title">Tasa de Conversión</span>
+                        <div class="metric-icon conversion">🎯</div>
+                    </div>
+                    <div class="metric-value">
+                        3.47<span class="value-unit">%</span>
+                    </div>
+                    <div class="metric-change">
+                        <span class="change-indicator positive">↗ +0.3%</span>
+                        <span class="change-text">vs promedio</span>
+                    </div>
+                    <div class="metric-chart">📈 Gráfico de Conversión</div>
+                </div>
+            </div>
+            
+            <!-- Dashboard Widgets -->
+            <div class="dashboard-widgets">
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title">Analytics de Rendimiento</h3>
+                        <p class="widget-description">Métricas detalladas de rendimiento y engagement</p>
+                    </div>
+                    <div class="widget-content">
+                        <div class="chart-placeholder">
+                            📊 Gráfico Principal de Analytics
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="widget">
+                    <div class="widget-header">
+                        <h3 class="widget-title">Actividad Reciente</h3>
+                        <p class="widget-description">Últimas transacciones y eventos del sistema</p>
+                    </div>
+                    <div class="widget-content">
+                        <div class="data-table">
+                            <div class="table-header">
+                                <div class="header-cell">Evento</div>
+                                <div class="header-cell">Estado</div>
+                                <div class="header-cell">Valor</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="cell">Nuevo pedido #1247</div>
+                                <div class="cell success">Completado</div>
+                                <div class="cell">$847.50</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="cell">Usuario registrado</div>
+                                <div class="cell success">Activo</div>
+                                <div class="cell muted">--</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="cell">Pago procesado #892</div>
+                                <div class="cell warning">Pendiente</div>
+                                <div class="cell">$1,247.00</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="cell">Reporte generado</div>
+                                <div class="cell success">Completado</div>
+                                <div class="cell muted">--</div>
+                            </div>
+                            <div class="table-row">
+                                <div class="cell">Backup automático</div>
+                                <div class="cell success">Exitoso</div>
+                                <div class="cell muted">847 MB</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+    
+    <script>
+        /*
+           SISTEMA DE CONTROL PARA EL DASHBOARD ADAPTATIVO
+           Este JavaScript coordina las interacciones entre los diferentes
+           componentes del dashboard sin interferir con las container queries
+        */
+        
+        // Referencias a elementos del DOM
+        const dashboardShell = document.getElementById('dashboard-shell');
+        const dashboardSidebar = document.getElementById('dashboard-sidebar');
+        const sidebarBackdrop = document.getElementById('sidebar-backdrop');
+        const dashboardWidthSlider = document.getElementById('dashboard-width');
+        const widthDisplay = document.getElementById('width-display');
+        const toggleSidebarBtn = document.getElementById('toggle-sidebar');
+        const sidebarToggle = document.getElementById('sidebar-toggle');
+        const mobileMenuToggle = document.getElementById('mobile-menu-toggle');
+        const toggleTabBtn = document.getElementById('toggle-tab');
+        
+        // Estado del dashboard
+        let dashboardState = {
+            sidebarOpen: true,
+            currentTab: 'overview',
+            isMobile: false
+        };
+        
+        /*
+           Control del ancho del dashboard para demostración
+           Permite experimentar con diferentes tamaños de contenedor
+        */
+        function updateDashboardWidth() {
+            const width = dashboardWidthSlider.value + 'px';
+            dashboardShell.style.width = width;
+            dashboardShell.style.margin = '0 auto';
+            widthDisplay.textContent = width;
+            
+            // Determinar si estamos en modo móvil basado en el ancho
+            const numericWidth = parseInt(dashboardWidthSlider.value);
+            dashboardState.isMobile = numericWidth < 768;
+            
+            // Ajustar el estado del sidebar según el ancho
+            if (dashboardState.isMobile && dashboardState.sidebarOpen) {
+                dashboardSidebar.classList.add('mobile-open');
+                sidebarBackdrop.classList.add('active');
+            }
+        }
+        
+        /*
+           Control del sidebar con diferentes estados
+           Maneja la lógica de apertura/cierre del sidebar
+        */
+        function toggleSidebar() {
+            dashboardState.sidebarOpen = !dashboardState.sidebarOpen;
+            
+            if (dashboardState.sidebarOpen) {
+                dashboardShell.classList.add('sidebar-open');
+                if (dashboardState.isMobile) {
+                    dashboardSidebar.classList.add('mobile-open');
+                    sidebarBackdrop.classList.add('active');
+                }
+            } else {
+                dashboardShell.classList.remove('sidebar-open');
+                dashboardSidebar.classList.remove('mobile-open');
+                sidebarBackdrop.classList.remove('active');
+            }
+            
+            console.log(`Sidebar ${dashboardState.sidebarOpen ? 'abierto' : 'cerrado'}`);
+        }
+        
+        /*
+           Sistema de pestañas integrado
+           Cambia entre diferentes vistas del contenido
+        */
+        const tabs = ['overview', 'performance', 'analytics', 'reports'];
+        let currentTabIndex = 0;
+        
+        function switchTab() {
+            // Desactivar pestaña actual
+            document.querySelector('.tab-button.active')?.classList.remove('active');
+            
+            // Activar siguiente pestaña
+            currentTabIndex = (currentTabIndex + 1) % tabs.length;
+            dashboardState.currentTab = tabs[currentTabIndex];
+            
+            const tabButtons = document.querySelectorAll('.tab-button');
+            if (tabButtons[currentTabIndex]) {
+                tabButtons[currentTabIndex].classList.add('active');
+            }
+            
+            console.log(`Pestaña activa: ${dashboardState.currentTab}`);
+        }
+        
+        /*
+           Event Listeners para todos los controles
+        */
+        dashboardWidthSlider.addEventListener('input', updateDashboardWidth);
+        toggleSidebarBtn.addEventListener('click', toggleSidebar);
+        sidebarToggle.addEventListener('click', toggleSidebar);
+        mobileMenuToggle.addEventListener('click', toggleSidebar);
+        toggleTabBtn.addEventListener('click', switchTab);
+        
+        /*
+           Cerrar sidebar cuando se hace clic en el backdrop (móvil)
+        */
+        sidebarBackdrop.addEventListener('click', () => {
+            if (dashboardState.isMobile) {
+                dashboardState.sidebarOpen = false;
+                dashboardSidebar.classList.remove('mobile-open');
+                sidebarBackdrop.classList.remove('active');
+            }
+        });
+        
+        /*
+           Sistema de pestañas clickeable
+        */
+        document.querySelectorAll('.tab-button').forEach((button, index) => {
+            button.addEventListener('click', () => {
+                document.querySelector('.tab-button.active')?.classList.remove('active');
+                button.classList.add('active');
+                currentTabIndex = index;
+                dashboardState.currentTab = tabs[index] || 'overview';
+                console.log(`Pestaña seleccionada: ${dashboardState.currentTab}`);
+            });
+        });
+        
+        /*
+           Navegación del sidebar clickeable
+        */
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remover active de todos los enlaces
+                document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
+                
+                // Agregar active al enlace clickeado
+                link.classList.add('active');
+                
+                // En móvil, cerrar sidebar después de la navegación
+                if (dashboardState.isMobile) {
+                    setTimeout(() => {
+                        dashboardState.sidebarOpen = false;
+                        dashboardSidebar.classList.remove('mobile-open');
+                        sidebarBackdrop.classList.remove('active');
+                    }, 150);
+                }
+            });
+        });
+        
+        /*
+           Observador de Container Queries para debugging
+           Nos ayuda a entender qué breakpoints están activos
+        */
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const width = Math.round(entry.contentRect.width);
+                
+                let layoutMode;
+                if (width < 768) {
+                    layoutMode = '📱 Móvil';
+                } else if (width < 1024) {
+                    layoutMode = '💻 Tablet';
+                } else if (width < 1280) {
+                    layoutMode = '🖥️ Desktop';
+                } else if (width < 1600) {
+                    layoutMode = '🎯 Desktop Amplio';
+                } else {
+                    layoutMode = '🖼️ Ultra-Wide';
+                }
+                
+                console.log(`Dashboard: ${width}px - Modo: ${layoutMode}`);
+            }
+        });
+        
+        observer.observe(dashboardShell);
+        
+        /*
+           Inicialización del dashboard
+        */
+        updateDashboardWidth();
+        
+        /*
+           Navegación con teclado para accesibilidad
+        */
+        document.addEventListener('keydown', (e) => {
+            // Esc para cerrar sidebar en móvil
+            if (e.key === 'Escape' && dashboardState.isMobile && dashboardState.sidebarOpen) {
+                toggleSidebar();
+            }
+            
+            // Ctrl/Cmd + B para toggle sidebar
+            if ((e.ctrlKey || e.metaKey) && e.key === 'b') {
+                e.preventDefault();
+                toggleSidebar();
+            }
+            
+            // Números 1-4 para cambiar pestañas
+            if (e.key >= '1' && e.key <= '4') {
+                const tabIndex = parseInt(e.key) - 1;
+                if (tabIndex < tabs.length) {
+                    document.querySelector('.tab-button.active')?.classList.remove('active');
+                    const tabButtons = document.querySelectorAll('.tab-button');
+                    if (tabButtons[tabIndex]) {
+                        tabButtons[tabIndex].classList.add('active');
+                        currentTabIndex = tabIndex;
+                        dashboardState.currentTab = tabs[tabIndex];
+                    }
+                }
+            }
+        });
+        
+        /*
+           Simulación de datos en tiempo real (opcional)
+           Demuestra cómo el dashboard puede actualizarse dinámicamente
+        */
+        function simulateDataUpdate() {
+            const metricValues = document.querySelectorAll('.metric-value');
+            metricValues.forEach(element => {
+                // Agregar clase de animación para mostrar actualización
+                element.classList.add('fade-in');
+                setTimeout(() => {
+                    element.classList.remove('fade-in');
+                }, 300);
+            });
+        }
+        
+        // Actualizar datos cada 30 segundos (comentado para la demo)
+        // setInterval(simulateDataUpdate, 30000);
+        
+        console.log('🚀 Dashboard Adaptativo inicializado correctamente');
+        console.log('💡 Tip: Usa Ctrl/Cmd + B para toggle del sidebar');
+        console.log('💡 Tip: Usa las teclas 1-4 para cambiar entre pestañas');
+    </script>
+</body>
+</html>

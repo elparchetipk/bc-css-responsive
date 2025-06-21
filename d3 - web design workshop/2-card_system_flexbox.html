@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Tarjetas con Flexbox</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 25px 50px rgba(0,0,0,0.15);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 40px;
+            font-size: 3rem;
+        }
+
+        .section {
+            margin-bottom: 50px;
+        }
+
+        .section h2 {
+            color: #2d3748;
+            margin-bottom: 25px;
+            border-left: 5px solid #f093fb;
+            padding-left: 20px;
+            font-size: 1.8rem;
+        }
+
+        /* === PATRÓN 1: CARD BÁSICA === */
+        .card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid #e2e8f0;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        /* Card Header con Flexbox */
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .card-badge {
+            background: rgba(255,255,255,0.2);
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+
+        /* Card Body con Flexbox */
+        .card-body {
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .card-content {
+            flex-grow: 1; /* Toma el espacio disponible */
+            color: #4a5568;
+            line-height: 1.6;
+        }
+
+        /* Card Footer con Flexbox */
+        .card-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 20px;
+            background: #f7fafc;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        .card-meta {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: #667eea;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+
+        .btn-secondary {
+            background: #e2e8f0;
+            color: #4a5568;
+        }
+
+        .btn-secondary:hover {
+            background: #cbd5e0;
+        }
+
+        /* === PATRÓN 2: GRID DE CARDS RESPONSIVE === */
+        .cards-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin: 30px 0;
+        }
+
+        .card-item {
+            flex: 1 1 300px; /* Grow, shrink, base de 300px */
+            min-width: 300px;
+            max-width: 400px;
+        }
+
+        /* === PATRÓN 3: CARD HORIZONTAL === */
+        .card-horizontal {
+            display: flex;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin: 20px 0;
+            transition: all 0.3s ease;
+        }
+
+        .card-horizontal:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.15);
+        }
+
+        .card-image {
+            flex: 0 0 200px; /* No crece, no encoge, 200px fijo */
+            background: linear-gradient(135deg, #f093fb, #f5576c);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 3rem;
+        }
+
+        .card-content-horizontal {
+            flex: 1; /* Toma todo el espacio restante */
+            padding: 25px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        /* === PATRÓN 4: CARD CON PERFIL === */
+        .card-profile {
+            background: white;
+            border-radius: 20px;
+            padding: 30px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .card-profile:hover {
+            transform: translateY(-5px) scale(1.02);
+        }
+
+        .profile-header {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .profile-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 2rem;
+            font-weight: bold;
+        }
+
+        .profile-info h3 {
+            color: #2d3748;
+            margin-bottom: 5px;
+        }
+
+        .profile-role {
+            color: #718096;
+            font-size: 0.9rem;
+        }
+
+        .profile-stats {
+            display: flex;
+            justify-content: space-around;
+            margin: 20px 0;
+            padding: 15px 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .stat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #718096;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .code-example {
+            background: #2d3748;
+            color: #68d391;
+            padding: 20px;
+            border-radius: 10px;
+            margin: 20px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+        }
+
+        .highlight {
+            background: rgba(240, 147, 251, 0.1);
+            padding: 15px;
+            border-left: 4px solid #f093fb;
+            border-radius: 0 8px 8px 0;
+            margin: 15px 0;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .card-horizontal {
+                flex-direction: column;
+            }
+            
+            .card-image {
+                flex: 0 0 150px;
+            }
+            
+            .cards-grid {
+                flex-direction: column;
+            }
+            
+            .card-item {
+                min-width: auto;
+                max-width: none;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Sistema de Tarjetas con Flexbox</h1>
+
+        <!-- Sección 1: Card Básica -->
+        <div class="section">
+            <h2>1. Card Básica con Flexbox</h2>
+            <div class="highlight">
+                <strong>Concepto clave:</strong> Una card utiliza flexbox en múltiples niveles: header para alineación horizontal, body para estructura vertical, y footer para distribución de elementos.
+            </div>
+            
+            <div class="card" style="max-width: 400px; margin: 0 auto;">
+                <div class="card-header">
+                    <h3 class="card-title">Proyecto Innovador</h3>
+                    <span class="card-badge">Nuevo</span>
+                </div>
+                <div class="card-body">
+                    <div class="card-content">
+                        Este es un ejemplo de card moderna usando Flexbox. Observa cómo cada sección mantiene su estructura y el contenido se distribuye de manera elegante y funcional.
+                    </div>
+                </div>
+                <div class="card-footer">
+                    <div class="card-meta">
+                        <span>📅 Hace 2 días</span>
+                        <span>👁️ 234 vistas</span>
+                    </div>
+                    <div class="card-actions">
+                        <a href="#" class="btn btn-secondary">Ver</a>
+                        <a href="#" class="btn btn-primary">Editar</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="code-example">
+/* Estructura Flexbox de una Card */
+.card-header {
+    display: flex;
+    align-items: center;          /* Centrado vertical */
+    justify-content: space-between; /* Separación horizontal */
+}
+
+.card-body {
+    display: flex;
+    flex-direction: column;       /* Stack vertical */
+    gap: 15px;                   /* Espaciado consistente */
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between; /* Meta info vs acciones */
+    align-items: center;
+}
+            </div>
+        </div>
+
+        <!-- Sección 2: Grid de Cards -->
+        <div class="section">
+            <h2>2. Grid de Cards Responsive</h2>
+            <div class="highlight">
+                <strong>Técnica avanzada:</strong> Usando <code>flex: 1 1 300px</code> creamos cards que crecen y se encogen, pero mantienen un ancho mínimo sensato para la legibilidad.
+            </div>
+
+            <div class="cards-grid">
+                <div class="card card-item">
+                    <div class="card-header">
+                        <h3 class="card-title">Desarrollo Web</h3>
+                        <span class="card-badge">Frontend</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-content">
+                            Aprende las últimas tecnologías frontend incluyendo React, Vue y Angular. Construye proyectos reales.
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span>⏱️ 12 semanas</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="#" class="btn btn-primary">Iniciar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-item">
+                    <div class="card-header">
+                        <h3 class="card-title">Diseño UX/UI</h3>
+                        <span class="card-badge">Popular</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-content">
+                            Domina los principios de diseño centrado en el usuario. Figma, prototipado y investigación UX.
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span>⏱️ 8 semanas</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="#" class="btn btn-primary">Iniciar</a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card card-item">
+                    <div class="card-header">
+                        <h3 class="card-title">Data Science</h3>
+                        <span class="card-badge">Avanzado</span>
+                    </div>
+                    <div class="card-body">
+                        <div class="card-content">
+                            Python, machine learning y análisis de datos. Desde estadística básica hasta IA avanzada.
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <div class="card-meta">
+                            <span>⏱️ 16 semanas</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="#" class="btn btn-primary">Iniciar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 3: Card Horizontal -->
+        <div class="section">
+            <h2>3. Card Horizontal</h2>
+            <div class="highlight">
+                <strong>Flexbox power:</strong> Cambiando la dirección del flex a horizontal, creamos layouts completamente diferentes con el mismo sistema base.
+            </div>
+
+            <div class="card-horizontal">
+                <div class="card-image">
+                    🚀
+                </div>
+                <div class="card-content-horizontal">
+                    <div>
+                        <h3 style="margin-bottom: 10px; color: #2d3748;">Proyecto Espacial</h3>
+                        <p style="color: #4a5568; line-height: 1.6;">
+                            Desarrollo de aplicaciones para la exploración espacial utilizando tecnologías de vanguardia. 
+                            Este proyecto combina ingeniería de software con física aplicada.
+                        </p>
+                    </div>
+                    <div class="card-footer" style="padding: 0; background: none; border: none; margin-top: 15px;">
+                        <div class="card-meta">
+                            <span>🔬 Investigación</span>
+                            <span>⭐ 4.9/5</span>
+                        </div>
+                        <div class="card-actions">
+                            <a href="#" class="btn btn-primary">Explorar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sección 4: Card de Perfil -->
+        <div class="section">
+            <h2>4. Card de Perfil</h2>
+            <div class="highlight">
+                <strong>Flexbox para centrado:</strong> Utilizamos flexbox para centrar perfectamente todos los elementos y crear un diseño simétrico y profesional.
+            </div>
+
+            <div style="display: flex; gap: 30px; flex-wrap: wrap;">
+                <div class="card-profile" style="flex: 1; min-width: 250px;">
+                    <div class="profile-header">
+                        <div class="profile-avatar">AZ</div>
+                        <div class="profile-info">
+                            <h3>Ana Zúñiga</h3>
+                            <div class="profile-role">Desarrolladora Frontend</div>
+                        </div>
+                    </div>
+                    
+                    <p style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+                        Especialista en React y Vue.js con 5 años de experiencia creando interfaces de usuario excepcionales.
+                    </p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-number">127</div>
+                            <div class="stat-label">Proyectos</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">2.3k</div>
+                            <div class="stat-label">Seguidores</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">89</div>
+                            <div class="stat-label">Siguiendo</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <a href="#" class="btn btn-primary">Seguir</a>
+                        <a href="#" class="btn btn-secondary">Mensaje</a>
+                    </div>
+                </div>
+
+                <div class="card-profile" style="flex: 1; min-width: 250px;">
+                    <div class="profile-header">
+                        <div class="profile-avatar">MR</div>
+                        <div class="profile-info">
+                            <h3>Mario Ruiz</h3>
+                            <div class="profile-role">Full Stack Developer</div>
+                        </div>
+                    </div>
+                    
+                    <p style="color: #4a5568; line-height: 1.6; margin-bottom: 20px;">
+                        Experto en Node.js y Python, arquitecto de sistemas escalables y mentor de desarrolladores junior.
+                    </p>
+                    
+                    <div class="profile-stats">
+                        <div class="stat">
+                            <div class="stat-number">89</div>
+                            <div class="stat-label">Proyectos</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">1.8k</div>
+                            <div class="stat-label">Seguidores</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-number">234</div>
+                            <div class="stat-label">Siguiendo</div>
+                        </div>
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; justify-content: center;">
+                        <a href="#" class="btn btn-primary">Seguir</a>
+                        <a href="#" class="btn btn-secondary">Mensaje</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

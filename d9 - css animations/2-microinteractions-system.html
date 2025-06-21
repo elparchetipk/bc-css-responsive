@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Microinteracciones Responsive</title>
+    <style>
+        /* Variables CSS para consistencia y mantenibilidad */
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            
+            --spacing-xs: 0.25rem;
+            --spacing-sm: 0.5rem;
+            --spacing-md: 1rem;
+            --spacing-lg: 1.5rem;
+            --spacing-xl: 2rem;
+            
+            /* Timing que respeta la percepción humana */
+            --timing-fast: 150ms;      /* Para feedback inmediato */
+            --timing-medium: 300ms;    /* Para transiciones principales */
+            --timing-slow: 500ms;      /* Para animaciones complejas */
+            
+            /* Curves de movimiento natural */
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-in-out-back: cubic-bezier(0.68, -0.6, 0.32, 1.6);
+            --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: var(--spacing-xl);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 24px;
+            padding: var(--spacing-xl);
+            backdrop-filter: blur(20px);
+            box-shadow: 
+                0 25px 50px -12px rgba(0, 0, 0, 0.25),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(2rem, 5vw, 3rem);
+            font-weight: 800;
+            margin-bottom: var(--spacing-xl);
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .section {
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: var(--spacing-lg);
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+        }
+
+        /* ===========================================
+           BOTONES CON MICROINTERACCIONES AVANZADAS
+           =========================================== */
+
+        .buttons-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .btn {
+            position: relative;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all var(--timing-medium) var(--ease-out-expo);
+            overflow: hidden;
+            transform: translateY(0);
+            /* Preparar para animaciones */
+            will-change: transform, box-shadow;
+        }
+
+        /* Efecto de ondas (ripple) */
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 0;
+            height: 0;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transform: translate(-50%, -50%);
+            transition: width var(--timing-slow) ease-out, height var(--timing-slow) ease-out;
+        }
+
+        .btn:active::before {
+            width: 300px;
+            height: 300px;
+        }
+
+        /* Variantes de botones */
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            box-shadow: 0 4px 14px 0 rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px 0 rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-ghost {
+            background: transparent;
+            color: var(--primary-color);
+            border: 2px solid var(--primary-color);
+        }
+
+        .btn-ghost:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .btn-elastic {
+            background: var(--success-color);
+            color: white;
+            transition: all var(--timing-medium) var(--ease-elastic);
+        }
+
+        .btn-elastic:hover {
+            transform: scale(1.05) translateY(-2px);
+        }
+
+        /* ===========================================
+           CARDS CON ANIMACIONES SOFISTICADAS
+           =========================================== */
+
+        .cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .card {
+            background: white;
+            border-radius: 16px;
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all var(--timing-medium) var(--ease-out-expo);
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Efecto de levitación */
+        .card:hover {
+            transform: translateY(-8px) scale(1.02);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        /* Gradiente animado en hover */
+        .card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            opacity: 0;
+            transition: opacity var(--timing-medium) ease;
+            z-index: -1;
+        }
+
+        .card:hover::before {
+            opacity: 0.05;
+        }
+
+        .card-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: #1f2937;
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .card:hover .card-title {
+            color: var(--primary-color);
+        }
+
+        /* ===========================================
+           FORMULARIOS CON ESTADOS ANIMADOS
+           =========================================== */
+
+        .form-group {
+            position: relative;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #e5e7eb;
+            border-radius: 12px;
+            font-size: 1rem;
+            transition: all var(--timing-medium) ease;
+            background: #fafafa;
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            background: white;
+            box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Label flotante animado */
+        .form-label {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #fafafa;
+            padding: 0 8px;
+            color: #6b7280;
+            transition: all var(--timing-medium) var(--ease-out-expo);
+            pointer-events: none;
+        }
+
+        .form-input:focus + .form-label,
+        .form-input:not(:placeholder-shown) + .form-label {
+            top: 0;
+            transform: translateY(-50%) scale(0.85);
+            color: var(--primary-color);
+            background: white;
+        }
+
+        /* ===========================================
+           INDICADORES DE PROGRESO ANIMADOS
+           =========================================== */
+
+        .progress-container {
+            margin: var(--spacing-lg) 0;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 4px;
+            transition: width var(--timing-slow) var(--ease-out-expo);
+            position: relative;
+        }
+
+        /* Efecto de brillo animado */
+        .progress-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background: linear-gradient(
+                90deg,
+                transparent,
+                rgba(255, 255, 255, 0.4),
+                transparent
+            );
+            transform: translateX(-100%);
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%); }
+            100% { transform: translateX(100%); }
+        }
+
+        /* ===========================================
+           TOGGLE SWITCHES ANIMADOS
+           =========================================== */
+
+        .toggle-container {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin: var(--spacing-md) 0;
+        }
+
+        .toggle {
+            position: relative;
+            width: 60px;
+            height: 32px;
+            background: #e5e7eb;
+            border-radius: 16px;
+            cursor: pointer;
+            transition: all var(--timing-medium) ease;
+        }
+
+        .toggle::before {
+            content: '';
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 28px;
+            height: 28px;
+            background: white;
+            border-radius: 50%;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+            transition: all var(--timing-medium) var(--ease-elastic);
+        }
+
+        .toggle.active {
+            background: var(--primary-color);
+        }
+
+        .toggle.active::before {
+            transform: translateX(28px);
+        }
+
+        /* ===========================================
+           RESPONSIVE DESIGN
+           =========================================== */
+
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--spacing-md);
+            }
+            
+            .buttons-grid,
+            .cards-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .btn {
+                padding: 14px 20px;
+                font-size: 0.9rem;
+            }
+        }
+
+        /* ===========================================
+           ACCESIBILIDAD Y REDUCED MOTION
+           =========================================== */
+
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* Focus visible para navegación por teclado */
+        .btn:focus-visible,
+        .form-input:focus-visible,
+        .card:focus-visible {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        /* Estados de carga */
+        .loading {
+            position: relative;
+            pointer-events: none;
+            color: transparent;
+        }
+
+        .loading::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            margin: -10px 0 0 -10px;
+            border: 2px solid transparent;
+            border-top: 2px solid currentColor;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎯 Sistema de Microinteracciones Responsive</h1>
+        
+        <div class="section">
+            <h2 class="section-title">
+                🔘 Botones con Efectos Avanzados
+            </h2>
+            <div class="buttons-grid">
+                <button class="btn btn-primary">Efecto Ripple</button>
+                <button class="btn btn-ghost">Transformación</button>
+                <button class="btn btn-elastic">Elastic Bounce</button>
+                <button class="btn btn-primary loading">Cargando</button>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                🎴 Cards Interactivas
+            </h2>
+            <div class="cards-container">
+                <div class="card" tabindex="0">
+                    <h3 class="card-title">Efecto Levitación</h3>
+                    <p>Esta card se eleva suavemente al hacer hover, creando una sensación de profundidad tridimensional que invita a la interacción.</p>
+                </div>
+                <div class="card" tabindex="0">
+                    <h3 class="card-title">Gradiente Animado</h3>
+                    <p>Un sutil gradiente de color aparece en el fondo durante la interacción, agregando elegancia sin distraer del contenido.</p>
+                </div>
+                <div class="card" tabindex="0">
+                    <h3 class="card-title">Transformación Suave</h3>
+                    <p>La combinación de escala y elevación crea una microinteracción que se siente natural y responsiva a la intención del usuario.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                📝 Formularios Inteligentes
+            </h2>
+            <div class="form-group">
+                <input type="text" class="form-input" placeholder=" ">
+                <label class="form-label">Nombre completo</label>
+            </div>
+            <div class="form-group">
+                <input type="email" class="form-input" placeholder=" ">
+                <label class="form-label">Correo electrónico</label>
+            </div>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                📊 Indicadores de Progreso
+            </h2>
+            <div class="progress-container">
+                <div class="progress-bar">
+                    <div class="progress-fill" style="width: 75%;"></div>
+                </div>
+            </div>
+            <button class="btn btn-primary" onclick="updateProgress()">Actualizar Progreso</button>
+        </div>
+
+        <div class="section">
+            <h2 class="section-title">
+                🔄 Toggle Switches
+            </h2>
+            <div class="toggle-container">
+                <div class="toggle" onclick="toggleSwitch(this)"></div>
+                <span>Modo oscuro</span>
+            </div>
+            <div class="toggle-container">
+                <div class="toggle active" onclick="toggleSwitch(this)"></div>
+                <span>Notificaciones</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de gestión de estados para progreso
+        let currentProgress = 75;
+        
+        function updateProgress() {
+            currentProgress = Math.min(100, currentProgress + 15);
+            if (currentProgress >= 100) currentProgress = 25;
+            
+            const progressFill = document.querySelector('.progress-fill');
+            progressFill.style.width = currentProgress + '%';
+        }
+
+        // Toggle switches con estado persistente
+        function toggleSwitch(element) {
+            element.classList.toggle('active');
+            
+            // Feedback háptico en dispositivos compatibles
+            if (navigator.vibrate) {
+                navigator.vibrate(50);
+            }
+        }
+
+        // Agregar efectos de ripple a botones
+        document.querySelectorAll('.btn').forEach(button => {
+            button.addEventListener('click', function(e) {
+                // Evitar múltiples ripples
+                const existingRipple = this.querySelector('.ripple');
+                if (existingRipple) {
+                    existingRipple.remove();
+                }
+                
+                const ripple = document.createElement('span');
+                ripple.classList.add('ripple');
+                this.appendChild(ripple);
+                
+                // Remover el ripple después de la animación
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+
+        // Optimización de performance para hover en dispositivos móviles
+        function isMobileDevice() {
+            return window.matchMedia('(hover: none)').matches;
+        }
+
+        if (isMobileDevice()) {
+            // Deshabilitar efectos hover en dispositivos táctiles
+            document.body.classList.add('touch-device');
+        }
+
+        // Prefers-reduced-motion: feedback al usuario
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            console.log('🎯 Animaciones reducidas activadas por preferencias del usuario');
+        }
+
+        // Monitoring de performance de animaciones
+        let animationFrameId;
+        function monitorAnimationPerformance() {
+            let lastFrameTime = performance.now();
+            
+            function checkFrame() {
+                const currentTime = performance.now();
+                const frameDuration = currentTime - lastFrameTime;
+                
+                // Si un frame toma más de 16.67ms (60fps), logear warning
+                if (frameDuration > 16.67) {
+                    console.warn(`⚠️ Frame lento detectado: ${frameDuration.toFixed(2)}ms`);
+                }
+                
+                lastFrameTime = currentTime;
+                animationFrameId = requestAnimationFrame(checkFrame);
+            }
+            
+            checkFrame();
+        }
+
+        // Iniciar monitoring en desarrollo
+        if (window.location.hostname === 'localhost') {
+            monitorAnimationPerformance();
+        }
+    </script>
+</body>
+</html>

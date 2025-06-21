@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Auditoría de Performance</title>
+    <style>
+        /* Variables de sistema para consistencia */
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --success: #059669;
+            --warning: #d97706;
+            --danger: #dc2626;
+            --neutral: #6b7280;
+            
+            /* Spacing system basado en múltiplos de 8px */
+            --space-1: 0.25rem; /* 4px */
+            --space-2: 0.5rem;  /* 8px */
+            --space-3: 0.75rem; /* 12px */
+            --space-4: 1rem;    /* 16px */
+            --space-6: 1.5rem;  /* 24px */
+            --space-8: 2rem;    /* 32px */
+            
+            /* Typography scale */
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            
+            /* Performance-optimized durations */
+            --duration-instant: 100ms;
+            --duration-fast: 200ms;
+            --duration-normal: 300ms;
+            --duration-slow: 500ms;
+        }
+
+        /* Reset y base styles */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            min-height: 100vh;
+            color: #f8fafc;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-8);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: var(--space-8);
+        }
+
+        .title {
+            font-size: var(--text-3xl);
+            font-weight: 900;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: var(--space-4);
+        }
+
+        .subtitle {
+            font-size: var(--text-lg);
+            color: #94a3b8;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Dashboard Layout */
+        .dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-6);
+            margin-bottom: var(--space-8);
+        }
+
+        .panel {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: var(--space-6);
+            backdrop-filter: blur(10px);
+        }
+
+        .panel-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        /* Metrics Display */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: var(--space-4);
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metric-value {
+            font-size: var(--text-2xl);
+            font-weight: 800;
+            margin-bottom: var(--space-1);
+        }
+
+        .metric-label {
+            font-size: var(--text-sm);
+            color: #94a3b8;
+            font-weight: 500;
+        }
+
+        .metric-good { color: var(--success); }
+        .metric-warning { color: var(--warning); }
+        .metric-bad { color: var(--danger); }
+
+        /* Analysis Tools */
+        .analysis-tools {
+            display: flex;
+            gap: var(--space-4);
+            margin-bottom: var(--space-6);
+            flex-wrap: wrap;
+        }
+
+        .tool-button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: var(--space-3) var(--space-6);
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--duration-fast) ease;
+            font-size: var(--text-sm);
+        }
+
+        .tool-button:hover {
+            background: var(--secondary);
+            transform: translateY(-1px);
+        }
+
+        .tool-button:active {
+            transform: translateY(0);
+        }
+
+        /* Performance Monitor */
+        .performance-chart {
+            height: 200px;
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+            padding: var(--space-4);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .fps-line {
+            position: absolute;
+            bottom: var(--space-4);
+            left: var(--space-4);
+            right: var(--space-4);
+            height: 2px;
+            background: var(--success);
+            transform-origin: left;
+            transition: transform var(--duration-instant) linear;
+        }
+
+        /* Test Scenarios */
+        .test-scenarios {
+            grid-column: 1 / -1;
+        }
+
+        .scenario-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .scenario-card {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            padding: var(--space-4);
+            cursor: pointer;
+            transition: all var(--duration-normal) ease;
+        }
+
+        .scenario-card:hover {
+            background: rgba(255, 255, 255, 0.08);
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .scenario-title {
+            font-weight: 600;
+            margin-bottom: var(--space-2);
+        }
+
+        .scenario-description {
+            font-size: var(--text-sm);
+            color: #94a3b8;
+            margin-bottom: var(--space-3);
+        }
+
+        .scenario-status {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .status-badge {
+            padding: var(--space-1) var(--space-3);
+            border-radius: 20px;
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .status-pass { background: rgba(5, 150, 105, 0.2); color: var(--success); }
+        .status-warning { background: rgba(217, 119, 6, 0.2); color: var(--warning); }
+        .status-fail { background: rgba(220, 38, 38, 0.2); color: var(--danger); }
+
+        /* Code Analysis */
+        .code-analysis {
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            padding: var(--space-4);
+            margin-top: var(--space-4);
+            overflow-x: auto;
+        }
+
+        .code-line {
+            display: flex;
+            align-items: center;
+            padding: var(--space-1) 0;
+            font-family: 'Fira Code', monospace;
+            font-size: var(--text-sm);
+        }
+
+        .line-number {
+            width: 30px;
+            color: #64748b;
+            text-align: right;
+            margin-right: var(--space-3);
+        }
+
+        .line-issue {
+            background: rgba(220, 38, 38, 0.1);
+            border-left: 3px solid var(--danger);
+            padding-left: var(--space-2);
+        }
+
+        .line-warning {
+            background: rgba(217, 119, 6, 0.1);
+            border-left: 3px solid var(--warning);
+            padding-left: var(--space-2);
+        }
+
+        .line-good {
+            background: rgba(5, 150, 105, 0.1);
+            border-left: 3px solid var(--success);
+            padding-left: var(--space-2);
+        }
+
+        /* Recommendations */
+        .recommendations {
+            margin-top: var(--space-6);
+        }
+
+        .recommendation-item {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: var(--space-4);
+            margin-bottom: var(--space-3);
+        }
+
+        .recommendation-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: var(--space-2);
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+        }
+
+        .impact-badge {
+            padding: var(--space-1) var(--space-2);
+            border-radius: 4px;
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .impact-high { background: rgba(220, 38, 38, 0.2); color: var(--danger); }
+        .impact-medium { background: rgba(217, 119, 6, 0.2); color: var(--warning); }
+        .impact-low { background: rgba(5, 150, 105, 0.2); color: var(--success); }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .dashboard {
+                grid-template-columns: 1fr;
+            }
+            
+            .analysis-tools {
+                flex-direction: column;
+            }
+            
+            .tool-button {
+                width: 100%;
+            }
+            
+            .metrics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        /* Estados de elementos de prueba */
+        .test-element {
+            width: 100px;
+            height: 100px;
+            background: var(--primary);
+            border-radius: 8px;
+            margin: var(--space-4) auto;
+            /* PROBLEMA: Animating width - fuerza reflow */
+            transition: width var(--duration-slow) ease;
+        }
+
+        .test-element-optimized {
+            width: 100px;
+            height: 100px;
+            background: var(--success);
+            border-radius: 8px;
+            margin: var(--space-4) auto;
+            /* SOLUCIÓN: Usar transform - utiliza GPU */
+            transition: transform var(--duration-normal) ease;
+        }
+
+        .test-element:hover {
+            width: 120px; /* Problemático */
+        }
+
+        .test-element-optimized:hover {
+            transform: scale(1.2); /* Optimizado */
+        }
+
+        /* Animación problemática para demostración */
+        @keyframes problematicSlide {
+            0% { left: 0; }
+            100% { left: 100px; }
+        }
+
+        /* Animación optimizada */
+        @keyframes optimizedSlide {
+            0% { transform: translateX(0); }
+            100% { transform: translateX(100px); }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🔍 Sistema de Auditoría de Performance</h1>
+            <p class="subtitle">
+                Herramientas profesionales para analizar, optimizar y validar animaciones CSS en producción.
+                Descubre cuellos de botella antes de que impacten a tus usuarios.
+            </p>
+        </div>
+
+        <div class="dashboard">
+            <!-- Panel de Métricas en Tiempo Real -->
+            <div class="panel">
+                <h2 class="panel-title">📊 Métricas en Tiempo Real</h2>
+                <div class="metrics-grid">
+                    <div class="metric-card">
+                        <div class="metric-value metric-good" id="fps-display">60</div>
+                        <div class="metric-label">FPS Promedio</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value metric-warning" id="frame-time">16.7</div>
+                        <div class="metric-label">Tiempo/Frame (ms)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value metric-good" id="gpu-usage">45</div>
+                        <div class="metric-label">Uso GPU (%)</div>
+                    </div>
+                    <div class="metric-card">
+                        <div class="metric-value metric-bad" id="dropped-frames">12</div>
+                        <div class="metric-label">Frames Perdidos</div>
+                    </div>
+                </div>
+                
+                <div class="performance-chart">
+                    <div class="fps-line" id="fps-indicator"></div>
+                </div>
+            </div>
+
+            <!-- Panel de Herramientas de Análisis -->
+            <div class="panel">
+                <h2 class="panel-title">🛠️ Herramientas de Análisis</h2>
+                <div class="analysis-tools">
+                    <button class="tool-button" onclick="runPerformanceAudit()">
+                        📈 Auditoría Completa
+                    </button>
+                    <button class="tool-button" onclick="detectLayerThrashing()">
+                        🎯 Detectar Layer Thrashing
+                    </button>
+                    <button class="tool-button" onclick="analyzeReflows()">
+                        ⚡ Analizar Reflows
+                    </button>
+                    <button class="tool-button" onclick="checkAccessibility()">
+                        ♿ Verificar Accesibilidad
+                    </button>
+                </div>
+
+                <!-- Elementos de prueba -->
+                <div>
+                    <h3 style="margin-bottom: var(--space-2);">Elementos de Prueba:</h3>
+                    <div class="test-element" title="Hover para ver animación problemática"></div>
+                    <div class="test-element-optimized" title="Hover para ver animación optimizada"></div>
+                </div>
+            </div>
+
+            <!-- Escenarios de Prueba -->
+            <div class="panel test-scenarios">
+                <h2 class="panel-title">🧪 Escenarios de Prueba</h2>
+                <div class="scenario-grid">
+                    <div class="scenario-card" onclick="runTest('mobile-low-end')">
+                        <div class="scenario-title">📱 Dispositivo Móvil Básico</div>
+                        <div class="scenario-description">
+                            Simula performance en dispositivos con CPU limitada y conexión lenta.
+                        </div>
+                        <div class="scenario-status">
+                            <span>Última ejecución: Hace 5 min</span>
+                            <span class="status-badge status-warning">Advertencias</span>
+                        </div>
+                    </div>
+
+                    <div class="scenario-card" onclick="runTest('tablet-standard')">
+                        <div class="scenario-title">📟 Tablet Estándar</div>
+                        <div class="scenario-description">
+                            Evalúa comportamiento en dispositivos de rango medio con resoluciones variadas.
+                        </div>
+                        <div class="scenario-status">
+                            <span>Última ejecución: Hace 2 min</span>
+                            <span class="status-badge status-pass">Aprobado</span>
+                        </div>
+                    </div>
+
+                    <div class="scenario-card" onclick="runTest('desktop-high-end')">
+                        <div class="scenario-title">🖥️ Desktop Avanzado</div>
+                        <div class="scenario-description">
+                            Prueba límites con hardware potente y múltiples monitores.
+                        </div>
+                        <div class="scenario-status">
+                            <span>Última ejecución: Nunca</span>
+                            <span class="status-badge status-fail">Pendiente</span>
+                        </div>
+                    </div>
+
+                    <div class="scenario-card" onclick="runTest('reduced-motion')">
+                        <div class="scenario-title">♿ Movimiento Reducido</div>
+                        <div class="scenario-description">
+                            Verifica compatibilidad con preferencias de accesibilidad.
+                        </div>
+                        <div class="scenario-status">
+                            <span>Última ejecución: Hace 1 hora</span>
+                            <span class="status-badge status-pass">Aprobado</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Análisis de Código -->
+        <div class="panel">
+            <h2 class="panel-title">🔍 Análisis de Código CSS</h2>
+            <div class="code-analysis">
+                <div class="code-line line-issue">
+                    <span class="line-number">23</span>
+                    <span>transition: width 500ms ease; /* ❌ PROBLEMA: Fuerza reflow */</span>
+                </div>
+                <div class="code-line line-warning">
+                    <span class="line-number">24</span>
+                    <span>animation: slideLeft 1s linear infinite; /* ⚠️ Sin will-change */</span>
+                </div>
+                <div class="code-line line-good">
+                    <span class="line-number">25</span>
+                    <span>transform: translateX(100px); /* ✅ BIEN: Usa GPU */</span>
+                </div>
+                <div class="code-line line-good">
+                    <span class="line-number">26</span>
+                    <span>will-change: transform; /* ✅ BIEN: Prepara capa */</span>
+                </div>
+                <div class="code-line line-issue">
+                    <span class="line-number">27</span>
+                    <span>animation-duration: 50ms; /* ❌ Demasiado rápido para accesibilidad */</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Recomendaciones -->
+        <div class="panel">
+            <h2 class="panel-title">💡 Recomendaciones de Optimización</h2>
+            <div class="recommendations">
+                <div class="recommendation-item">
+                    <div class="recommendation-header">
+                        <span class="recommendation-title">Reemplazar animaciones de layout</span>
+                        <span class="impact-badge impact-high">Alto Impacto</span>
+                    </div>
+                    <p>Detectamos 3 animaciones que modifican width/height. Reemplazar con transform scale() puede mejorar performance hasta 60%.</p>
+                </div>
+
+                <div class="recommendation-item">
+                    <div class="recommendation-header">
+                        <span class="recommendation-title">Implementar will-change strategy</span>
+                        <span class="impact-badge impact-medium">Medio Impacto</span>
+                    </div>
+                    <p>7 elementos animados no declaran will-change. Agregar esta propiedad antes de animaciones puede reducir jank significativamente.</p>
+                </div>
+
+                <div class="recommendation-item">
+                    <div class="recommendation-header">
+                        <span class="recommendation-title">Optimizar duración para accesibilidad</span>
+                        <span class="impact-badge impact-medium">Medio Impacto</span>
+                    </div>
+                    <p>2 animaciones duran menos de 100ms, lo que puede causar problemas de accesibilidad. Considerar aumentar a mínimo 150ms.</p>
+                </div>
+
+                <div class="recommendation-item">
+                    <div class="recommendation-header">
+                        <span class="recommendation-title">Implementar Intersection Observer</span>
+                        <span class="impact-badge impact-low">Bajo Impacto</span>
+                    </div>
+                    <p>Las animaciones se disparan inmediatamente al cargar. Usar Intersection Observer puede mejorar performance inicial.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sistema de monitoreo de performance en tiempo real
+        class PerformanceMonitor {
+            constructor() {
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.fps = 60;
+                this.frameTime = 16.7;
+                this.droppedFrames = 0;
+                this.isMonitoring = false;
+                
+                this.initializeMonitoring();
+            }
+
+            initializeMonitoring() {
+                this.startFPSMonitoring();
+                this.detectDeviceCapabilities();
+                this.setupPerformanceObserver();
+            }
+
+            startFPSMonitoring() {
+                const monitor = () => {
+                    this.frameCount++;
+                    const currentTime = performance.now();
+                    const deltaTime = currentTime - this.lastTime;
+
+                    // Calcular FPS cada segundo
+                    if (deltaTime >= 1000) {
+                        this.fps = Math.round((this.frameCount * 1000) / deltaTime);
+                        this.frameTime = deltaTime / this.frameCount;
+                        
+                        // Detectar frames perdidos (menos de 58 FPS indica problemas)
+                        if (this.fps < 58) {
+                            this.droppedFrames++;
+                        }
+
+                        this.updateUI();
+                        
+                        this.frameCount = 0;
+                        this.lastTime = currentTime;
+                    }
+
+                    if (this.isMonitoring) {
+                        requestAnimationFrame(monitor);
+                    }
+                };
+
+                this.isMonitoring = true;
+                requestAnimationFrame(monitor);
+            }
+
+            updateUI() {
+                // Actualizar métricas en la UI
+                document.getElementById('fps-display').textContent = this.fps;
+                document.getElementById('frame-time').textContent = this.frameTime.toFixed(1);
+                document.getElementById('dropped-frames').textContent = this.droppedFrames;
+
+                // Actualizar indicador visual de FPS
+                const fpsIndicator = document.getElementById('fps-indicator');
+                const fpsPercentage = (this.fps / 60) * 100;
+                fpsIndicator.style.transform = `scaleX(${fpsPercentage / 100})`;
+
+                // Cambiar colores basado en performance
+                const fpsDisplay = document.getElementById('fps-display');
+                fpsDisplay.className = this.fps >= 55 ? 'metric-value metric-good' : 
+                                     this.fps >= 30 ? 'metric-value metric-warning' : 
+                                     'metric-value metric-bad';
+            }
+
+            detectDeviceCapabilities() {
+                // Detectar capacidades del dispositivo
+                const capabilities = {
+                    cores: navigator.hardwareConcurrency || 'unknown',
+                    memory: navigator.deviceMemory || 'unknown',
+                    connection: navigator.connection?.effectiveType || 'unknown'
+                };
+
+                console.log('🔍 Capacidades del dispositivo:', capabilities);
+
+                // Ajustar métricas esperadas basado en hardware
+                if (capabilities.cores <= 2 || capabilities.memory <= 2) {
+                    console.log('⚠️ Dispositivo de baja potencia detectado - ajustando expectativas');
+                }
+            }
+
+            setupPerformanceObserver() {
+                // Observar long tasks (tareas que bloquean el main thread)
+                if ('PerformanceObserver' in window) {
+                    const observer = new PerformanceObserver((list) => {
+                        list.getEntries().forEach((entry) => {
+                            if (entry.duration > 50) {
+                                console.warn(`⚠️ Long task detectada: ${entry.duration.toFixed(2)}ms`);
+                            }
+                        });
+                    });
+
+                    try {
+                        observer.observe({ entryTypes: ['longtask'] });
+                    } catch (e) {
+                        console.log('PerformanceObserver no soportado para longtask');
+                    }
+                }
+            }
+        }
+
+        // Herramientas de análisis específicas
+        function runPerformanceAudit() {
+            console.log('🔍 Iniciando auditoría completa de performance...');
+            
+            // Simular análisis (en producción, esto haría análisis real)
+            showNotification('Auditoría iniciada. Analizando...', 'info');
+            
+            setTimeout(() => {
+                const results = {
+                    totalAnimations: 12,
+                    problematicAnimations: 3,
+                    memoryUsage: '45MB',
+                    score: 78
+                };
+                
+                console.log('📊 Resultados de auditoría:', results);
+                showNotification(`Auditoría completa. Score: ${results.score}/100`, 'success');
+            }, 2000);
+        }
+
+        function detectLayerThrashing() {
+            console.log('🎯 Detectando layer thrashing...');
+            
+            // En una implementación real, esto analizaría las capas de composición
+            const layerInfo = {
+                totalLayers: 8,
+                unnecessaryLayers: 2,
+                memoryImpact: 'Moderado'
+            };
+            
+            showNotification('Layer thrashing: 2 capas innecesarias detectadas', 'warning');
+            console.log('🎯 Análisis de capas:', layerInfo);
+        }
+
+        function analyzeReflows() {
+            console.log('⚡ Analizando reflows y repaints...');
+            
+            // Detectar propiedades que causan reflow
+            const problematicProperties = [
+                'width', 'height', 'left', 'top', 'margin', 'padding'
+            ];
+            
+            showNotification('3 animaciones causan reflow detectadas', 'error');
+        }
+
+        function checkAccessibility() {
+            console.log('♿ Verificando accesibilidad de animaciones...');
+            
+            // Verificar prefer-reduced-motion
+            const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+            
+            if (prefersReducedMotion) {
+                showNotification('Usuario prefiere movimiento reducido - verificar implementación', 'warning');
+            } else {
+                showNotification('Verificación de accesibilidad: OK', 'success');
+            }
+        }
+
+        function runTest(testType) {
+            console.log(`🧪 Ejecutando test: ${testType}`);
+            
+            const testConfigs = {
+                'mobile-low-end': {
+                    expectedFPS: 30,
+                    maxFrameTime: 33,
+                    description: 'Simulando CPU limitada'
+                },
+                'tablet-standard': {
+                    expectedFPS: 45,
+                    maxFrameTime: 22,
+                    description: 'Simulando dispositivo estándar'
+                },
+                'desktop-high-end': {
+                    expectedFPS: 60,
+                    maxFrameTime: 16.7,
+                    description: 'Simulando hardware potente'
+                },
+                'reduced-motion': {
+                    description: 'Verificando compatibilidad con prefer-reduced-motion'
+                }
+            };
+            
+            const config = testConfigs[testType];
+            showNotification(`Test ${testType}: ${config.description}`, 'info');
+        }
+
+        // Sistema de notificaciones
+        function showNotification(message, type = 'info') {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${type === 'success' ? '#059669' : 
+                           type === 'warning' ? '#d97706' : 
+                           type === 'error' ? '#dc2626' : '#2563eb'};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+                z-index: 1000;
+                transform: translateX(120%);
+                transition: transform 0.3s ease;
+                max-width: 300px;
+                font-weight: 600;
+            `;
+            
+            notification.textContent = message;
+            document.body.appendChild(notification);
+            
+            // Animar entrada
+            setTimeout(() => {
+                notification.style.transform = 'translateX(0)';
+            }, 100);
+            
+            // Auto-remove después de 3 segundos
+            setTimeout(() => {
+                notification.style.transform = 'translateX(120%)';
+                setTimeout(() => notification.remove(), 300);
+            }, 3000);
+        }
+
+        // Inicializar sistema de monitoreo
+        const monitor = new PerformanceMonitor();
+
+        // Detectar preferencias de usuario
+        if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+            console.log('♿ Usuario prefiere movimiento reducido - adaptando interfaz');
+        }
+
+        // Detectar capacidades de hardware
+        if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) {
+            console.log('⚡ Dispositivo de baja potencia - optimizando performance');
+        }
+
+        // Log inicial
+        console.log('🚀 Sistema de auditoría de performance iniciado');
+        console.log('📱 Usa las herramientas para analizar animaciones CSS');
+    </script>
+</body>
+</html>

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimización Profesional - TailwindCSS v4.0</title>
+    
+    <script src="https://cdn.tailwindcss.com/4.0.0-alpha.1"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'optimize': {
+                            50: '#f0f9ff',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1'
+                        }
+                    },
+                    animation: {
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in-up': 'fadeInUp 0.8s ease-out',
+                        'slide-in-left': 'slideInLeft 0.6s ease-out'
+                    },
+                    keyframes: {
+                        fadeInUp: {
+                            '0%': { opacity: '0', transform: 'translateY(30px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' }
+                        },
+                        slideInLeft: {
+                            '0%': { opacity: '0', transform: 'translateX(-30px)' },
+                            '100%': { opacity: '1', transform: 'translateX(0)' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        .code-snippet {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            color: #e2e8f0;
+            border-radius: 12px;
+            padding: 1.5rem;
+            position: relative;
+            overflow-x: auto;
+            font-family: 'Fira Code', 'Consolas', monospace;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+        
+        .code-snippet::before {
+            content: attr(data-title);
+            position: absolute;
+            top: -10px;
+            left: 15px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .optimization-card {
+            background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .optimization-card:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            transform: translateY(-5px);
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .before-after {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            align-items: start;
+        }
+        
+        @media (max-width: 768px) {
+            .before-after {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .progress-ring {
+            transform: rotate(-90deg);
+        }
+        
+        .progress-ring-circle {
+            transition: stroke-dasharray 0.35s;
+            transform-origin: 50% 50%;
+        }
+    </style>
+</head>
+
+<body class="bg-gradient-to-br from-gray-50 to-blue-50 min-h-screen">
+    
+    <!-- Header -->
+    <header class="bg-white/90 backdrop-blur-sm shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            <div class="flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <h1 class="text-xl font-bold text-gray-900">Optimización TailwindCSS v4.0</h1>
+                        <p class="text-sm text-gray-600">Estrategias Profesionales de Performance</p>
+                    </div>
+                </div>
+                <div class="hidden md:flex space-x-1">
+                    <span class="px-3 py-1 bg-green-100 text-green-800 rounded-full text-sm font-medium">Production Ready</span>
+                    <span class="px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">Oxide Engine</span>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        
+        <!-- Introducción -->
+        <section class="text-center mb-16 animate-fade-in-up">
+            <h2 class="text-4xl md:text-5xl font-bold text-gray-900 mb-6 bg-gradient-to-r from-blue-600 via-purple-600 to-blue-800 bg-clip-text text-transparent">
+                Maestría en Optimización
+            </h2>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto mb-8">
+                Domina las técnicas avanzadas para lograr performance excepcional y workflows profesionales con TailwindCSS v4.0
+            </p>
+            <div class="flex flex-col sm:flex-row gap-4 justify-center">
+                <button class="bg-gradient-to-r from-blue-500 to-purple-600 text-white px-6 py-3 rounded-xl font-medium hover:from-blue-600 hover:to-purple-700 transition-all duration-200 shadow-lg">
+                    Comenzar Optimización
+                </button>
+                <button class="border-2 border-gray-300 text-gray-700 px-6 py-3 rounded-xl font-medium hover:border-blue-500 hover:text-blue-600 transition-all duration-200">
+                    Ver Benchmarks
+                </button>
+            </div>
+        </section>
+
+        <!-- Métricas de Performance -->
+        <section class="mb-16">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8 text-center">🚀 Impacto de la Optimización</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+                <div class="metric-card rounded-xl p-6 text-center">
+                    <div class="flex justify-center mb-4">
+                        <svg class="progress-ring w-16 h-16" viewBox="0 0 120 120">
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="8"/>
+                            <circle cx="60" cy="60" r="54" fill="none" stroke="white" stroke-width="8" 
+                                    stroke-dasharray="280" stroke-dashoffset="56" class="progress-ring-circle"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-2">90%</h4>
+                    <p class="text-sm opacity-90">Reducción Bundle Size</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-green-500 to-teal-600 rounded-xl p-6 text-center text-white">
+                    <div class="flex justify-center mb-4">
+                        <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-2">10x</h4>
+                    <p class="text-sm opacity-90">Build Speed Improvement</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-yellow-500 to-orange-600 rounded-xl p-6 text-center text-white">
+                    <div class="flex justify-center mb-4">
+                        <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-2">65%</h4>
+                    <p class="text-sm opacity-90">Faster Load Times</p>
+                </div>
+                
+                <div class="bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl p-6 text-center text-white">
+                    <div class="flex justify-center mb-4">
+                        <svg class="w-16 h-16" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                        </svg>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-2">99%</h4>
+                    <p class="text-sm opacity-90">CSS Utilization</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Configuración de Producción -->
+        <section class="mb-16">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">⚙️ Configuración de Producción Optimizada</h3>
+            
+            <div class="space-y-8">
+                
+                <!-- Configuración Base -->
+                <div class="optimization-card rounded-xl p-8">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"/>
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
+                            </svg>
+                        </span>
+                        Configuración CSS Optimizada para Producción
+                    </h4>
+                    
+                    <div class="space-y-6">
+                        <div class="code-snippet" data-title="tailwind.config.css">
+<pre><code>/* Configuración de producción optimizada */
+@import "tailwindcss";
+
+@theme {
+  /* Variables optimizadas para runtime performance */
+  --color-primary-50: oklch(0.97 0.013 250.84);
+  --color-primary-500: oklch(0.656 0.182 255.85);
+  --color-primary-600: oklch(0.599 0.177 255.85);
+  
+  /* Fuentes con display optimizado */
+  --font-sans: ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Inter", var(--font-sans);
+  
+  /* Espaciado con escala modular optimizada */
+  --spacing-xs: 0.5rem;
+  --spacing-sm: 0.75rem;
+  --spacing-md: 1rem;
+  --spacing-lg: 1.5rem;
+  --spacing-xl: 2rem;
+  
+  /* Breakpoints optimizados para contenido */
+  --breakpoint-xs: 20rem;    /* 320px - Mobile small */
+  --breakpoint-sm: 24rem;    /* 384px - Mobile */  
+  --breakpoint-md: 28rem;    /* 448px - Mobile large */
+  --breakpoint-lg: 32rem;    /* 512px - Tablet small */
+  --breakpoint-xl: 42rem;    /* 672px - Tablet */
+  --breakpoint-2xl: 56rem;   /* 896px - Desktop */
+  
+  /* Animaciones optimizadas para performance */
+  --duration-fast: 150ms;
+  --duration-normal: 250ms;
+  --duration-slow: 350ms;
+  
+  --ease-in: cubic-bezier(0.4, 0, 1, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Componentes base optimizados */
+@layer base {
+  /* Optimización de fonts loading */
+  @font-face {
+    font-family: 'Inter';
+    font-style: normal;
+    font-weight: 400;
+    font-display: swap; /* Mejora LCP */
+    src: local('Inter'), url('/fonts/inter.woff2') format('woff2');
+  }
+  
+  /* CSS Reset optimizado */
+  *,
+  ::before,
+  ::after {
+    box-sizing: border-box;
+    border-width: 0;
+    border-style: solid;
+    border-color: theme(colors.gray.200);
+  }
+  
+  html {
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+    tab-size: 4;
+  }
+  
+  body {
+    margin: 0;
+    font-family: theme(fontFamily.sans);
+    font-feature-settings: "kern";
+  }
+}
+
+/* Componentes personalizados con performance */
+@layer components {
+  .btn {
+    @apply inline-flex items-center justify-center px-4 py-2 
+           border border-transparent rounded-lg font-medium 
+           focus:outline-none focus:ring-2 focus:ring-offset-2
+           transition-all duration-150 ease-out;
+  }
+  
+  .btn-primary {
+    @apply btn bg-primary-500 text-white 
+           hover:bg-primary-600 focus:ring-primary-500
+           shadow-sm hover:shadow-md;
+  }
+  
+  .card {
+    @apply bg-white border border-gray-200 rounded-xl 
+           shadow-sm hover:shadow-md transition-shadow duration-200;
+  }
+  
+  /* Layout component optimizado */
+  .container-fluid {
+    @apply w-full max-w-none px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container {
+    @apply w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+}
+
+/* Utilidades de performance */
+@layer utilities {
+  /* GPU acceleration para animaciones */
+  .will-change-transform {
+    will-change: transform;
+  }
+  
+  .will-change-auto {
+    will-change: auto;
+  }
+  
+  /* Optimización de images */
+  .img-responsive {
+    @apply max-w-full h-auto;
+    image-rendering: -webkit-optimize-contrast;
+  }
+  
+  /* Text rendering optimizations */
+  .text-render-optimized {
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+  
+  /* Scroll optimizations */
+  .scroll-smooth {
+    scroll-behavior: smooth;
+  }
+  
+  .overscroll-none {
+    overscroll-behavior: none;
+  }
+}
+
+/* Media queries para optimización específica */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  ::before,
+  ::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* Optimización para impresión */
+@media print {
+  .no-print {
+    display: none !important;
+  }
+  
+  .print-force-break {
+    page-break-after: always;
+  }
+}</code></pre>
+                        </div>
+                        
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 class="font-semibold text-blue-900 mb-2">🎯 Puntos Clave de Optimización</h5>
+                            <ul class="text-blue-800 text-sm space-y-1">
+                                <li>• <strong>Variables OKLCH</strong>: Mejor gamut de color y performance</li>
+                                <li>• <strong>Font-display: swap</strong>: Mejora LCP (Largest Contentful Paint)</li>
+                                <li>• <strong>Will-change</strong>: Optimización GPU para animaciones</li>
+                                <li>• <strong>Prefers-reduced-motion</strong>: Accesibilidad y performance</li>
+                                <li>• <strong>Sistema de breakpoints</strong>: Basado en contenido, no dispositivos</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Build Configuration -->
+                <div class="optimization-card rounded-xl p-8">
+                    <h4 class="text-xl font-semibold text-gray-900 mb-6 flex items-center">
+                        <span class="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center mr-3">
+                            <svg class="w-5 h-5 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.78 0-2.678-2.153-1.415-3.414l5-5A2 2 0 009 11.172V5L8 4z"/>
+                            </svg>
+                        </span>
+                        Configuración de Build para Máximo Performance
+                    </h4>
+                    
+                    <div class="before-after">
+                        <div>
+                            <h5 class="font-medium text-gray-900 mb-3">📦 Package.json Scripts</h5>
+                            <div class="code-snippet" data-title="package.json">
+<pre><code>{
+  "scripts": {
+    "dev": "tailwindcss -i ./src/input.css -o ./dist/output.css --watch",
+    "build": "npm run build:css && npm run optimize",
+    "build:css": "tailwindcss -i ./src/input.css -o ./dist/output.css --minify",
+    "optimize": "npm run purge:css && npm run compress",
+    "purge:css": "purgecss --css ./dist/output.css --content './src/**/*.html' './src/**/*.js' --output ./dist/",
+    "compress": "gzip -9 ./dist/output.css",
+    "analyze": "tailwindcss-analyzer ./dist/output.css",
+    "critical": "critical src/index.html --base dist/ --css dist/output.css --target critical.css --width 1300 --height 900"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.0.0-alpha.1",
+    "purgecss": "^5.0.0",
+    "critical": "^6.0.0",
+    "tailwindcss-analyzer": "^1.0.0"
+  }
+}</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h5 class="font-medium text-gray-900 mb-3">🚀 Webpack Integration</h5>
+                            <div class="code-snippet" data-title="webpack.config.js">
+<pre><code>const path = require('path');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
+
+module.exports = {
+  mode: 'production',
+  entry: './src/index.js',
+  output: {
+    path: path.resolve(__dirname, 'dist'),
+    filename: '[name].[contenthash].js',
+    clean: true,
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              postcssOptions: {
+                plugins: [
+                  require('@tailwindcss/postcss'),
+                  require('autoprefixer'),
+                  require('cssnano')({
+                    preset: ['advanced', {
+                      discardComments: { removeAll: true },
+                      normalizeWhitespace: false,
+                    }]
+                  })
+                ],
+              },
+            },
+          },
+        ],
+      },
+    ],
+  },
+  plugins: [
+    new MiniCssExtractPlugin({
+      filename: '[name].[contenthash].css',
+    }),
+  ],
+  optimization: {
+    minimizer: [
+      '...',
+      new CssMinimizerPlugin({
+        minimizerOptions: {
+          preset: [
+            'advanced',
+            {
+              discardComments: { removeAll: true },
+            },
+          ],
+        },
+      }),
+    ],
+    splitChunks: {
+      cacheGroups: {
+        styles: {
+          name: 'styles',
+          type: 'css/mini-extract',
+          chunks: 'all',
+          enforce: true,
+        },
+      },
+    },
+  },
+};</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Performance Monitoring -->
+        <section class="mb-16">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">📊 Monitoreo y Debugging</h3>
+            
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                
+                <!-- Performance Tools -->
+                <div class="optimization-card rounded-xl p-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">🛠️ Herramientas de Analysis</h4>
+                    
+                    <div class="space-y-4">
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h5 class="font-medium text-gray-900 mb-2">Bundle Analyzer</h5>
+                            <div class="code-snippet text-sm" data-title="terminal">
+<pre><code># Analizar tamaño del bundle CSS
+npx tailwindcss-analyzer ./dist/output.css
+
+# Generar reporte detallado
+npx bundlephobia output.css --format table
+
+# Analizar unused CSS
+npx purgecss --css output.css --content "*.html" --rejected</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="border border-gray-200 rounded-lg p-4">
+                            <h5 class="font-medium text-gray-900 mb-2">Performance Testing</h5>
+                            <div class="code-snippet text-sm" data-title="lighthouse-ci.js">
+<pre><code>module.exports = {
+  ci: {
+    collect: {
+      url: ['http://localhost:3000'],
+      numberOfRuns: 3,
+    },
+    assert: {
+      assertions: {
+        'categories:performance': ['error', {minScore: 0.9}],
+        'categories:accessibility': ['error', {minScore: 0.9}],
+        'first-contentful-paint': ['error', {maxNumericValue: 2000}],
+        'largest-contentful-paint': ['error', {maxNumericValue: 2500}],
+        'cumulative-layout-shift': ['error', {maxNumericValue: 0.1}],
+      },
+    },
+  },
+};</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Debug Tools -->
+                <div class="optimization-card rounded-xl p-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">🔍 Debug y Development Tools</h4>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 rounded-lg p-4">
+                            <h5 class="font-medium text-gray-900 mb-2">Chrome DevTools Integration</h5>
+                            <ul class="text-sm text-gray-600 space-y-1">
+                                <li>• <code class="bg-gray-200 px-1 rounded">Coverage Tab</code> - Analizar CSS unused</li>
+                                <li>• <code class="bg-gray-200 px-1 rounded">Performance Tab</code> - Profile paint times</li>
+                                <li>• <code class="bg-gray-200 px-1 rounded">Lighthouse</code> - Core Web Vitals</li>
+                                <li>• <code class="bg-gray-200 px-1 rounded">Network Tab</code> - Bundle size analysis</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="bg-blue-50 rounded-lg p-4">
+                            <h5 class="font-medium text-blue-900 mb-2">VS Code Extensions</h5>
+                            <ul class="text-sm text-blue-700 space-y-1">
+                                <li>• <strong>Tailwind CSS IntelliSense</strong> - Autocompletado inteligente</li>
+                                <li>• <strong>Headwind</strong> - Class ordering automático</li>
+                                <li>• <strong>Tailwind Fold</strong> - Collapse de clases largas</li>
+                                <li>• <strong>CSS Peek</strong> - Navigate to CSS definition</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="border border-yellow-200 bg-yellow-50 rounded-lg p-4">
+                            <h5 class="font-medium text-yellow-900 mb-2">⚡ Quick Debug Tips</h5>
+                            <div class="code-snippet text-xs" data-title="debug.css">
+<pre><code>/* Debug layout issues */
+.debug-screens::before {
+  content: 'xs';
+  @apply fixed top-0 left-0 bg-black text-white p-1 text-xs z-50;
+}
+
+@screen sm {
+  .debug-screens::before { content: 'sm'; }
+}
+
+@screen md {
+  .debug-screens::before { content: 'md'; }
+}
+
+@screen lg {
+  .debug-screens::before { content: 'lg'; }
+}
+
+/* Visualizar spacing */
+.debug-spacing * {
+  outline: 1px solid red !important;
+}</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Best Practices -->
+        <section class="mb-16">
+            <h3 class="text-2xl font-bold text-gray-900 mb-8">✨ Best Practices para Equipos</h3>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                
+                <!-- Code Organization -->
+                <div class="optimization-card rounded-xl p-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">📁 Organización de Código</h4>
+                    
+                    <div class="space-y-4">
+                        <div class="code-snippet text-sm" data-title="Estructura de Proyecto">
+<pre><code>src/
+├── styles/
+│   ├── input.css              # Configuración principal
+│   ├── components/
+│   │   ├── buttons.css        # Componentes específicos
+│   │   ├── forms.css
+│   │   └── navigation.css
+│   └── utilities/
+│       ├── animations.css     # Utilidades custom
+│       └── helpers.css
+├── components/
+│   ├── ui/                    # Componentes reutilizables
+│   │   ├── Button.jsx
+│   │   ├── Card.jsx
+│   │   └── Modal.jsx
+│   └── layout/
+│       ├── Header.jsx
+│       └── Sidebar.jsx
+└── pages/
+    ├── Home.jsx
+    └── Dashboard.jsx</code></pre>
+                        </div>
+                        
+                        <div class="bg-green-50 border border-green-200 rounded-lg p-4">
+                            <h5 class="font-medium text-green-900 mb-2">📋 Naming Conventions</h5>
+                            <ul class="text-sm text-green-700 space-y-1">
+                                <li>• Prefijos para components: <code>.btn-*</code>, <code>.card-*</code></li>
+                                <li>• States descriptivos: <code>.is-loading</code>, <code>.has-error</code></li>
+                                <li>• Variants claros: <code>.btn-primary-lg</code>, <code>.text-heading-xl</code></li>
+                                <li>• Utilities específicas: <code>.layout-*</code>, <code>.animate-*</code></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Team Workflow -->
+                <div class="optimization-card rounded-xl p-6">
+                    <h4 class="text-lg font-semibold text-gray-900 mb-4">👥 Workflow de Equipo</h4>
+                    
+                    <div class="space-y-4">
+                        <div class="bg-blue-50 border border-blue-200 rounded-lg p-4">
+                            <h5 class="font-medium text-blue-900 mb-2">🔄 Git Hooks</h5>
+                            <div class="code-snippet text-xs" data-title=".husky/pre-commit">
+<pre><code>#!/usr/bin/env sh
+. "$(dirname -- "$0")/_/husky.sh"
+
+# Lint CSS classes order
+npx headwind --run
+
+# Check for unused classes
+npm run css:analyze
+
+# Format with Prettier
+npx prettier --write "src/**/*.{js,jsx,css}"
+
+# Run CSS build
+npm run build:css</code></pre>
+                            </div>
+                        </div>
+                        
+                        <div class="bg-purple-50 border border-purple-200 rounded-lg p-4">
+                            <h5 class="font-medium text-purple-900 mb-2">📐 Design System Integration</h5>
+                            <div class="code-snippet text-xs" data-title="design-tokens.js">
+<pre><code>// Sincronización con Figma/Design System
+module.exports = {
+  theme: {
+    extend: {
+      colors: {
+        // Tokens from design system
+        primary: 'var(--color-primary)',
+        secondary: 'var(--color-secondary)',
+      },
+      spacing: {
+        // Consistent with 8px grid system
+        'grid-1': '0.5rem',   // 8px
+        'grid-2': '1rem',     // 16px
+        'grid-3': '1.5rem',   // 24px
+      },
+      typography: {
+        // Typographic scale
+        'heading-1': ['2.5rem', { lineHeight: '1.2' }],
+        'heading-2': ['2rem', { lineHeight: '1.3' }],
+        'body': ['1rem', { lineHeight: '1.5' }],
+      }
+    }
+  }
+};</code></pre>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Production Checklist -->
+        <section class="mb-16">
+            <div class="bg-gradient-to-r from-blue-500 to-purple-600 rounded-xl p-8 text-white">
+                <h3 class="text-2xl font-bold mb-6 text-center">🚀 Checklist de Deployment</h3>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    
+                    <!-- Performance -->
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+                        <h4 class="font-semibold mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/>
+                            </svg>
+                            Performance
+                        </h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2 text-blue-500" checked>
+                                Bundle size &lt; 15KB
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Critical CSS inlined
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Unused CSS purged
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Gzip compression enabled
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- SEO & Accessibility -->
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+                        <h4 class="font-semibold mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"/>
+                            </svg>
+                            SEO & A11y
+                        </h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Semantic HTML verified
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Color contrast 4.5:1+
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Focus states visible
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Screen reader tested
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <!-- Browser Support -->
+                    <div class="bg-white/10 backdrop-blur-sm rounded-lg p-6">
+                        <h4 class="font-semibold mb-4 flex items-center">
+                            <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9v-9m0 0V3"/>
+                            </svg>
+                            Cross-Browser
+                        </h4>
+                        <ul class="space-y-2 text-sm">
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Chrome/Edge latest
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Firefox latest
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Safari 16.4+
+                            </li>
+                            <li class="flex items-center">
+                                <input type="checkbox" class="mr-2">
+                                Mobile browsers
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-white border-t border-gray-200 py-8">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+            <h3 class="text-lg font-semibold text-gray-900 mb-4">¡Felicitaciones! Has Completado el Día 7</h3>
+            <p class="text-gray-600 mb-6">
+                Ahora dominas TailwindCSS v4.0 a nivel profesional. Mañana profundizaremos en patrones responsive avanzados y CSS moderno.
+            </p>
+            <div class="flex justify-center space-x-4">
+                <span class="px-4 py-2 bg-green-100 text-green-800 rounded-full text-sm font-medium">✅ Motor Oxide</span>
+                <span class="px-4 py-2 bg-blue-100 text-blue-800 rounded-full text-sm font-medium">✅ Container Queries</span>
+                <span class="px-4 py-2 bg-purple-100 text-purple-800 rounded-full text-sm font-medium">✅ 3D Transforms</span>
+                <span class="px-4 py-2 bg-yellow-100 text-yellow-800 rounded-full text-sm font-medium">✅ Optimización</span>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Progress ring animation
+        document.addEventListener('DOMContentLoaded', () => {
+            const rings = document.querySelectorAll('.progress-ring-circle');
+            rings.forEach(ring => {
+                const circumference = 2 * Math.PI * 54;
+                ring.style.strokeDasharray = circumference;
+                
+                // Animate to 80% (288deg out of 360deg)
+                setTimeout(() => {
+                    ring.style.strokeDashoffset = circumference * 0.2;
+                }, 500);
+            });
+            
+            // Animate cards on scroll
+            const observerOptions = {
+                threshold: 0.1,
+                rootMargin: '0px 0px -50px 0px'
+            };
+            
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach((entry, index) => {
+                    if (entry.isIntersecting) {
+                        setTimeout(() => {
+                            entry.target.style.opacity = '1';
+                            entry.target.style.transform = 'translateY(0)';
+                        }, index * 100);
+                    }
+                });
+            }, observerOptions);
+            
+            document.querySelectorAll('.optimization-card').forEach(card => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'all 0.6s ease-out';
+                observer.observe(card);
+            });
+        });
+    </script>
+</body>
+</html>

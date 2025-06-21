@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="TechMag - Las últimas noticias y análisis del mundo tecnológico, optimizado para todos tus dispositivos">
+    <title>TechMag - Tecnología del Futuro</title>
+    
+    <!-- Preload para recursos críticos -->
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" as="style">
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+    
+    <style>
+        /* === SISTEMA DE DESIGN TOKENS === */
+        :root {
+            /* Tipografía fluida escalable */
+            --font-size-xs: clamp(0.75rem, 1.5vw, 0.875rem);
+            --font-size-sm: clamp(0.875rem, 2vw, 1rem);
+            --font-size-base: clamp(1rem, 2.5vw, 1.125rem);
+            --font-size-lg: clamp(1.125rem, 3vw, 1.25rem);
+            --font-size-xl: clamp(1.25rem, 3.5vw, 1.5rem);
+            --font-size-2xl: clamp(1.5rem, 4.5vw, 2rem);
+            --font-size-3xl: clamp(2rem, 5.5vw, 2.5rem);
+            --font-size-4xl: clamp(2.5rem, 6.5vw, 3.5rem);
+            --font-size-5xl: clamp(3.5rem, 8vw, 5rem);
+            
+            /* Espaciado fluido responsive */
+            --space-xs: clamp(0.25rem, 1vw, 0.5rem);
+            --space-sm: clamp(0.5rem, 2vw, 1rem);
+            --space-md: clamp(1rem, 3vw, 1.5rem);
+            --space-lg: clamp(1.5rem, 4vw, 2.5rem);
+            --space-xl: clamp(2rem, 5vw, 3rem);
+            --space-2xl: clamp(3rem, 6vw, 4rem);
+            --space-3xl: clamp(4rem, 8vw, 6rem);
+            
+            /* Paleta de colores semántica */
+            --color-primary: #2563eb;
+            --color-primary-light: #3b82f6;
+            --color-primary-dark: #1d4ed8;
+            --color-secondary: #64748b;
+            --color-accent: #f59e0b;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-error: #ef4444;
+            
+            /* Esquema de grises */
+            --color-gray-50: #f8fafc;
+            --color-gray-100: #f1f5f9;
+            --color-gray-200: #e2e8f0;
+            --color-gray-300: #cbd5e1;
+            --color-gray-400: #94a3b8;
+            --color-gray-500: #64748b;
+            --color-gray-600: #475569;
+            --color-gray-700: #334155;
+            --color-gray-800: #1e293b;
+            --color-gray-900: #0f172a;
+            
+            /* Line height fluido */
+            --line-height-tight: clamp(1.1, 0.5vw + 1rem, 1.3);
+            --line-height-normal: clamp(1.4, 0.5vw + 1.2rem, 1.6);
+            --line-height-relaxed: clamp(1.6, 0.5vw + 1.4rem, 1.8);
+            
+            /* Bordes y sombras */
+            --border-radius-sm: clamp(4px, 1vw, 6px);
+            --border-radius-md: clamp(8px, 1.5vw, 12px);
+            --border-radius-lg: clamp(12px, 2vw, 20px);
+            --border-radius-xl: clamp(20px, 3vw, 32px);
+            
+            /* Transiciones suaves */
+            --transition-fast: 0.15s ease;
+            --transition-normal: 0.3s ease;
+            --transition-slow: 0.5s ease;
+        }
+
+        /* === RESET Y CONFIGURACIÓN BASE === */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            font-size: var(--font-size-base);
+            line-height: var(--line-height-normal);
+            color: var(--color-gray-800);
+            background-color: var(--color-gray-50);
+            overflow-x: hidden;
+        }
+
+        /* Mejora la experiencia de lectura */
+        h1, h2, h3, h4, h5, h6 {
+            line-height: var(--line-height-tight);
+            font-weight: 600;
+            color: var(--color-gray-900);
+        }
+
+        p {
+            line-height: var(--line-height-relaxed);
+            margin-bottom: var(--space-md);
+        }
+
+        img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius-sm);
+        }
+
+        /* === SISTEMA DE LAYOUT RESPONSIVO === */
+        .container {
+            width: 100%;
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 var(--space-md);
+        }
+
+        .container-narrow {
+            max-width: 800px;
+        }
+
+        .container-wide {
+            max-width: 1600px;
+        }
+
+        /* === HEADER NAVEGACIÓN === */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--color-gray-200);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            padding: var(--space-sm) 0;
+        }
+
+        .nav {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: var(--space-md);
+        }
+
+        .logo {
+            font-size: var(--font-size-2xl);
+            font-weight: 800;
+            color: var(--color-primary);
+            text-decoration: none;
+            letter-spacing: -0.02em;
+        }
+
+        .nav-menu {
+            display: flex;
+            list-style: none;
+            gap: var(--space-lg);
+            align-items: center;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: var(--color-gray-700);
+            font-weight: 500;
+            font-size: var(--font-size-sm);
+            transition: color var(--transition-normal);
+            position: relative;
+        }
+
+        .nav-link:hover {
+            color: var(--color-primary);
+        }
+
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            bottom: -4px;
+            left: 0;
+            width: 0;
+            height: 2px;
+            background: var(--color-primary);
+            transition: width var(--transition-normal);
+        }
+
+        .nav-link:hover::after {
+            width: 100%;
+        }
+
+        /* Menú móvil simplificado */
+        .nav-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            color: var(--color-gray-700);
+        }
+
+        @media (max-width: 768px) {
+            .nav-menu {
+                display: none;
+                width: 100%;
+                flex-direction: column;
+                background: white;
+                border-radius: var(--border-radius-md);
+                padding: var(--space-md);
+                box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            }
+
+            .nav-menu.active {
+                display: flex;
+            }
+
+            .nav-toggle {
+                display: block;
+            }
+        }
+
+        /* === HERO SECTION === */
+        .hero {
+            background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
+            color: white;
+            padding: var(--space-3xl) 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000"><defs><radialGradient id="a" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="200" cy="200" r="150" fill="url(%23a)"/><circle cx="800" cy="300" r="100" fill="url(%23a)"/><circle cx="300" cy="700" r="120" fill="url(%23a)"/></svg>');
+            opacity: 0.3;
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+
+        .hero-title {
+            font-size: var(--font-size-5xl);
+            font-weight: 800;
+            margin-bottom: var(--space-lg);
+            letter-spacing: -0.02em;
+        }
+
+        .hero-subtitle {
+            font-size: var(--font-size-xl);
+            font-weight: 300;
+            margin-bottom: var(--space-2xl);
+            opacity: 0.9;
+        }
+
+        .hero-cta {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-sm);
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: var(--space-md) var(--space-xl);
+            border-radius: var(--border-radius-lg);
+            font-weight: 600;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: all var(--transition-normal);
+        }
+
+        .hero-cta:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.2);
+        }
+
+        /* === SECCIÓN DE ARTÍCULOS PRINCIPALES === */
+        .featured-section {
+            padding: var(--space-3xl) 0;
+        }
+
+        .section-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: var(--space-2xl);
+            color: var(--color-gray-900);
+        }
+
+        .featured-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-xl);
+            margin-bottom: var(--space-3xl);
+        }
+
+        .featured-article {
+            background: white;
+            border-radius: var(--border-radius-lg);
+            overflow: hidden;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.05);
+            transition: all var(--transition-normal);
+            height: fit-content;
+        }
+
+        .featured-article:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+        }
+
+        .article-image {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 16/9;
+        }
+
+        .article-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 0;
+            transition: transform var(--transition-slow);
+        }
+
+        .featured-article:hover .article-image img {
+            transform: scale(1.05);
+        }
+
+        .article-category {
+            position: absolute;
+            top: var(--space-md);
+            left: var(--space-md);
+            background: var(--color-primary);
+            color: white;
+            padding: var(--space-xs) var(--space-sm);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .article-content {
+            padding: var(--space-lg);
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--space-md);
+            margin-bottom: var(--space-md);
+            font-size: var(--font-size-sm);
+            color: var(--color-gray-500);
+        }
+
+        .article-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            margin-bottom: var(--space-md);
+            line-height: var(--line-height-tight);
+        }
+
+        .article-title a {
+            text-decoration: none;
+            color: var(--color-gray-900);
+            transition: color var(--transition-normal);
+        }
+
+        .article-title a:hover {
+            color: var(--color-primary);
+        }
+
+        .article-excerpt {
+            color: var(--color-gray-600);
+            margin-bottom: var(--space-lg);
+        }
+
+        .read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: var(--space-xs);
+            color: var(--color-primary);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: var(--font-size-sm);
+            transition: gap var(--transition-normal);
+        }
+
+        .read-more:hover {
+            gap: var(--space-sm);
+        }
+
+        /* === NEWSLETTER SECTION === */
+        .newsletter {
+            background: linear-gradient(135deg, var(--color-gray-900) 0%, var(--color-gray-800) 100%);
+            color: white;
+            padding: var(--space-3xl) 0;
+            text-align: center;
+        }
+
+        .newsletter-title {
+            font-size: var(--font-size-3xl);
+            font-weight: 700;
+            margin-bottom: var(--space-lg);
+        }
+
+        .newsletter-description {
+            font-size: var(--font-size-lg);
+            opacity: 0.8;
+            margin-bottom: var(--space-2xl);
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: var(--space-md);
+            max-width: 400px;
+            margin: 0 auto;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .newsletter-input {
+            flex: 1;
+            min-width: 200px;
+            padding: var(--space-md);
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-size: var(--font-size-base);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .newsletter-input::placeholder {
+            color: rgba(255, 255, 255, 0.7);
+        }
+
+        .newsletter-button {
+            padding: var(--space-md) var(--space-xl);
+            background: var(--color-accent);
+            color: white;
+            border: none;
+            border-radius: var(--border-radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            white-space: nowrap;
+        }
+
+        .newsletter-button:hover {
+            background: #d97706;
+            transform: translateY(-2px);
+        }
+
+        /* === FOOTER === */
+        .footer {
+            background: var(--color-gray-900);
+            color: var(--color-gray-300);
+            padding: var(--space-2xl) 0;
+        }
+
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: var(--space-xl);
+        }
+
+        .footer-section h3 {
+            color: white;
+            font-size: var(--font-size-lg);
+            margin-bottom: var(--space-md);
+        }
+
+        .footer-links {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: var(--space-sm);
+        }
+
+        .footer-links a {
+            color: var(--color-gray-400);
+            text-decoration: none;
+            transition: color var(--transition-normal);
+        }
+
+        .footer-links a:hover {
+            color: white;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid var(--color-gray-700);
+            margin-top: var(--space-xl);
+            padding-top: var(--space-lg);
+            text-align: center;
+            color: var(--color-gray-500);
+        }
+
+        /* === OPTIMIZACIONES DE PERFORMANCE === */
+        .lazy-loading {
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.6s ease, transform 0.6s ease;
+        }
+
+        .lazy-loading.loaded {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* === ACCESIBILIDAD === */
+        .sr-only {
+            position: absolute;
+            width: 1px;
+            height: 1px;
+            padding: 0;
+            margin: -1px;
+            overflow: hidden;
+            clip: rect(0, 0, 0, 0);
+            white-space: nowrap;
+            border: 0;
+        }
+
+        /* Respeta las preferencias de movimiento reducido */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        /* === INDICADOR DE DEBUG === */
+        .debug-info {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0,0,0,0.8);
+            color: white;
+            padding: var(--space-sm);
+            border-radius: var(--border-radius-sm);
+            font-size: var(--font-size-xs);
+            font-family: monospace;
+            z-index: 1000;
+            opacity: 0.7;
+        }
+
+        .debug-info::before {
+            content: "📱 " attr(data-breakpoint);
+        }
+    </style>
+</head>
+<body>
+    <!-- Indicador de debug para desarrollo -->
+    <div class="debug-info" data-breakpoint="Mobile"></div>
+
+    <!-- Header con navegación sticky -->
+    <header class="header">
+        <nav class="nav container">
+            <a href="#" class="logo">TechMag</a>
+            
+            <button class="nav-toggle" aria-label="Abrir menú de navegación">
+                ☰
+            </button>
+            
+            <ul class="nav-menu">
+                <li><a href="#" class="nav-link">Inicio</a></li>
+                <li><a href="#" class="nav-link">Noticias</a></li>
+                <li><a href="#" class="nav-link">Análisis</a></li>
+                <li><a href="#" class="nav-link">Reviews</a></li>
+                <li><a href="#" class="nav-link">Contacto</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- Hero section con llamada a la acción -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">El Futuro de la Tecnología</h1>
+                <p class="hero-subtitle">
+                    Descubre las últimas tendencias, análisis profundos y reviews que definen el mundo digital
+                </p>
+                <a href="#featured" class="hero-cta">
+                    Explorar Artículos
+                    <span aria-hidden="true">→</span>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de artículos destacados -->
+    <section class="featured-section" id="featured">
+        <div class="container">
+            <h2 class="section-title">Artículos Destacados</h2>
+            
+            <div class="featured-grid">
+                <!-- Artículo 1: IA -->
+                <article class="featured-article lazy-loading">
+                    <div class="article-image">
+                        <picture>
+                            <!-- Móvil: imagen cuadrada -->
+                            <source 
+                                media="(max-width: 767px)" 
+                                srcset="https://picsum.photos/400/400?random=10"
+                            >
+                            <!-- Desktop: imagen panorámica -->
+                            <img 
+                                src="https://picsum.photos/600/400?random=10" 
+                                srcset="
+                                    https://picsum.photos/600/400?random=10 600w,
+                                    https://picsum.photos/1200/800?random=10 1200w
+                                "
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                alt="Inteligencia Artificial transformando la industria"
+                                loading="lazy"
+                            >
+                        </picture>
+                        <span class="article-category">Inteligencia Artificial</span>
+                    </div>
+                    <div class="article-content">
+                        <div class="article-meta">
+                            <span>15 Junio 2025</span>
+                            <span>•</span>
+                            <span>8 min lectura</span>
+                        </div>
+                        <h3 class="article-title">
+                            <a href="#">La Revolución de la IA Generativa: Transformando Industrias en 2025</a>
+                        </h3>
+                        <p class="article-excerpt">
+                            Exploramos cómo la inteligencia artificial generativa está revolucionando sectores desde la medicina hasta el entretenimiento, creando nuevas oportunidades y desafíos éticos sin precedentes.
+                        </p>
+                        <a href="#" class="read-more">
+                            Leer más
+                            <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Artículo 2: Realidad Virtual -->
+                <article class="featured-article lazy-loading">
+                    <div class="article-image">
+                        <picture>
+                            <source 
+                                media="(max-width: 767px)" 
+                                srcset="https://picsum.photos/400/400?random=11"
+                            >
+                            <img 
+                                src="https://picsum.photos/600/400?random=11" 
+                                srcset="
+                                    https://picsum.photos/600/400?random=11 600w,
+                                    https://picsum.photos/1200/800?random=11 1200w
+                                "
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                alt="Dispositivos de realidad virtual de nueva generación"
+                                loading="lazy"
+                            >
+                        </picture>
+                        <span class="article-category">Realidad Virtual</span>
+                    </div>
+                    <div class="article-content">
+                        <div class="article-meta">
+                            <span>12 Junio 2025</span>
+                            <span>•</span>
+                            <span>6 min lectura</span>
+                        </div>
+                        <h3 class="article-title">
+                            <a href="#">Metaverso 2025: La Nueva Frontera Digital Ya Está Aquí</a>
+                        </h3>
+                        <p class="article-excerpt">
+                            Las últimas innovaciones en realidad virtual y aumentada están creando experiencias inmersivas que trascienden las barreras entre lo físico y lo digital. Descubre qué nos depara el futuro.
+                        </p>
+                        <a href="#" class="read-more">
+                            Leer más
+                            <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </article>
+
+                <!-- Artículo 3: Computación Cuántica -->
+                <article class="featured-article lazy-loading">
+                    <div class="article-image">
+                        <picture>
+                            <source 
+                                media="(max-width: 767px)" 
+                                srcset="https://picsum.photos/400/400?random=12"
+                            >
+                            <img 
+                                src="https://picsum.photos/600/400?random=12" 
+                                srcset="
+                                    https://picsum.photos/600/400?random=12 600w,
+                                    https://picsum.photos/1200/800?random=12 1200w
+                                "
+                                sizes="(max-width: 768px) 100vw, 50vw"
+                                alt="Procesador cuántico de última generación"
+                                loading="lazy"
+                            >
+                        </picture>
+                        <span class="article-category">Computación Cuántica</span>
+                    </div>
+                    <div class="article-content">
+                        <div class="article-meta">
+                            <span>10 Junio 2025</span>
+                            <span>•</span>
+                            <span>12 min lectura</span>
+                        </div>
+                        <h3 class="article-title">
+                            <a href="#">Computación Cuántica: El Salto Tecnológico que Cambiará Todo</a>
+                        </h3>
+                        <p class="article-excerpt">
+                            Los avances recientes en computación cuántica prometen resolver problemas que los supercomputadores actuales no pueden abordar. Analizamos las implicaciones para la criptografía, medicina y más.
+                        </p>
+                        <a href="#" class="read-more">
+                            Leer más
+                            <span aria-hidden="true">→</span>
+                        </a>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter subscription -->
+    <section class="newsletter">
+        <div class="container container-narrow">
+            <h2 class="newsletter-title">Mantente al Día</h2>
+            <p class="newsletter-description">
+                Recibe las últimas noticias tecnológicas directamente en tu bandeja de entrada. Sin spam, solo contenido de calidad.
+            </p>
+            <form class="newsletter-form" aria-label="Suscripción al newsletter">
+                <input 
+                    type="email" 
+                    class="newsletter-input" 
+                    placeholder="tu@email.com" 
+                    required 
+                    aria-label="Tu dirección de email"
+                >
+                <button type="submit" class="newsletter-button">
+                    Suscribirse
+                </button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>TechMag</h3>
+                    <p>
+                        La revista digital líder en tecnología, llevándote las últimas innovaciones y análisis profundos del mundo digital.
+                    </p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Categorías</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Inteligencia Artificial</a></li>
+                        <li><a href="#">Dispositivos</a></li>
+                        <li><a href="#">Software</a></li>
+                        <li><a href="#">Startups</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Empresa</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Sobre Nosotros</a></li>
+                        <li><a href="#">Contacto</a></li>
+                        <li><a href="#">Careers</a></li>
+                        <li><a href="#">Publicidad</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Legal</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Política de Privacidad</a></li>
+                        <li><a href="#">Términos de Uso</a></li>
+                        <li><a href="#">Cookies</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <p>&copy; 2025 TechMag. Todos los derechos reservados. Sitio optimizado para todos los dispositivos.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // === GESTIÓN DE NAVEGACIÓN MÓVIL ===
+        const navToggle = document.querySelector('.nav-toggle');
+        const navMenu = document.querySelector('.nav-menu');
+
+        navToggle.addEventListener('click', () => {
+            navMenu.classList.toggle('active');
+            navToggle.setAttribute('aria-expanded', 
+                navMenu.classList.contains('active') ? 'true' : 'false'
+            );
+        });
+
+        // === LAZY LOADING CON INTERSECTION OBSERVER ===
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('loaded');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+
+        // Observar todos los elementos con lazy loading
+        document.querySelectorAll('.lazy-loading').forEach(el => {
+            observer.observe(el);
+        });
+
+        // === INDICADOR DE BREAKPOINT DINÁMICO ===
+        const debugInfo = document.querySelector('.debug-info');
+        
+        function updateBreakpointIndicator() {
+            const width = window.innerWidth;
+            let breakpoint = 'Mobile';
+            
+            if (width >= 1440) breakpoint = 'XL Desktop';
+            else if (width >= 1024) breakpoint = 'Desktop';
+            else if (width >= 768) breakpoint = 'Tablet';
+            else if (width >= 480) breakpoint = 'Mobile L';
+            
+            debugInfo.setAttribute('data-breakpoint', breakpoint);
+        }
+
+        // Actualizar indicador al cargar y redimensionar
+        updateBreakpointIndicator();
+        window.addEventListener('resize', updateBreakpointIndicator);
+
+        // === SMOOTH SCROLLING PARA ENLACES INTERNOS ===
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // === OPTIMIZACIÓN DE IMÁGENES - LOG DE DEBUG ===
+        const images = document.querySelectorAll('img[srcset]');
+        images.forEach(img => {
+            img.addEventListener('load', function() {
+                console.log(`🖼️ Imagen cargada: ${this.currentSrc || this.src}`);
+                console.log(`📐 Dimensiones naturales: ${this.naturalWidth}x${this.naturalHeight}px`);
+                console.log(`📱 Viewport actual: ${window.innerWidth}x${window.innerHeight}px`);
+            });
+        });
+
+        // === NEWSLETTER FORM HANDLER ===
+        const newsletterForm = document.querySelector('.newsletter-form');
+        newsletterForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input').value;
+            
+            // Simulación de envío exitoso
+            const button = this.querySelector('button');
+            const originalText = button.textContent;
+            
+            button.textContent = 'Suscrito ✓';
+            button.style.background = 'var(--color-success)';
+            
+            setTimeout(() => {
+                button.textContent = originalText;
+                button.style.background = 'var(--color-accent)';
+                this.reset();
+            }, 2000);
+        });
+
+        // === PERFORMANCE MONITORING ===
+        window.addEventListener('load', () => {
+            // Tiempo de carga completa
+            const loadTime = performance.now();
+            console.log(`⚡ Página cargada en: ${Math.round(loadTime)}ms`);
+            
+            // Métricas Web Vitals simuladas
+            setTimeout(() => {
+                console.log('📊 Métricas de Performance:');
+                console.log('• LCP (Largest Contentful Paint): Optimizado');
+                console.log('• FID (First Input Delay): < 100ms');
+                console.log('• CLS (Cumulative Layout Shift): < 0.1');
+            }, 1000);
+        });
+    </script>
+</body>
+</html>

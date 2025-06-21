@@ -1,0 +1,560 @@
+<!DOCTYPE html>
+<html lang="es" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Empresarial - Bootstrap vs TailwindCSS v4.0</title>
+    
+    <!-- TailwindCSS v4.0 -->
+    <script src="https://cdn.tailwindcss.com/4.0.0-alpha.1"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        // Equivalentes a Bootstrap primary, secondary, etc.
+                        primary: {
+                            50: '#eff6ff',
+                            100: '#dbeafe', 
+                            500: '#3b82f6',
+                            600: '#2563eb',
+                            700: '#1d4ed8',
+                            900: '#1e3a8a'
+                        },
+                        secondary: {
+                            100: '#f1f5f9',
+                            500: '#64748b',
+                            600: '#475569',
+                            700: '#334155'
+                        },
+                        success: {
+                            100: '#dcfce7',
+                            500: '#22c55e',
+                            600: '#16a34a',
+                            700: '#15803d'
+                        },
+                        warning: {
+                            100: '#fef3c7',
+                            500: '#f59e0b',
+                            600: '#d97706',
+                            700: '#b45309'
+                        },
+                        danger: {
+                            100: '#fee2e2',
+                            500: '#ef4444',
+                            600: '#dc2626',
+                            700: '#b91c1c'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    },
+                    boxShadow: {
+                        'card': '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+                        'card-hover': '0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05)'
+                    },
+                    animation: {
+                        'slide-in-right': 'slideInRight 0.3s ease-out',
+                        'fade-in-up': 'fadeInUp 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s infinite'
+                    },
+                    keyframes: {
+                        slideInRight: {
+                            '0%': { transform: 'translateX(100%)', opacity: '0' },
+                            '100%': { transform: 'translateX(0)', opacity: '1' }
+                        },
+                        fadeInUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' }
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Iconos Heroicons -->
+    <script src="https://unpkg.com/@heroicons/react@1.0.6/outline/index.js"></script>
+    
+    <style>
+        /* Custom components que reemplazan componentes de Bootstrap */
+        .btn-primary {
+            @apply bg-primary-500 hover:bg-primary-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200 inline-flex items-center gap-2;
+        }
+        
+        .btn-secondary {
+            @apply bg-secondary-500 hover:bg-secondary-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200;
+        }
+        
+        .btn-success {
+            @apply bg-success-500 hover:bg-success-600 text-white px-4 py-2 rounded-lg font-medium transition-all duration-200;
+        }
+        
+        .btn-outline-primary {
+            @apply border-2 border-primary-500 text-primary-500 hover:bg-primary-500 hover:text-white px-4 py-2 rounded-lg font-medium transition-all duration-200;
+        }
+        
+        .card {
+            @apply bg-white dark:bg-gray-800 rounded-xl shadow-card border border-gray-200 dark:border-gray-700 overflow-hidden;
+        }
+        
+        .card-header {
+            @apply px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50;
+        }
+        
+        .card-body {
+            @apply p-6;
+        }
+        
+        .card-footer {
+            @apply px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50;
+        }
+        
+        .alert-success {
+            @apply bg-success-100 border border-success-500 text-success-700 px-4 py-3 rounded-lg;
+        }
+        
+        .alert-warning {
+            @apply bg-warning-100 border border-warning-500 text-warning-700 px-4 py-3 rounded-lg;
+        }
+        
+        .alert-danger {
+            @apply bg-danger-100 border border-danger-500 text-danger-700 px-4 py-3 rounded-lg;
+        }
+        
+        .badge-primary {
+            @apply bg-primary-500 text-white text-xs px-2 py-1 rounded-full font-medium;
+        }
+        
+        .badge-success {
+            @apply bg-success-500 text-white text-xs px-2 py-1 rounded-full font-medium;
+        }
+        
+        .badge-warning {
+            @apply bg-warning-500 text-white text-xs px-2 py-1 rounded-full font-medium;
+        }
+        
+        .progress-bar {
+            @apply bg-gray-200 dark:bg-gray-700 rounded-full overflow-hidden;
+        }
+        
+        .progress-fill {
+            @apply bg-primary-500 h-full transition-all duration-500 ease-out;
+        }
+        
+        .form-control {
+            @apply w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500 dark:bg-gray-700 dark:text-white transition-all duration-200;
+        }
+        
+        .navbar {
+            @apply bg-white dark:bg-gray-800 shadow-lg border-b border-gray-200 dark:border-gray-700;
+        }
+        
+        .sidebar {
+            @apply bg-white dark:bg-gray-800 shadow-lg border-r border-gray-200 dark:border-gray-700 h-full;
+        }
+        
+        /* Animaciones personalizadas */
+        @keyframes countUp {
+            from { transform: scale(0.8); opacity: 0; }
+            to { transform: scale(1); opacity: 1; }
+        }
+        
+        .stat-number {
+            animation: countUp 0.8s ease-out;
+        }
+    </style>
+</head>
+
+<body class="bg-gray-100 dark:bg-gray-900 font-sans">
+    
+    <!-- Sidebar Navigation (reemplaza nav de Bootstrap) -->
+    <div class="flex h-screen">
+        
+        <!-- Sidebar -->
+        <aside class="sidebar w-64 flex-shrink-0 hidden lg:block">
+            <div class="p-6">
+                <div class="flex items-center space-x-3 mb-8">
+                    <div class="w-8 h-8 bg-primary-500 rounded-lg flex items-center justify-center">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
+                        </svg>
+                    </div>
+                    <h1 class="text-xl font-bold text-gray-900 dark:text-white">Dashboard Pro</h1>
+                </div>
+                
+                <!-- Navigation Menu -->
+                <nav class="space-y-2">
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 bg-primary-100 dark:bg-primary-900/20 text-primary-700 dark:text-primary-300 rounded-lg">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2H5a2 2 0 00-2-2z"></path>
+                        </svg>
+                        <span class="font-medium">Dashboard</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                        </svg>
+                        <span>Analytics</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197m13.5-4.5a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                        </svg>
+                        <span>Usuarios</span>
+                    </a>
+                    
+                    <a href="#" class="flex items-center space-x-3 px-3 py-2 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors">
+                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                        <span>Configuración</span>
+                    </a>
+                </nav>
+            </div>
+        </aside>
+        
+        <!-- Main Content Area -->
+        <div class="flex-1 flex flex-col min-h-0">
+            
+            <!-- Top Navigation (reemplaza navbar de Bootstrap) -->
+            <header class="navbar flex-shrink-0">
+                <div class="flex justify-between items-center px-6 py-4">
+                    <!-- Mobile menu button -->
+                    <button class="lg:hidden p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    
+                    <div class="flex items-center space-x-4">
+                        <!-- Search bar -->
+                        <div class="hidden md:block relative">
+                            <input type="text" placeholder="Buscar..." class="form-control pl-10 w-64">
+                            <svg class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                            </svg>
+                        </div>
+                        
+                        <!-- User menu -->
+                        <div class="flex items-center space-x-3">
+                            <button class="p-2 rounded-lg text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 relative">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-5-5-5 5h5zM15 17v-5a6 6 0 00-12 0v5"></path>
+                                </svg>
+                                <span class="absolute top-1 right-1 w-2 h-2 bg-danger-500 rounded-full"></span>
+                            </button>
+                            
+                            <div class="flex items-center space-x-2">
+                                <img src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=40&h=40&fit=crop&crop=face" 
+                                     alt="Avatar" class="w-8 h-8 rounded-full">
+                                <span class="hidden md:block text-sm font-medium text-gray-700 dark:text-gray-300">Juan Pérez</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </header>
+            
+            <!-- Main Content (equivale a container-fluid de Bootstrap) -->
+            <main class="flex-1 overflow-auto p-6">
+                
+                <!-- Page Header -->
+                <div class="mb-8">
+                    <h1 class="text-3xl font-bold text-gray-900 dark:text-white mb-2">Dashboard</h1>
+                    <p class="text-gray-600 dark:text-gray-300">Bienvenido de vuelta, aquí tienes un resumen de tu actividad.</p>
+                </div>
+                
+                <!-- Stats Cards (reemplaza cards de Bootstrap) -->
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+                    
+                    <!-- Card 1 -->
+                    <div class="card hover:shadow-card-hover transition-all duration-200 group">
+                        <div class="card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Ventas Totales</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white stat-number">$45,850</p>
+                                    <p class="text-sm text-success-600 flex items-center mt-1">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        +12.5%
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-primary-100 dark:bg-primary-900/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <svg class="w-6 h-6 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 2 -->
+                    <div class="card hover:shadow-card-hover transition-all duration-200 group">
+                        <div class="card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Usuarios Activos</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white stat-number">2,847</p>
+                                    <p class="text-sm text-success-600 flex items-center mt-1">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        +8.2%
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-success-100 dark:bg-success-900/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <svg class="w-6 h-6 text-success-600 dark:text-success-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 3 -->
+                    <div class="card hover:shadow-card-hover transition-all duration-200 group">
+                        <div class="card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Pedidos</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white stat-number">1,234</p>
+                                    <p class="text-sm text-warning-600 flex items-center mt-1">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 12H4"></path>
+                                        </svg>
+                                        -2.1%
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-warning-100 dark:bg-warning-900/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <svg class="w-6 h-6 text-warning-600 dark:text-warning-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Card 4 -->
+                    <div class="card hover:shadow-card-hover transition-all duration-200 group">
+                        <div class="card-body">
+                            <div class="flex items-center justify-between">
+                                <div>
+                                    <p class="text-sm font-medium text-gray-600 dark:text-gray-400 mb-1">Conversión</p>
+                                    <p class="text-2xl font-bold text-gray-900 dark:text-white stat-number">3.2%</p>
+                                    <p class="text-sm text-success-600 flex items-center mt-1">
+                                        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path>
+                                        </svg>
+                                        +5.7%
+                                    </p>
+                                </div>
+                                <div class="w-12 h-12 bg-purple-100 dark:bg-purple-900/20 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform">
+                                    <svg class="w-6 h-6 text-purple-600 dark:text-purple-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                    </svg>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Charts and Tables Row -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+                    
+                    <!-- Chart Card (reemplaza Bootstrap chart) -->
+                    <div class="lg:col-span-2">
+                        <div class="card">
+                            <div class="card-header">
+                                <div class="flex justify-between items-center">
+                                    <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Ventas por Mes</h3>
+                                    <div class="flex space-x-2">
+                                        <button class="btn-outline-primary text-sm px-3 py-1">7 días</button>
+                                        <button class="btn-primary text-sm px-3 py-1">30 días</button>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="card-body">
+                                <!-- Simulación de gráfico con CSS -->
+                                <div class="h-64 flex items-end justify-between space-x-2">
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-8 bg-primary-500 rounded-t" style="height: 60%"></div>
+                                        <span class="text-xs text-gray-500 mt-2">Ene</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-8 bg-primary-500 rounded-t" style="height: 80%"></div>
+                                        <span class="text-xs text-gray-500 mt-2">Feb</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-8 bg-primary-500 rounded-t" style="height: 45%"></div>
+                                        <span class="text-xs text-gray-500 mt-2">Mar</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-8 bg-primary-500 rounded-t" style="height: 90%"></div>
+                                        <span class="text-xs text-gray-500 mt-2">Abr</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-8 bg-primary-500 rounded-t" style="height: 70%"></div>
+                                        <span class="text-xs text-gray-500 mt-2">May</span>
+                                    </div>
+                                    <div class="flex flex-col items-center">
+                                        <div class="w-8 bg-primary-500 rounded-t" style="height: 85%"></div>
+                                        <span class="text-xs text-gray-500 mt-2">Jun</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Progress Card -->
+                    <div class="space-y-6">
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Objetivos del Mes</h3>
+                            </div>
+                            <div class="card-body space-y-4">
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Ventas</span>
+                                        <span class="text-sm text-gray-500">75%</span>
+                                    </div>
+                                    <div class="progress-bar h-2">
+                                        <div class="progress-fill" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Usuarios</span>
+                                        <span class="text-sm text-gray-500">68%</span>
+                                    </div>
+                                    <div class="progress-bar h-2">
+                                        <div class="progress-fill bg-success-500" style="width: 68%"></div>
+                                    </div>
+                                </div>
+                                
+                                <div>
+                                    <div class="flex justify-between items-center mb-2">
+                                        <span class="text-sm font-medium text-gray-700 dark:text-gray-300">Conversión</span>
+                                        <span class="text-sm text-gray-500">92%</span>
+                                    </div>
+                                    <div class="progress-bar h-2">
+                                        <div class="progress-fill bg-warning-500" style="width: 92%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Activity feed -->
+                        <div class="card">
+                            <div class="card-header">
+                                <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Actividad Reciente</h3>
+                            </div>
+                            <div class="card-body">
+                                <div class="space-y-3">
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-2 h-2 bg-success-500 rounded-full"></div>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">Nuevo usuario registrado</p>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-2 h-2 bg-primary-500 rounded-full"></div>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">Pedido #1234 completado</p>
+                                    </div>
+                                    <div class="flex items-center space-x-3">
+                                        <div class="w-2 h-2 bg-warning-500 rounded-full"></div>
+                                        <p class="text-sm text-gray-600 dark:text-gray-300">Sistema actualizado</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Orders Table (reemplaza table de Bootstrap) -->
+                <div class="card">
+                    <div class="card-header">
+                        <div class="flex justify-between items-center">
+                            <h3 class="text-lg font-semibold text-gray-900 dark:text-white">Pedidos Recientes</h3>
+                            <button class="btn-primary">Ver Todos</button>
+                        </div>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="overflow-x-auto">
+                            <table class="w-full">
+                                <thead class="bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">ID</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Cliente</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Producto</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Estado</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Total</th>
+                                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#1001</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Ana García</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Laptop Pro</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="badge-success">Completado</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">$1,299</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2024-06-13</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#1002</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Carlos López</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Mouse Wireless</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="badge-warning">Pendiente</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">$89</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2024-06-13</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-white">#1003</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">María Rodríguez</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">Auriculares</td>
+                                        <td class="px-6 py-4 whitespace-nowrap">
+                                            <span class="badge-primary">Procesando</span>
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-900 dark:text-white">$159</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500 dark:text-gray-300">2024-06-12</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+    
+    <script>
+        // Simulación de actualización de datos en tiempo real
+        document.addEventListener('DOMContentLoaded', () => {
+            // Animar números estadísticos
+            const statNumbers = document.querySelectorAll('.stat-number');
+            statNumbers.forEach((stat, index) => {
+                stat.style.animationDelay = `${index * 0.2}s`;
+            });
+            
+            // Simular actualización de progreso
+            const progressBars = document.querySelectorAll('.progress-fill');
+            progressBars.forEach(bar => {
+                const width = bar.style.width;
+                bar.style.width = '0%';
+                setTimeout(() => {
+                    bar.style.width = width;
+                }, 500);
+            });
+        });
+    </script>
+</body>
+</html>

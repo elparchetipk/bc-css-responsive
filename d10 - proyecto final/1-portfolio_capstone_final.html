@@ -1,0 +1,1300 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Portfolio profesional de desarrollador frontend especializado en CSS responsive, Bootstrap y TailwindCSS">
+    <meta name="keywords" content="desarrollador frontend, CSS responsive, Bootstrap, TailwindCSS, portfolio">
+    <meta name="author" content="Tu Nombre">
+    <title>Mi Portfolio - Desarrollador Frontend Especializado</title>
+    
+    <!-- Bootstrap 5.3+ CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    
+    <!-- TailwindCSS v4.0 CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Configuración personalizada TailwindCSS -->
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#2563eb',
+                        secondary: '#64748b',
+                        accent: '#f59e0b'
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'system-ui', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Estilos personalizados -->
+    <style>
+        /* Variables CSS para consistencia */
+        :root {
+            --bs-body-bg: #ffffff;
+            --text-primary: #1f2937;
+            --footer-bg: #1f2937;
+            --footer-text: #9ca3af;
+            --footer-link: #d1d5db;
+            --footer-link-hover: #ffffff;
+            --footer-accent: #3b82f6;
+        }
+        
+        [data-bs-theme="dark"] {
+            --bs-body-bg: #111827;
+            --text-primary: #f9fafb;
+            --footer-bg: #0f172a;
+            --footer-text: #64748b;
+            --footer-link: #cbd5e1;
+        }
+        
+        /* CSS Moderno con Container Queries */
+        @layer utilities {
+            .hero-gradient {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            }
+        }
+        
+        /* Animaciones suaves para transiciones */
+        * {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        /* Tipografía fluida usando clamp() */
+        .display-fluid {
+            font-size: clamp(2rem, 5vw, 3.5rem);
+            line-height: 1.2;
+        }
+        
+        .lead-fluid {
+            font-size: clamp(1.1rem, 2.5vw, 1.25rem);
+        }
+        
+        /* Grid de proyectos con Container Queries */
+        .projects-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        /* Container Queries - CSS del futuro */
+        @container (min-width: 400px) {
+            .project-card .card-body {
+                padding: 1.5rem !important;
+            }
+            
+            .project-card .card-title {
+                font-size: 1.25rem;
+            }
+        }
+        
+        @container (min-width: 500px) {
+            .project-card .card-img-top {
+                height: 250px !important;
+            }
+            
+            .project-card .display-1 {
+                font-size: 4rem;
+            }
+        }
+        
+        /* Hover effects con GPU acceleration */
+        .project-card:hover {
+            transform: translateY(-4px);
+            will-change: transform;
+        }
+        
+        .project-card .card {
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 1rem;
+            overflow: hidden;
+        }
+        
+        /* Animaciones de entrada */
+        .project-card {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .project-card.animate-in {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Footer styling */
+        footer {
+            background: linear-gradient(135deg, var(--footer-bg) 0%, #111827 100%);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            margin-top: auto;
+        }
+        
+        .footer-link {
+            color: var(--footer-link) !important;
+            text-decoration: none;
+            position: relative;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        
+        .footer-link:hover {
+            color: var(--footer-link-hover) !important;
+            transform: translateX(4px);
+        }
+        
+        .footer-link::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 0;
+            width: 0;
+            height: 1px;
+            background: var(--footer-accent);
+            transition: width 0.3s ease;
+        }
+        
+        .footer-link:hover::after {
+            width: 100%;
+        }
+        
+        .footer-text {
+            color: var(--footer-text);
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        
+        /* Redes sociales */
+        .social-link {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 44px;
+            height: 44px;
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--footer-link);
+            border-radius: 50%;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .social-link:hover {
+            background: var(--footer-accent);
+            color: white;
+            transform: translateY(-2px) scale(1.05);
+            box-shadow: 0 8px 25px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Indicador de estado animado */
+        .status-indicator {
+            animation: pulse-availability 2s infinite;
+        }
+        
+        @keyframes pulse-availability {
+            0%, 100% {
+                opacity: 1;
+                transform: scale(1);
+            }
+            50% {
+                opacity: 0.7;
+                transform: scale(1.2);
+            }
+        }
+        
+        /* Botón Back to Top */
+        .back-to-top-btn {
+            width: 50px;
+            height: 50px;
+            background: var(--footer-accent);
+            border: none;
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.3);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            z-index: 1000;
+        }
+        
+        .back-to-top-btn:hover {
+            background: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(59, 130, 246, 0.4);
+        }
+        
+        .back-to-top-btn.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .back-to-top-btn.hide {
+            opacity: 0;
+            transform: translateY(20px);
+        }
+        
+        /* Utility classes */
+        .space-y-2 > * + * { margin-top: 0.5rem; }
+        .space-y-3 > * + * { margin-top: 0.75rem; }
+        .space-y-4 > * + * { margin-top: 1rem; }
+        .leading-relaxed { line-height: 1.625; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        
+        /* Responsive adjustments */
+        @media (max-width: 768px) {
+            .projects-grid {
+                grid-template-columns: 1fr;
+                gap: 1.5rem;
+            }
+            
+            footer .container > .row:first-child {
+                text-align: center;
+            }
+            
+            .social-links {
+                justify-content: center;
+            }
+        }
+        
+        /* Accessibility improvements */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            .status-indicator {
+                animation: none;
+            }
+        }
+        
+        .footer-link:focus,
+        .social-link:focus,
+        .back-to-top-btn:focus {
+            outline: 2px solid var(--footer-accent);
+            outline-offset: 2px;
+        }
+        
+        /* Dark mode enhancements */
+        [data-bs-theme="dark"] .card {
+            background: rgba(15, 23, 42, 0.8) !important;
+            border-color: rgba(255, 255, 255, 0.1) !important;
+        }
+        
+        [data-bs-theme="dark"] .bg-light {
+            background: #1e293b !important;
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- Navegación híbrida: Bootstrap structure + Tailwind styling -->
+    <nav class="navbar navbar-expand-lg fixed-top bg-white/90 backdrop-blur-md shadow-sm">
+        <div class="container">
+            <a class="navbar-brand font-bold text-2xl text-gray-800 hover:text-blue-600" href="#home">
+                Portfolio
+            </a>
+            
+            <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto space-x-8">
+                    <li class="nav-item">
+                        <a class="nav-link text-gray-700 hover:text-blue-600 font-medium" href="#home">Inicio</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-gray-700 hover:text-blue-600 font-medium" href="#about">Sobre Mí</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-gray-700 hover:text-blue-600 font-medium" href="#projects">Proyectos</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link text-gray-700 hover:text-blue-600 font-medium" href="#contact">Contacto</a>
+                    </li>
+                    <li class="nav-item">
+                        <button id="themeToggle" class="btn btn-outline-secondary btn-sm rounded-full">
+                            🌙
+                        </button>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section: CSS Grid layout con Flexbox components -->
+    <section id="home" class="hero-gradient min-vh-100 d-flex align-items-center">
+        <div class="container">
+            <div class="row align-items-center min-vh-100">
+                <div class="col-lg-6 text-white">
+                    <h1 class="display-fluid font-bold mb-4">
+                        Desarrollador <span class="text-yellow-300">Frontend</span> Especializado en CSS Responsive
+                    </h1>
+                    <p class="lead-fluid mb-5 text-gray-100">
+                        Creo experiencias web excepcionales usando CSS moderno, Bootstrap y TailwindCSS. 
+                        Especializado en diseño responsive y performance optimization.
+                    </p>
+                    
+                    <div class="d-flex flex-column flex-sm-row gap-3">
+                        <a href="#projects" class="btn btn-light btn-lg px-4 py-3 rounded-pill font-semibold">
+                            Ver Proyectos
+                        </a>
+                        <a href="#contact" class="btn btn-outline-light btn-lg px-4 py-3 rounded-pill font-semibold">
+                            Contactar
+                        </a>
+                    </div>
+                    
+                    <div class="d-flex flex-wrap gap-2 mt-5">
+                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill">CSS3</span>
+                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill">Bootstrap 5.3+</span>
+                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill">TailwindCSS v4.0</span>
+                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill">CSS Grid</span>
+                        <span class="badge bg-white text-dark px-3 py-2 rounded-pill">Flexbox</span>
+                    </div>
+                </div>
+                
+                <div class="col-lg-6 text-center">
+                    <div class="position-relative">
+                        <div class="bg-white/20 rounded-circle mx-auto mb-4" 
+                             style="width: 300px; height: 300px; display: flex; align-items: center; justify-content: center;">
+                            <span class="text-white text-6xl">👨‍💻</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección Sobre Mí: CSS Grid + Flexbox + Animaciones -->
+    <section id="about" class="py-5 py-lg-6 bg-light">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-4 font-bold text-gray-800 mb-4">
+                        Sobre <span class="text-primary">Mí</span>
+                    </h2>
+                    <p class="lead text-gray-600">
+                        Descubre mi trayectoria profesional y las tecnologías que domino
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row g-5 align-items-center">
+                <div class="col-lg-7">
+                    <div class="bg-white/80 backdrop-blur-sm rounded-4 p-4 p-lg-5 shadow-lg border border-gray-200/50">
+                        <h3 class="h4 font-semibold text-gray-800 mb-4">
+                            Mi Historia Profesional
+                        </h3>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Soy un desarrollador frontend especializado en crear experiencias web responsive 
+                            que funcionan perfectamente en cualquier dispositivo. Mi enfoque se centra en 
+                            combinar las mejores prácticas de CSS moderno con frameworks como Bootstrap y TailwindCSS.
+                        </p>
+                        <p class="text-gray-600 mb-4 leading-relaxed">
+                            Durante mi formación intensiva en este bootcamp, he dominado técnicas avanzadas 
+                            como Container Queries, CSS Grid Layout, y optimización de performance para 
+                            crear interfaces que no solo se ven bien, sino que también cargan rápidamente.
+                        </p>
+                        
+                        <div class="grid grid-cols-2 lg:grid-cols-3 gap-4 mt-5">
+                            <div class="text-center p-3 bg-primary/5 rounded-3">
+                                <div class="h2 font-bold text-primary mb-1">10+</div>
+                                <div class="small text-gray-600">Proyectos Completados</div>
+                            </div>
+                            <div class="text-center p-3 bg-success/5 rounded-3">
+                                <div class="h2 font-bold text-success mb-1">3</div>
+                                <div class="small text-gray-600">Frameworks Dominados</div>
+                            </div>
+                            <div class="text-center p-3 bg-warning/5 rounded-3">
+                                <div class="h2 font-bold text-warning mb-1">100%</div>
+                                <div class="small text-gray-600">Mobile Responsive</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-5">
+                    <h3 class="h4 font-semibold text-gray-800 mb-4">Habilidades Técnicas</h3>
+                    
+                    <div class="space-y-4">
+                        <div class="skill-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="font-medium text-gray-700">CSS3 & Responsive Design</span>
+                                <span class="text-primary font-semibold">95%</span>
+                            </div>
+                            <div class="progress bg-gray-200" style="height: 8px;">
+                                <div class="progress-bar bg-primary progress-bar-animated" 
+                                     style="width: 95%; animation-duration: 2s; animation-delay: 0.5s;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="font-medium text-gray-700">Bootstrap 5.3+</span>
+                                <span class="text-success font-semibold">90%</span>
+                            </div>
+                            <div class="progress bg-gray-200" style="height: 8px;">
+                                <div class="progress-bar bg-success progress-bar-animated" 
+                                     style="width: 90%; animation-duration: 2s; animation-delay: 1s;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="font-medium text-gray-700">TailwindCSS v4.0</span>
+                                <span class="text-info font-semibold">88%</span>
+                            </div>
+                            <div class="progress bg-gray-200" style="height: 8px;">
+                                <div class="progress-bar bg-info progress-bar-animated" 
+                                     style="width: 88%; animation-duration: 2s; animation-delay: 1.5s;"></div>
+                            </div>
+                        </div>
+                        
+                        <div class="skill-item">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <span class="font-medium text-gray-700">CSS Grid & Flexbox</span>
+                                <span class="text-warning font-semibold">92%</span>
+                            </div>
+                            <div class="progress bg-gray-200" style="height: 8px;">
+                                <div class="progress-bar bg-warning progress-bar-animated" 
+                                     style="width: 92%; animation-duration: 2s; animation-delay: 2s;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Sección de Proyectos: Container Queries + CSS Grid avanzado -->
+    <section id="projects" class="py-5 py-lg-6">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-4 font-bold text-gray-800 mb-4">
+                        Mis <span class="text-primary">Proyectos</span>
+                    </h2>
+                    <p class="lead text-gray-600">
+                        Una colección de proyectos que demuestran mi evolución durante el bootcamp
+                    </p>
+                </div>
+            </div>
+            
+            <div class="projects-grid">
+                <article class="project-card" style="container-type: inline-size;">
+                    <div class="card h-100 border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                        <div class="card-img-top bg-gradient-to-br from-blue-500 to-purple-600 d-flex align-items-center justify-content-center text-white position-relative overflow-hidden" 
+                             style="height: 200px;">
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-black/20"></div>
+                            <div class="position-relative z-1 text-center">
+                                <div class="display-1 mb-0">🚀</div>
+                                <div class="small opacity-90">Landing Page</div>
+                            </div>
+                            <div class="position-absolute top-3 end-3">
+                                <span class="badge bg-white text-primary px-2 py-1 rounded-pill small">Bootstrap</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            <h3 class="card-title h5 font-semibold text-gray-800 mb-3">
+                                Landing Page Corporativa
+                            </h3>
+                            <p class="card-text text-gray-600 mb-4">
+                                Página de aterrizaje responsive construida con Bootstrap 5.3+, 
+                                implementando modo oscuro nativo y componentes personalizados.
+                            </p>
+                            
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <span class="badge bg-primary/10 text-primary px-2 py-1 rounded-pill small">Bootstrap 5.3+</span>
+                                <span class="badge bg-success/10 text-success px-2 py-1 rounded-pill small">CSS Grid</span>
+                                <span class="badge bg-info/10 text-info px-2 py-1 rounded-pill small">Dark Mode</span>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn btn-primary btn-sm flex-fill">Ver Demo</a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">Código</a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+                <article class="project-card" style="container-type: inline-size;">
+                    <div class="card h-100 border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                        <div class="card-img-top bg-gradient-to-br from-green-500 to-teal-600 d-flex align-items-center justify-content-center text-white position-relative overflow-hidden" 
+                             style="height: 200px;">
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-black/20"></div>
+                            <div class="position-relative z-1 text-center">
+                                <div class="display-1 mb-0">📊</div>
+                                <div class="small opacity-90">Dashboard</div>
+                            </div>
+                            <div class="position-absolute top-3 end-3">
+                                <span class="badge bg-white text-teal-600 px-2 py-1 rounded-pill small">TailwindCSS</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            <h3 class="card-title h5 font-semibold text-gray-800 mb-3">
+                                Dashboard Administrativo
+                            </h3>
+                            <p class="card-text text-gray-600 mb-4">
+                                Interface de administración completa usando TailwindCSS v4.0 
+                                con Container Queries y utilidades 3D transforms.
+                            </p>
+                            
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <span class="badge bg-teal-100 text-teal-700 px-2 py-1 rounded-pill small">TailwindCSS v4.0</span>
+                                <span class="badge bg-purple-100 text-purple-700 px-2 py-1 rounded-pill small">Container Queries</span>
+                                <span class="badge bg-orange-100 text-orange-700 px-2 py-1 rounded-pill small">3D Transforms</span>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn btn-success btn-sm flex-fill">Ver Demo</a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">Código</a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+                
+                <article class="project-card" style="container-type: inline-size;">
+                    <div class="card h-100 border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+                        <div class="card-img-top bg-gradient-to-br from-purple-500 to-pink-600 d-flex align-items-center justify-content-center text-white position-relative overflow-hidden" 
+                             style="height: 200px;">
+                            <div class="position-absolute top-0 start-0 w-100 h-100 bg-black/20"></div>
+                            <div class="position-relative z-1 text-center">
+                                <div class="display-1 mb-0">🎨</div>
+                                <div class="small opacity-90">CSS Moderno</div>
+                            </div>
+                            <div class="position-absolute top-3 end-3">
+                                <span class="badge bg-white text-purple-600 px-2 py-1 rounded-pill small">CSS3</span>
+                            </div>
+                        </div>
+                        
+                        <div class="card-body p-4">
+                            <h3 class="card-title h5 font-semibold text-gray-800 mb-3">
+                                Portfolio Creativo CSS
+                            </h3>
+                            <p class="card-text text-gray-600 mb-4">
+                                Showcase de técnicas CSS avanzadas incluyendo CSS Nesting, 
+                                :has() selector y animaciones de performance optimizada.
+                            </p>
+                            
+                            <div class="d-flex flex-wrap gap-2 mb-4">
+                                <span class="badge bg-purple-100 text-purple-700 px-2 py-1 rounded-pill small">CSS Nesting</span>
+                                <span class="badge bg-pink-100 text-pink-700 px-2 py-1 rounded-pill small">:has() Selector</span>
+                                <span class="badge bg-indigo-100 text-indigo-700 px-2 py-1 rounded-pill small">Animations</span>
+                            </div>
+                            
+                            <div class="d-flex gap-2">
+                                <a href="#" class="btn btn-sm flex-fill" style="background-color: #8b5cf6; border-color: #8b5cf6; color: white;">Ver Demo</a>
+                                <a href="#" class="btn btn-outline-secondary btn-sm">Código</a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+        </div>
+    </section>
+
+    <!-- Formulario de Contacto: HTML5 + Bootstrap + Validación JavaScript -->
+    <section id="contact" class="py-5 py-lg-6 bg-light">
+        <div class="container">
+            <div class="row justify-content-center mb-5">
+                <div class="col-lg-8 text-center">
+                    <h2 class="display-4 font-bold text-gray-800 mb-4">
+                        ¿Trabajamos <span class="text-primary">Juntos</span>?
+                    </h2>
+                    <p class="lead text-gray-600">
+                        Estoy disponible para nuevos proyectos. Conversemos sobre tu próxima idea.
+                    </p>
+                </div>
+            </div>
+            
+            <div class="row justify-content-center">
+                <div class="col-lg-8">
+                    <div class="card border-0 shadow-lg bg-white/80 backdrop-blur-sm rounded-4">
+                        <div class="card-body p-4 p-lg-5">
+                            <div id="form-status" class="alert d-none" role="alert"></div>
+                            
+                            <form id="contact-form" class="needs-validation" novalidate>
+                                <div class="row g-4">
+                                    <div class="col-md-6">
+                                        <label for="firstName" class="form-label font-medium text-gray-700">
+                                            Nombre <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg border-2 rounded-3" 
+                                               id="firstName" 
+                                               name="firstName"
+                                               required 
+                                               minlength="2"
+                                               maxlength="50"
+                                               placeholder="Tu nombre"
+                                               autocomplete="given-name">
+                                        <div class="invalid-feedback">
+                                            Por favor, ingresa tu nombre (mínimo 2 caracteres).
+                                        </div>
+                                        <div class="valid-feedback">
+                                            ¡Perfecto! ✓
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-md-6">
+                                        <label for="lastName" class="form-label font-medium text-gray-700">
+                                            Apellido <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="text" 
+                                               class="form-control form-control-lg border-2 rounded-3" 
+                                               id="lastName" 
+                                               name="lastName"
+                                               required 
+                                               minlength="2"
+                                               maxlength="50"
+                                               placeholder="Tu apellido"
+                                               autocomplete="family-name">
+                                        <div class="invalid-feedback">
+                                            Por favor, ingresa tu apellido (mínimo 2 caracteres).
+                                        </div>
+                                        <div class="valid-feedback">
+                                            ¡Perfecto! ✓
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="email" class="form-label font-medium text-gray-700">
+                                            Email <span class="text-danger">*</span>
+                                        </label>
+                                        <input type="email" 
+                                               class="form-control form-control-lg border-2 rounded-3" 
+                                               id="email" 
+                                               name="email"
+                                               required 
+                                               placeholder="tu@email.com"
+                                               autocomplete="email"
+                                               pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$">
+                                        <div class="invalid-feedback">
+                                            Por favor, ingresa un email válido.
+                                        </div>
+                                        <div class="valid-feedback">
+                                            ¡Email válido! ✓
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="projectType" class="form-label font-medium text-gray-700">
+                                            Tipo de Proyecto <span class="text-danger">*</span>
+                                        </label>
+                                        <select class="form-select form-select-lg border-2 rounded-3" 
+                                                id="projectType" 
+                                                name="projectType" 
+                                                required>
+                                            <option value="">Selecciona el tipo de proyecto...</option>
+                                            <option value="landing-page">Landing Page Corporativa</option>
+                                            <option value="ecommerce">Tienda Online / E-commerce</option>
+                                            <option value="dashboard">Dashboard / Panel Administrativo</option>
+                                            <option value="portfolio">Portfolio Personal / Creativo</option>
+                                            <option value="blog">Blog / Revista Digital</option>
+                                            <option value="custom">Proyecto Personalizado</option>
+                                        </select>
+                                        <div class="invalid-feedback">
+                                            Por favor, selecciona el tipo de proyecto.
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <label for="message" class="form-label font-medium text-gray-700">
+                                            Mensaje <span class="text-danger">*</span>
+                                        </label>
+                                        <textarea class="form-control form-control-lg border-2 rounded-3" 
+                                                  id="message" 
+                                                  name="message"
+                                                  rows="5" 
+                                                  required 
+                                                  minlength="20"
+                                                  maxlength="1000"
+                                                  placeholder="Cuéntame sobre tu proyecto, objetivos, timeline y cualquier detalle importante..."></textarea>
+                                        <div class="d-flex justify-content-between mt-2">
+                                            <div class="invalid-feedback">
+                                                Por favor, describe tu proyecto (mínimo 20 caracteres).
+                                            </div>
+                                            <small id="message-counter" class="text-muted">
+                                                0/1000 caracteres
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <div class="form-check">
+                                            <input class="form-check-input border-2" 
+                                                   type="checkbox" 
+                                                   id="terms" 
+                                                   name="terms" 
+                                                   required>
+                                            <label class="form-check-label text-gray-600" for="terms">
+                                                Acepto ser contactado sobre este proyecto y entiendo que mis datos 
+                                                serán tratados según las políticas de privacidad.
+                                                <span class="text-danger">*</span>
+                                            </label>
+                                            <div class="invalid-feedback">
+                                                Debes aceptar los términos para continuar.
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="col-12">
+                                        <button type="submit" 
+                                                id="submit-btn"
+                                                class="btn btn-primary btn-lg w-100 py-3 rounded-3 font-semibold">
+                                            <span id="btn-text">Enviar Mensaje</span>
+                                            <span id="btn-spinner" class="spinner-border spinner-border-sm ms-2 d-none" role="status">
+                                                <span class="visually-hidden">Enviando...</span>
+                                            </span>
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer Profesional -->
+    <footer class="bg-dark text-light py-5 mt-auto">
+        <div class="container">
+            <div class="row g-4 pb-4">
+                <div class="col-lg-4 col-md-6">
+                    <div class="footer-brand mb-4">
+                        <h3 class="h4 font-bold text-white mb-3">
+                            <span class="text-primary">Dev</span>Portfolio
+                        </h3>
+                        <p class="text-gray-300 leading-relaxed mb-4">
+                            Desarrollador Frontend especializado en crear experiencias web responsive 
+                            excepcionales. Transformo ideas en interfaces digitales que funcionan 
+                            perfectamente en cualquier dispositivo.
+                        </p>
+                        
+                        <div class="social-links d-flex gap-3">
+                            <a href="#" class="social-link" aria-label="LinkedIn">
+                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M0 1.146C0 .513.526 0 1.175 0h13.65C15.474 0 16 .513 16 1.146v13.708c0 .633-.526 1.146-1.175 1.146H1.175C.526 16 0 15.487 0 14.854V1.146zm4.943 12.248V6.169H2.542v7.225h2.401zm-1.2-8.212c.837 0 1.358-.554 1.358-1.248-.015-.709-.52-1.248-1.342-1.248-.822 0-1.359.54-1.359 1.248 0 .694.521 1.248 1.327 1.248h.016zm4.908 8.212V9.359c0-.216.016-.432.08-.586.173-.431.568-.878 1.232-.878.869 0 1.216.662 1.216 1.634v3.865h2.401V9.25c0-2.22-1.184-3.252-2.764-3.252-1.274 0-1.845.7-2.165 1.193v.025h-.016a5.54 5.54 0 0 1 .016-.025V6.169h-2.4c.03.678 0 7.225 0 7.225h2.4z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="social-link" aria-label="GitHub">
+                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.012 8.012 0 0 0 16 8c0-4.42-3.58-8-8-8z"/>
+                                </svg>
+                            </a>
+                            <a href="#" class="social-link" aria-label="Twitter">
+                                <svg width="24" height="24" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M5.026 15c6.038 0 9.341-5.003 9.341-9.334 0-.14 0-.282-.006-.422A6.685 6.685 0 0 0 16 3.542a6.658 6.658 0 0 1-1.889.518 3.301 3.301 0 0 0 1.447-1.817 6.533 6.533 0 0 1-2.087.793A3.286 3.286 0 0 0 7.875 6.03a9.325 9.325 0 0 1-6.767-3.429 3.289 3.289 0 0 0 1.018 4.382A3.323 3.323 0 0 1 .64 6.575v.045a3.288 3.288 0 0 0 2.632 3.218 3.203 3.203 0 0 1-.865.115 3.23 3.23 0 0 1-.614-.057 3.283 3.283 0 0 0 3.067 2.277A6.588 6.588 0 0 1 .78 13.58a6.32 6.32 0 0 1-.78-.045A9.344 9.344 0 0 0 5.026 15z"/>
+                                </svg>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-2 col-md-6">
+                    <h4 class="h6 font-semibold text-white mb-3">Navegación</h4>
+                    <ul class="list-unstyled space-y-2">
+                        <li><a href="#home" class="footer-link">Inicio</a></li>
+                        <li><a href="#about" class="footer-link">Sobre Mí</a></li>
+                        <li><a href="#projects" class="footer-link">Proyectos</a></li>
+                        <li><a href="#contact" class="footer-link">Contacto</a></li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="h6 font-semibold text-white mb-3">Servicios</h4>
+                    <ul class="list-unstyled space-y-2">
+                        <li class="footer-text">Desarrollo Frontend</li>
+                        <li class="footer-text">Diseño Responsive</li>
+                        <li class="footer-text">Optimización Performance</li>
+                        <li class="footer-text">Consultoría CSS</li>
+                        <li class="footer-text">Auditorías de Código</li>
+                    </ul>
+                </div>
+                
+                <div class="col-lg-3 col-md-6">
+                    <h4 class="h6 font-semibold text-white mb-3">Contacto Directo</h4>
+                    <div class="contact-info space-y-3">
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" fill="currentColor" class="text-primary me-2" viewBox="0 0 16 16">
+                                <path d="M2 2a2 2 0 0 0-2 2v8.01A2 2 0 0 0 2 14h5.5a.5.5 0 0 0 0-1H2a1 1 0 0 1-.966-.741l5.64-3.471L8 9.583l1.326-.795-5.64 3.47A1 1 0 0 1 2 13V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v.5a.5.5 0 0 0 1 0V4a2 2 0 0 0-2-2H2z"/>
+                            </svg>
+                            <a href="mailto:contacto@portfolio.com" class="footer-link small">contacto@portfolio.com</a>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" fill="currentColor" class="text-primary me-2" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M1.885.511a1.745 1.745 0 0 1 2.61.163L6.29 2.98c.329.423.445.974.315 1.494l-.547 2.19a.678.678 0 0 0 .178.643l2.457 2.457a.678.678 0 0 0 .644.178l2.189-.547a1.745 1.745 0 0 1 1.494.315l2.306 1.794c.829.645.905 1.87.163 2.611l-1.034 1.034c-.74.74-1.846 1.065-2.877.702a18.634 18.634 0 0 1-7.01-4.42 18.634 18.634 0 0 1-4.42-7.009c-.362-1.03-.037-2.137.703-2.877L1.885.511z"/>
+                            </svg>
+                            <span class="footer-text small">+1 (555) 123-4567</span>
+                        </div>
+                        <div class="d-flex align-items-center">
+                            <svg width="16" height="16" fill="currentColor" class="text-primary me-2" viewBox="0 0 16 16">
+                                <path d="M8 16s6-5.686 6-10A6 6 0 0 0 2 6c0 4.314 6 10 6 10zm0-7a3 3 0 1 1 0-6 3 3 0 0 1 0 6z"/>
+                            </svg>
+                            <span class="footer-text small">Bogotá, Colombia</span>
+                        </div>
+                    </div>
+                    
+                    <div class="availability-badge mt-3">
+                        <div class="d-flex align-items-center">
+                            <div class="status-indicator bg-success rounded-circle me-2" style="width: 8px; height: 8px;"></div>
+                            <span class="small text-success font-medium">Disponible para proyectos</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <hr class="border-secondary opacity-25">
+            
+            <div class="row align-items-center py-3">
+                <div class="col-md-6">
+                    <p class="text-gray-400 small mb-0">
+                        © 2025 DevPortfolio. Desarrollado con 
+                        <span class="text-danger">❤️</span> 
+                        usando Bootstrap 5.3+ y TailwindCSS v4.0
+                    </p>
+                </div>
+                <div class="col-md-6 text-md-end">
+                    <div class="d-flex justify-content-md-end gap-4 mt-2 mt-md-0">
+                        <a href="#" class="footer-link small">Privacidad</a>
+                        <a href="#" class="footer-link small">Términos</a>
+                        <a href="#" class="footer-link small">Cookies</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <button id="backToTop" class="back-to-top-btn position-fixed bottom-4 end-4 btn btn-primary rounded-circle d-none" 
+                aria-label="Volver al inicio">
+            <svg width="20" height="20" fill="currentColor" viewBox="0 0 16 16">
+                <path fill-rule="evenodd" d="M8 15a.5.5 0 0 0 .5-.5V2.707l3.146 3.147a.5.5 0 0 0 .708-.708l-4-4a.5.5 0 0 0-.708 0l-4 4a.5.5 0 1 0 .708.708L7.5 2.707V14.5a.5.5 0 0 0 .5.5z"/>
+            </svg>
+        </button>
+    </footer>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- JavaScript personalizado -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            
+            // ======================================
+            // SISTEMA DE MODO OSCURO
+            // ======================================
+            class ThemeManager {
+                constructor() {
+                    this.themeToggle = document.getElementById('themeToggle');
+                    this.currentTheme = this.getInitialTheme();
+                    this.init();
+                }
+                
+                getInitialTheme() {
+                    if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                        return 'dark';
+                    }
+                    return 'light';
+                }
+                
+                init() {
+                    this.applyTheme(this.currentTheme);
+                    this.updateToggleIcon();
+                    this.bindEvents();
+                    
+                    window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+                        if (!this.userHasManuallyChangedTheme) {
+                            this.currentTheme = e.matches ? 'dark' : 'light';
+                            this.applyTheme(this.currentTheme);
+                            this.updateToggleIcon();
+                        }
+                    });
+                }
+                
+                applyTheme(theme) {
+                    document.documentElement.setAttribute('data-bs-theme', theme);
+                    document.body.style.transition = 'background-color 0.3s ease, color 0.3s ease';
+                    
+                    if (theme === 'dark') {
+                        document.documentElement.style.setProperty('--bs-body-bg', '#111827');
+                        document.documentElement.style.setProperty('--text-primary', '#f9fafb');
+                    } else {
+                        document.documentElement.style.setProperty('--bs-body-bg', '#ffffff');
+                        document.documentElement.style.setProperty('--text-primary', '#1f2937');
+                    }
+                }
+                
+                updateToggleIcon() {
+                    const icon = this.currentTheme === 'dark' ? '☀️' : '🌙';
+                    this.themeToggle.textContent = icon;
+                    this.themeToggle.setAttribute('aria-label', 
+                        `Cambiar a modo ${this.currentTheme === 'dark' ? 'claro' : 'oscuro'}`
+                    );
+                }
+                
+                bindEvents() {
+                    this.themeToggle.addEventListener('click', () => {
+                        this.userHasManuallyChangedTheme = true;
+                        this.currentTheme = this.currentTheme === 'dark' ? 'light' : 'dark';
+                        this.applyTheme(this.currentTheme);
+                        this.updateToggleIcon();
+                        
+                        this.themeToggle.style.transform = 'scale(0.9)';
+                        setTimeout(() => {
+                            this.themeToggle.style.transform = 'scale(1)';
+                        }, 150);
+                    });
+                }
+            }
+            
+            // ======================================
+            // VALIDACIÓN DE FORMULARIO
+            // ======================================
+            class FormValidator {
+                constructor() {
+                    this.form = document.getElementById('contact-form');
+                    this.submitBtn = document.getElementById('submit-btn');
+                    this.btnText = document.getElementById('btn-text');
+                    this.btnSpinner = document.getElementById('btn-spinner');
+                    this.formStatus = document.getElementById('form-status');
+                    this.messageCounter = document.getElementById('message-counter');
+                    this.messageField = document.getElementById('message');
+                    
+                    this.init();
+                }
+                
+                init() {
+                    this.bindEvents();
+                    this.setupRealTimeValidation();
+                }
+                
+                setupRealTimeValidation() {
+                    const inputs = this.form.querySelectorAll('input, select, textarea');
+                    
+                    inputs.forEach(input => {
+                        input.addEventListener('blur', () => {
+                            this.validateField(input);
+                        });
+                        
+                        input.addEventListener('input', this.debounce(() => {
+                            if (input.classList.contains('is-invalid') || input.classList.contains('is-valid')) {
+                                this.validateField(input);
+                            }
+                            
+                            if (input.id === 'message') {
+                                this.updateCharacterCounter();
+                            }
+                        }, 300));
+                    });
+                }
+                
+                debounce(func, wait) {
+                    let timeout;
+                    return function executedFunction(...args) {
+                        const later = () => {
+                            clearTimeout(timeout);
+                            func(...args);
+                        };
+                        clearTimeout(timeout);
+                        timeout = setTimeout(later, wait);
+                    };
+                }
+                
+                validateField(field) {
+                    const isValid = field.checkValidity();
+                    
+                    if (field.id === 'email') {
+                        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+                        if (field.value && !emailRegex.test(field.value)) {
+                            field.setCustomValidity('Por favor, ingresa un email válido');
+                        } else {
+                            field.setCustomValidity('');
+                        }
+                    }
+                    
+                    if (isValid && field.value.trim() !== '') {
+                        field.classList.remove('is-invalid');
+                        field.classList.add('is-valid');
+                    } else if (field.value.trim() !== '') {
+                        field.classList.remove('is-valid');
+                        field.classList.add('is-invalid');
+                    } else {
+                        field.classList.remove('is-valid', 'is-invalid');
+                    }
+                    
+                    return isValid;
+                }
+                
+                updateCharacterCounter() {
+                    const current = this.messageField.value.length;
+                    const max = this.messageField.getAttribute('maxlength');
+                    this.messageCounter.textContent = `${current}/${max} caracteres`;
+                    
+                    if (current > max * 0.9) {
+                        this.messageCounter.className = 'text-warning';
+                    } else if (current > max * 0.8) {
+                        this.messageCounter.className = 'text-info';
+                    } else {
+                        this.messageCounter.className = 'text-muted';
+                    }
+                }
+                
+                bindEvents() {
+                    this.form.addEventListener('submit', (e) => {
+                        e.preventDefault();
+                        this.handleSubmit();
+                    });
+                }
+                
+                async handleSubmit() {
+                    const inputs = this.form.querySelectorAll('input, select, textarea');
+                    let allValid = true;
+                    
+                    inputs.forEach(input => {
+                        if (!this.validateField(input)) {
+                            allValid = false;
+                        }
+                    });
+                    
+                    if (!allValid) {
+                        this.showMessage('Por favor, corrige los errores antes de enviar.', 'danger');
+                        return;
+                    }
+                    
+                    this.setLoadingState(true);
+                    
+                    try {
+                        await this.simulateFormSubmission();
+                        this.showMessage('¡Mensaje enviado correctamente! Te contactaré pronto.', 'success');
+                        this.form.reset();
+                        this.clearValidationClasses();
+                        
+                    } catch (error) {
+                        this.showMessage('Hubo un error al enviar el mensaje. Por favor, inténtalo de nuevo.', 'danger');
+                        console.error('Error al enviar formulario:', error);
+                    } finally {
+                        this.setLoadingState(false);
+                    }
+                }
+                
+                simulateFormSubmission() {
+                    return new Promise((resolve, reject) => {
+                        setTimeout(() => {
+                            if (Math.random() > 0.1) {
+                                resolve();
+                            } else {
+                                reject(new Error('Error de red simulado'));
+                            }
+                        }, 2000);
+                    });
+                }
+                
+                setLoadingState(loading) {
+                    if (loading) {
+                        this.submitBtn.disabled = true;
+                        this.btnText.textContent = 'Enviando...';
+                        this.btnSpinner.classList.remove('d-none');
+                    } else {
+                        this.submitBtn.disabled = false;
+                        this.btnText.textContent = 'Enviar Mensaje';
+                        this.btnSpinner.classList.add('d-none');
+                    }
+                }
+                
+                showMessage(message, type) {
+                    this.formStatus.className = `alert alert-${type}`;
+                    this.formStatus.textContent = message;
+                    this.formStatus.classList.remove('d-none');
+                    
+                    setTimeout(() => {
+                        this.formStatus.classList.add('d-none');
+                    }, 5000);
+                    
+                    this.formStatus.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+                
+                clearValidationClasses() {
+                    const inputs = this.form.querySelectorAll('input, select, textarea');
+                    inputs.forEach(input => {
+                        input.classList.remove('is-valid', 'is-invalid');
+                    });
+                    this.updateCharacterCounter();
+                }
+            }
+            
+            // ======================================
+            // NAVEGACIÓN Y SCROLL
+            // ======================================
+            class NavigationEnhancer {
+                constructor() {
+                    this.init();
+                }
+                
+                init() {
+                    this.setupSmoothScrolling();
+                    this.setupActiveNavigation();
+                    this.setupScrollAnimations();
+                }
+                
+                setupSmoothScrolling() {
+                    const navLinks = document.querySelectorAll('a[href^="#"]');
+                    
+                    navLinks.forEach(link => {
+                        link.addEventListener('click', (e) => {
+                            e.preventDefault();
+                            const targetId = link.getAttribute('href');
+                            const targetElement = document.querySelector(targetId);
+                            
+                            if (targetElement) {
+                                const navHeight = document.querySelector('.navbar').offsetHeight;
+                                const targetPosition = targetElement.offsetTop - navHeight - 20;
+                                
+                                window.scrollTo({
+                                    top: targetPosition,
+                                    behavior: 'smooth'
+                                });
+                            }
+                        });
+                    });
+                }
+                
+                setupActiveNavigation() {
+                    const sections = document.querySelectorAll('section[id]');
+                    const navLinks = document.querySelectorAll('.navbar-nav .nav-link');
+                    
+                    window.addEventListener('scroll', () => {
+                        let current = '';
+                        const scrollPosition = window.scrollY + 200;
+                        
+                        sections.forEach(section => {
+                            const sectionTop = section.offsetTop;
+                            const sectionHeight = section.clientHeight;
+                            
+                            if (scrollPosition >= sectionTop && scrollPosition < sectionTop + sectionHeight) {
+                                current = section.getAttribute('id');
+                            }
+                        });
+                        
+                        navLinks.forEach(link => {
+                            link.classList.remove('active');
+                            if (link.getAttribute('href') === `#${current}`) {
+                                link.classList.add('active');
+                            }
+                        });
+                    });
+                }
+                
+                setupScrollAnimations() {
+                    const observerOptions = {
+                        threshold: 0.1,
+                        rootMargin: '0px 0px -50px 0px'
+                    };
+                    
+                    const observer = new IntersectionObserver((entries) => {
+                        entries.forEach(entry => {
+                            if (entry.isIntersecting) {
+                                entry.target.classList.add('animate-in');
+                            }
+                        });
+                    }, observerOptions);
+                    
+                    const elementsToAnimate = document.querySelectorAll('.project-card, .skill-item');
+                    elementsToAnimate.forEach(el => observer.observe(el));
+                }
+            }
+            
+            // ======================================
+            // BOTÓN BACK TO TOP
+            // ======================================
+            class BackToTopController {
+                constructor() {
+                    this.button = document.getElementById('backToTop');
+                    this.scrollThreshold = 300;
+                    this.init();
+                }
+                
+                init() {
+                    if (!this.button) return;
+                    this.bindEvents();
+                    this.checkScrollPosition();
+                }
+                
+                bindEvents() {
+                    window.addEventListener('scroll', this.throttle(() => {
+                        this.checkScrollPosition();
+                    }, 100));
+                    
+                    this.button.addEventListener('click', () => {
+                        this.scrollToTop();
+                    });
+                }
+                
+                checkScrollPosition() {
+                    const scrollPosition = window.pageYOffset || document.documentElement.scrollTop;
+                    
+                    if (scrollPosition > this.scrollThreshold) {
+                        this.showButton();
+                    } else {
+                        this.hideButton();
+                    }
+                }
+                
+                showButton() {
+                    this.button.classList.remove('d-none', 'hide');
+                    this.button.classList.add('show');
+                }
+                
+                hideButton() {
+                    this.button.classList.remove('show');
+                    this.button.classList.add('hide');
+                    
+                    setTimeout(() => {
+                        if (this.button.classList.contains('hide')) {
+                            this.button.classList.add('d-none');
+                        }
+                    }, 300);
+                }
+                
+                scrollToTop() {
+                    window.scrollTo({
+                        top: 0,
+                        behavior: 'smooth'
+                    });
+                }
+                
+                throttle(func, limit) {
+                    let inThrottle;
+                    return function() {
+                        const args = arguments;
+                        const context = this;
+                        if (!inThrottle) {
+                            func.apply(context, args);
+                            inThrottle = true;
+                            setTimeout(() => inThrottle = false, limit);
+                        }
+                    }
+                }
+            }
+            
+            // Inicializar todos los sistemas
+            new ThemeManager();
+            new FormValidator();
+            new NavigationEnhancer();
+            new BackToTopController();
+            
+            console.log('🎉 Portfolio capstone inicializado correctamente!');
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1416 @@
+<!DOCTYPE html>
+<html lang="es" data-bs-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patrones Responsive Avanzados - CSS Moderno</title>
+    
+    <!-- Bootstrap 5.3+ CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <style>
+        /* ========================================
+           SISTEMA DE CAPAS CSS (@layer)
+           ======================================== */
+        
+        /* Definimos las capas en orden de prioridad (menor a mayor) */
+        @layer reset, base, components, utilities, overrides;
+        
+        /* Capa de reset - la prioridad más baja */
+        @layer reset {
+            * {
+                box-sizing: border-box;
+            }
+        }
+        
+        /* Capa base - variables y fundamentos */
+        @layer base {
+            :root {
+                /* === VARIABLES PARA CONTAINER QUERIES === */
+                --container-inline-size: 100%;
+                --container-block-size: auto;
+                
+                /* === VARIABLES DE BREAKPOINTS PERSONALIZADOS === */
+                --bp-xs: 20rem;    /* 320px */
+                --bp-sm: 30rem;    /* 480px */
+                --bp-md: 48rem;    /* 768px */
+                --bp-lg: 64rem;    /* 1024px */
+                --bp-xl: 80rem;    /* 1280px */
+                
+                /* === SISTEMA DE ESPACIADO FLUIDO === */
+                --space-3xs: clamp(0.25rem, 0.25rem + 0vw, 0.25rem);
+                --space-2xs: clamp(0.5rem, 0.5rem + 0vw, 0.5rem);
+                --space-xs: clamp(0.75rem, 0.75rem + 0vw, 0.75rem);
+                --space-s: clamp(1rem, 1rem + 0vw, 1rem);
+                --space-m: clamp(1.25rem, 1.125rem + 0.625vw, 1.5rem);
+                --space-l: clamp(1.75rem, 1.5rem + 1.25vw, 2.25rem);
+                --space-xl: clamp(2.25rem, 1.875rem + 1.875vw, 3rem);
+                --space-2xl: clamp(3rem, 2.25rem + 3.75vw, 4.5rem);
+                --space-3xl: clamp(4rem, 3rem + 5vw, 6rem);
+                
+                /* === TIPOGRAFÍA FLUIDA === */
+                --text-xs: clamp(0.75rem, 0.75rem + 0vw, 0.75rem);
+                --text-sm: clamp(0.875rem, 0.875rem + 0vw, 0.875rem);
+                --text-base: clamp(1rem, 1rem + 0vw, 1rem);
+                --text-lg: clamp(1.125rem, 1.0625rem + 0.3125vw, 1.25rem);
+                --text-xl: clamp(1.25rem, 1.125rem + 0.625vw, 1.5rem);
+                --text-2xl: clamp(1.5rem, 1.25rem + 1.25vw, 2rem);
+                --text-3xl: clamp(1.875rem, 1.5rem + 1.875vw, 2.5rem);
+                
+                /* === COLORES CONTEXTUALES === */
+                --color-surface: #ffffff;
+                --color-surface-variant: #f8fafc;
+                --color-on-surface: #1e293b;
+                --color-primary: #6366f1;
+                --color-primary-container: rgba(99, 102, 241, 0.1);
+                --color-outline: #e2e8f0;
+                --color-outline-variant: #f1f5f9;
+            }
+            
+            /* Modo oscuro */
+            [data-bs-theme="dark"] {
+                --color-surface: #0f172a;
+                --color-surface-variant: #1e293b;
+                --color-on-surface: #f1f5f9;
+                --color-primary: #818cf8;
+                --color-primary-container: rgba(129, 140, 248, 0.1);
+                --color-outline: #334155;
+                --color-outline-variant: #475569;
+            }
+        }
+        
+        /* ========================================
+           COMPONENTES CON CONTAINER QUERIES
+           ======================================== */
+        
+        @layer components {
+            /* === COMPONENTE ADAPTATIVO PRINCIPAL === */
+            .adaptive-component {
+                container-type: inline-size;
+                container-name: adaptive-card;
+                background: var(--color-surface);
+                border: 1px solid var(--color-outline);
+                border-radius: 1rem;
+                padding: var(--space-m);
+                transition: all 0.3s ease;
+            }
+            
+            /* Container queries para el componente adaptativo */
+            @container adaptive-card (max-width: 300px) {
+                .adaptive-component {
+                    /* Diseño compacto para espacios pequeños */
+                    padding: var(--space-s);
+                    border-radius: 0.5rem;
+                    
+                    .component-title {
+                        font-size: var(--text-sm);
+                        margin-bottom: var(--space-xs);
+                    }
+                    
+                    .component-content {
+                        font-size: var(--text-xs);
+                    }
+                    
+                    .component-actions {
+                        flex-direction: column;
+                        gap: var(--space-2xs);
+                    }
+                    
+                    .btn {
+                        font-size: 0.75rem;
+                        padding: 0.375rem 0.75rem;
+                    }
+                }
+            }
+            
+            @container adaptive-card (min-width: 301px) and (max-width: 500px) {
+                .adaptive-component {
+                    /* Diseño intermedio */
+                    padding: var(--space-m);
+                    
+                    .component-title {
+                        font-size: var(--text-base);
+                        margin-bottom: var(--space-s);
+                    }
+                    
+                    .component-content {
+                        font-size: var(--text-sm);
+                    }
+                    
+                    .component-actions {
+                        flex-direction: row;
+                        gap: var(--space-xs);
+                    }
+                }
+            }
+            
+            @container adaptive-card (min-width: 501px) {
+                .adaptive-component {
+                    /* Diseño expansivo para espacios amplios */
+                    padding: var(--space-l);
+                    
+                    .component-title {
+                        font-size: var(--text-lg);
+                        margin-bottom: var(--space-m);
+                    }
+                    
+                    .component-content {
+                        font-size: var(--text-base);
+                        line-height: 1.6;
+                    }
+                    
+                    .component-actions {
+                        flex-direction: row;
+                        gap: var(--space-s);
+                        margin-top: var(--space-m);
+                    }
+                }
+            }
+            
+            /* === CARD INTELIGENTE CON :has() === */
+            .smart-card {
+                container-type: inline-size;
+                background: var(--color-surface);
+                border: 1px solid var(--color-outline);
+                border-radius: 1rem;
+                padding: var(--space-m);
+                transition: all 0.3s ease;
+                
+                /* CSS Nesting moderno */
+                .card-header {
+                    margin-bottom: var(--space-m);
+                    padding-bottom: var(--space-s);
+                    border-bottom: 1px solid var(--color-outline-variant);
+                    
+                    .card-title {
+                        font-size: var(--text-lg);
+                        font-weight: 600;
+                        color: var(--color-on-surface);
+                        margin: 0;
+                    }
+                    
+                    .card-subtitle {
+                        font-size: var(--text-sm);
+                        color: var(--color-on-surface);
+                        opacity: 0.7;
+                        margin: var(--space-2xs) 0 0 0;
+                    }
+                }
+                
+                .card-body {
+                    .card-text {
+                        color: var(--color-on-surface);
+                        line-height: 1.6;
+                        margin-bottom: var(--space-m);
+                    }
+                    
+                    .card-actions {
+                        display: flex;
+                        gap: var(--space-s);
+                        flex-wrap: wrap;
+                    }
+                }
+                
+                /* Selector :has() para diferentes tipos de contenido */
+                &:has(.card-image) {
+                    .card-header {
+                        position: relative;
+                        margin-bottom: var(--space-l);
+                        
+                        &::after {
+                            content: "";
+                            position: absolute;
+                            bottom: -0.5rem;
+                            left: 0;
+                            width: 3rem;
+                            height: 2px;
+                            background: var(--color-primary);
+                            border-radius: 1px;
+                        }
+                    }
+                }
+                
+                &:has(.priority-high) {
+                    border-color: #ef4444;
+                    box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.1);
+                    
+                    .card-header .card-title {
+                        color: #dc2626;
+                    }
+                }
+                
+                &:has(.priority-medium) {
+                    border-color: #f59e0b;
+                    box-shadow: 0 0 0 1px rgba(245, 158, 11, 0.1);
+                }
+                
+                &:has(.status-completed) {
+                    background: var(--color-surface-variant);
+                    border-color: #10b981;
+                    
+                    .card-body {
+                        opacity: 0.8;
+                    }
+                }
+            }
+            
+            /* === GRID ADAPTATIVO CON CONTAINER QUERIES === */
+            .adaptive-grid {
+                container-type: inline-size;
+                display: grid;
+                gap: var(--space-m);
+                
+                /* Grid por defecto */
+                grid-template-columns: 1fr;
+                
+                @container (min-width: 400px) {
+                    grid-template-columns: repeat(2, 1fr);
+                }
+                
+                @container (min-width: 600px) {
+                    grid-template-columns: repeat(3, 1fr);
+                }
+                
+                @container (min-width: 800px) {
+                    grid-template-columns: repeat(4, 1fr);
+                }
+                
+                @container (min-width: 1000px) {
+                    grid-template-columns: repeat(5, 1fr);
+                }
+            }
+            
+            /* === NAVEGACIÓN MEGA MENU MODERNA === */
+            .mega-menu {
+                container-type: inline-size;
+                
+                .mega-menu-content {
+                    display: none;
+                    position: absolute;
+                    top: 100%;
+                    left: 0;
+                    right: 0;
+                    background: var(--color-surface);
+                    border: 1px solid var(--color-outline);
+                    border-top: none;
+                    border-radius: 0 0 1rem 1rem;
+                    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
+                    z-index: 1000;
+                    padding: var(--space-l);
+                    
+                    @container (max-width: 768px) {
+                        /* Mega menu compacto en móvil */
+                        padding: var(--space-m);
+                        
+                        .mega-menu-grid {
+                            grid-template-columns: 1fr;
+                            gap: var(--space-m);
+                        }
+                        
+                        .mega-menu-section {
+                            border-bottom: 1px solid var(--color-outline-variant);
+                            padding-bottom: var(--space-s);
+                            
+                            &:last-child {
+                                border-bottom: none;
+                            }
+                        }
+                    }
+                    
+                    @container (min-width: 769px) {
+                        /* Mega menu expandido en desktop */
+                        .mega-menu-grid {
+                            display: grid;
+                            grid-template-columns: repeat(4, 1fr);
+                            gap: var(--space-xl);
+                        }
+                    }
+                }
+                
+                &:hover .mega-menu-content {
+                    display: block;
+                    animation: fadeInDown 0.3s ease;
+                }
+            }
+            
+            /* === COMPONENTE DE ESTADÍSTICAS RESPONSIVE === */
+            .stats-component {
+                container-type: inline-size;
+                background: var(--color-surface);
+                border: 1px solid var(--color-outline);
+                border-radius: 1rem;
+                padding: var(--space-m);
+                
+                .stats-grid {
+                    display: grid;
+                    gap: var(--space-s);
+                    
+                    @container (max-width: 300px) {
+                        grid-template-columns: 1fr;
+                        text-align: center;
+                        
+                        .stat-item {
+                            padding: var(--space-s);
+                            border-bottom: 1px solid var(--color-outline-variant);
+                            
+                            &:last-child {
+                                border-bottom: none;
+                            }
+                            
+                            .stat-value {
+                                font-size: var(--text-lg);
+                                display: block;
+                            }
+                            
+                            .stat-label {
+                                font-size: var(--text-xs);
+                                margin-top: var(--space-2xs);
+                            }
+                        }
+                    }
+                    
+                    @container (min-width: 301px) and (max-width: 500px) {
+                        grid-template-columns: repeat(2, 1fr);
+                        
+                        .stat-item {
+                            text-align: center;
+                            padding: var(--space-m);
+                            
+                            .stat-value {
+                                font-size: var(--text-xl);
+                                display: block;
+                                font-weight: 700;
+                            }
+                            
+                            .stat-label {
+                                font-size: var(--text-sm);
+                                margin-top: var(--space-xs);
+                            }
+                        }
+                    }
+                    
+                    @container (min-width: 501px) {
+                        grid-template-columns: repeat(4, 1fr);
+                        
+                        .stat-item {
+                            text-align: center;
+                            padding: var(--space-l);
+                            position: relative;
+                            
+                            &:not(:last-child)::after {
+                                content: "";
+                                position: absolute;
+                                right: 0;
+                                top: 50%;
+                                transform: translateY(-50%);
+                                width: 1px;
+                                height: 60%;
+                                background: var(--color-outline-variant);
+                            }
+                            
+                            .stat-value {
+                                font-size: var(--text-2xl);
+                                display: block;
+                                font-weight: 700;
+                                color: var(--color-primary);
+                            }
+                            
+                            .stat-label {
+                                font-size: var(--text-sm);
+                                margin-top: var(--space-s);
+                                text-transform: uppercase;
+                                letter-spacing: 0.05em;
+                                font-weight: 500;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* ========================================
+           UTILIDADES AVANZADAS
+           ======================================== */
+        
+        @layer utilities {
+            /* === UTILIDADES DE CONTAINER === */
+            .container-queries {
+                container-type: inline-size;
+            }
+            
+            .container-size {
+                container-type: size;
+            }
+            
+            .container-normal {
+                container-type: normal;
+            }
+            
+            /* === UTILIDADES DE DEBUG === */
+            .debug-container {
+                position: relative;
+                
+                &::before {
+                    content: "📏 " attr(data-container-size);
+                    position: absolute;
+                    top: -1.5rem;
+                    left: 0;
+                    font-size: 0.75rem;
+                    background: var(--color-primary);
+                    color: white;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 0.25rem;
+                    font-family: monospace;
+                    z-index: 10;
+                }
+            }
+            
+            /* === UTILIDADES DE ESPACIADO FLUIDO === */
+            .space-3xs { margin: var(--space-3xs); }
+            .space-2xs { margin: var(--space-2xs); }
+            .space-xs { margin: var(--space-xs); }
+            .space-s { margin: var(--space-s); }
+            .space-m { margin: var(--space-m); }
+            .space-l { margin: var(--space-l); }
+            .space-xl { margin: var(--space-xl); }
+            .space-2xl { margin: var(--space-2xl); }
+            .space-3xl { margin: var(--space-3xl); }
+            
+            /* Variaciones direccionales */
+            .space-y-s > * + * { margin-top: var(--space-s); }
+            .space-y-m > * + * { margin-top: var(--space-m); }
+            .space-y-l > * + * { margin-top: var(--space-l); }
+            
+            /* === UTILIDADES DE TIPOGRAFÍA FLUIDA === */
+            .text-fluid-xs { font-size: var(--text-xs); }
+            .text-fluid-sm { font-size: var(--text-sm); }
+            .text-fluid-base { font-size: var(--text-base); }
+            .text-fluid-lg { font-size: var(--text-lg); }
+            .text-fluid-xl { font-size: var(--text-xl); }
+            .text-fluid-2xl { font-size: var(--text-2xl); }
+            .text-fluid-3xl { font-size: var(--text-3xl); }
+        }
+        
+        /* ========================================
+           OVERRIDES Y CASOS ESPECIALES
+           ======================================== */
+        
+        @layer overrides {
+            /* === FIXES PARA CASOS EDGE === */
+            
+            /* Fix para container queries en navegadores sin soporte */
+            @supports not (container-type: inline-size) {
+                .adaptive-component,
+                .smart-card,
+                .stats-component {
+                    /* Fallback a media queries tradicionales */
+                    @media (max-width: 300px) {
+                        padding: var(--space-s);
+                    }
+                }
+            }
+            
+            /* Fix para reduced motion */
+            @media (prefers-reduced-motion: reduce) {
+                *,
+                *::before,
+                *::after {
+                    animation-duration: 0.01ms !important;
+                    animation-iteration-count: 1 !important;
+                    transition-duration: 0.01ms !important;
+                }
+            }
+            
+            /* Fix para high contrast mode */
+            @media (prefers-contrast: high) {
+                .adaptive-component,
+                .smart-card,
+                .stats-component {
+                    border-width: 2px;
+                    border-color: currentColor;
+                }
+            }
+            
+            /* Debug mode para desarrollo */
+            .debug-mode * {
+                outline: 1px solid red;
+                outline-offset: -1px;
+            }
+            
+            .debug-mode [class*="container"] {
+                outline-color: blue;
+            }
+            
+            .debug-mode [class*="grid"] {
+                outline-color: green;
+            }
+        }
+        
+        /* ========================================
+           ANIMACIONES Y TRANSICIONES
+           ======================================== */
+        
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        @keyframes slideInContainer {
+            from {
+                opacity: 0;
+                transform: scale(0.95);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        /* === RESPONSIVE DEBUGGING === */
+        .debug-info {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            background: rgba(0, 0, 0, 0.8);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 0.5rem;
+            font-family: monospace;
+            font-size: 0.75rem;
+            z-index: 9999;
+            
+            .debug-item {
+                margin: 0.25rem 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- ========================================
+         HEADER CON CONTROLES DE DEBUG
+         ======================================== -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container-fluid">
+            <a class="navbar-brand fw-bold" href="#">
+                <i class="bi bi-grid-3x3-gap-fill me-2"></i>
+                CSS Moderno Lab
+            </a>
+            
+            <div class="navbar-nav ms-auto">
+                <!-- Toggle de debug mode -->
+                <button class="btn btn-outline-light btn-sm me-2" onclick="toggleDebugMode()" id="debugToggle">
+                    <i class="bi bi-bug"></i> Debug Mode
+                </button>
+                
+                <!-- Toggle de tema -->
+                <button class="btn btn-outline-light btn-sm me-2" onclick="toggleTheme()">
+                    <i class="bi bi-moon-stars" id="themeIcon"></i>
+                </button>
+                
+                <!-- Toggle de reduced motion -->
+                <button class="btn btn-outline-light btn-sm" onclick="toggleReducedMotion()" id="motionToggle">
+                    <i class="bi bi-pause-circle"></i> Reduce Motion
+                </button>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Debug Info Panel -->
+    <div class="debug-info" id="debugInfo">
+        <div class="debug-item">Viewport: <span id="viewportSize">-</span></div>
+        <div class="debug-item">Container Support: <span id="containerSupport">-</span></div>
+        <div class="debug-item">:has() Support: <span id="hasSupport">-</span></div>
+        <div class="debug-item">Nesting Support: <span id="nestingSupport">-</span></div>
+    </div>
+    
+    <!-- ========================================
+         DEMOSTRACIÓN DE CONTAINER QUERIES
+         ======================================== -->
+    <main class="container-fluid py-4">
+        <div class="row">
+            <div class="col-12">
+                <div class="space-y-l">
+                    <!-- Título principal -->
+                    <div class="text-center mb-5">
+                        <h1 class="text-fluid-3xl fw-bold text-primary mb-3">
+                            Patrones Responsive Avanzados
+                        </h1>
+                        <p class="text-fluid-lg text-muted">
+                            Explorando Container Queries, CSS Nesting, :has() y @layer
+                        </p>
+                    </div>
+                    
+                    <!-- Sección 1: Container Queries Básicos -->
+                    <section class="mb-5">
+                        <h2 class="text-fluid-2xl fw-semibold mb-4">
+                            <i class="bi bi-bounding-box text-primary me-2"></i>
+                            Container Queries en Acción
+                        </h2>
+                        <p class="text-fluid-base text-muted mb-4">
+                            Redimensiona las columnas para ver cómo los componentes se adaptan a su contenedor, 
+                            no al viewport. Cada componente toma decisiones independientes basadas en su espacio disponible.
+                        </p>
+                        
+                        <div class="row g-4">
+                            <!-- Columna estrecha -->
+                            <div class="col-12 col-md-3">
+                                <div class="adaptive-component debug-container" data-container-size="Estrecho">
+                                    <h3 class="component-title">Componente Adaptativo</h3>
+                                    <div class="component-content">
+                                        En espacios estrechos, me reorganizo para maximizar la legibilidad. 
+                                        Los botones se apilan verticalmente y el texto se reduce.
+                                    </div>
+                                    <div class="component-actions d-flex">
+                                        <button class="btn btn-primary btn-sm">Acción</button>
+                                        <button class="btn btn-outline-secondary btn-sm">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna media -->
+                            <div class="col-12 col-md-5">
+                                <div class="adaptive-component debug-container" data-container-size="Medio">
+                                    <h3 class="component-title">Componente Adaptativo</h3>
+                                    <div class="component-content">
+                                        Con espacio medio, encuentro un equilibrio entre compacidad y comodidad. 
+                                        Los botones van en línea horizontal y tengo más espaciado interno.
+                                    </div>
+                                    <div class="component-actions d-flex">
+                                        <button class="btn btn-primary">Acción Principal</button>
+                                        <button class="btn btn-outline-secondary">Cancelar</button>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Columna amplia -->
+                            <div class="col-12 col-md-4">
+                                <div class="adaptive-component debug-container" data-container-size="Amplio">
+                                    <h3 class="component-title">Componente Adaptativo</h3>
+                                    <div class="component-content">
+                                        Con mucho espacio disponible, puedo expandirme cómodamente. 
+                                        Uso tipografía más grande, más espaciado interno, y un diseño más generoso 
+                                        que aprovecha el espacio disponible de manera elegante.
+                                    </div>
+                                    <div class="component-actions d-flex">
+                                        <button class="btn btn-primary">Acción Principal</button>
+                                        <button class="btn btn-outline-secondary">Secundaria</button>
+                                        <button class="btn btn-outline-info">Info</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Sección 2: Selector :has() y CSS Nesting -->
+                    <section class="mb-5">
+                        <h2 class="text-fluid-2xl fw-semibold mb-4">
+                            <i class="bi bi-search text-success me-2"></i>
+                            Selector :has() - El "Selector Padre"
+                        </h2>
+                        <p class="text-fluid-base text-muted mb-4">
+                            Las cards cambian su apariencia basándose en su contenido. Observa cómo diferentes 
+                            elementos internos afectan el estilo del contenedor padre.
+                        </p>
+                        
+                        <div class="row g-4">
+                            <!-- Card normal -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="smart-card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Tarea Normal</h4>
+                                        <p class="card-subtitle">Sin prioridad especial</p>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Esta es una tarea estándar sin características especiales. 
+                                            La card mantiene su apariencia normal.
+                                        </p>
+                                        <div class="card-actions">
+                                            <button class="btn btn-primary btn-sm">Ver Detalles</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card con imagen (usando :has()) -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="smart-card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Proyecto con Imagen</h4>
+                                        <p class="card-subtitle">Contiene elementos visuales</p>
+                                        <div class="card-image" style="width: 100%; height: 100px; background: linear-gradient(45deg, #6366f1, #8b5cf6); border-radius: 0.5rem; margin-top: 1rem;"></div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Esta card contiene una imagen, por lo que automáticamente 
+                                            recibe estilos especiales gracias al selector :has(.card-image).
+                                        </p>
+                                        <div class="card-actions">
+                                            <button class="btn btn-primary btn-sm">Ver Galería</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card de alta prioridad -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="smart-card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Tarea Urgente</h4>
+                                        <p class="card-subtitle">Requiere atención inmediata</p>
+                                        <div class="priority-high d-none">high-priority-marker</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Esta card tiene alta prioridad, detectada por el selector 
+                                            :has(.priority-high), y automáticamente recibe un borde rojo 
+                                            y otros estilos de alerta.
+                                        </p>
+                                        <div class="card-actions">
+                                            <button class="btn btn-danger btn-sm">Acción Urgente</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card completada -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="smart-card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Tarea Completada</h4>
+                                        <p class="card-subtitle">Finalizada exitosamente</p>
+                                        <div class="status-completed d-none">completed-marker</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Esta tarea está marcada como completada. El selector 
+                                            :has(.status-completed) la detecta y aplica estilos 
+                                            que indican su estado finalizado.
+                                        </p>
+                                        <div class="card-actions">
+                                            <button class="btn btn-success btn-sm">✓ Completada</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Card con prioridad media -->
+                            <div class="col-12 col-md-6 col-lg-4">
+                                <div class="smart-card">
+                                    <div class="card-header">
+                                        <h4 class="card-title">Tarea Importante</h4>
+                                        <p class="card-subtitle">Prioridad media</p>
+                                        <div class="priority-medium d-none">medium-priority-marker</div>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Prioridad media detectada por :has(.priority-medium). 
+                                            Recibe un borde amarillo para indicar importancia moderada.
+                                        </p>
+                                        <div class="card-actions">
+                                            <button class="btn btn-warning btn-sm">Programar</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Sección 3: Grid Adaptativo -->
+                    <section class="mb-5">
+                        <h2 class="text-fluid-2xl fw-semibold mb-4">
+                            <i class="bi bi-grid text-info me-2"></i>
+                            Grid Adaptativo con Container Queries
+                        </h2>
+                        <p class="text-fluid-base text-muted mb-4">
+                            Este grid cambia el número de columnas basándose en el ancho de su contenedor, 
+                            no del viewport. Redimensiona la ventana para ver la adaptación inteligente.
+                        </p>
+                        
+                        <div class="adaptive-grid debug-container" data-container-size="Grid Adaptativo">
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-cpu display-4 text-primary mb-3"></i>
+                                    <h6 class="card-title">Procesamiento</h6>
+                                    <p class="card-text small">Sistema optimizado</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-memory display-4 text-success mb-3"></i>
+                                    <h6 class="card-title">Memoria</h6>
+                                    <p class="card-text small">16GB disponibles</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-hdd display-4 text-warning mb-3"></i>
+                                    <h6 class="card-title">Almacenamiento</h6>
+                                    <p class="card-text small">1TB SSD</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-wifi display-4 text-info mb-3"></i>
+                                    <h6 class="card-title">Red</h6>
+                                    <p class="card-text small">1Gbps</p>
+                                </div>
+                            </div>
+                            <div class="card">
+                                <div class="card-body text-center">
+                                    <i class="bi bi-shield-check display-4 text-danger mb-3"></i>
+                                    <h6 class="card-title">Seguridad</h6>
+                                    <p class="card-text small">Nivel empresarial</p>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Sección 4: Componente de Estadísticas -->
+                    <section class="mb-5">
+                        <h2 class="text-fluid-2xl fw-semibold mb-4">
+                            <i class="bi bi-graph-up text-warning me-2"></i>
+                            Estadísticas Adaptativas
+                        </h2>
+                        <p class="text-fluid-base text-muted mb-4">
+                            Este componente reorganiza completamente su layout según el espacio disponible, 
+                            desde una columna en espacios pequeños hasta cuatro columnas con separadores en espacios amplios.
+                        </p>
+                        
+                        <div class="row g-4">
+                            <!-- Estadísticas en contenedor pequeño -->
+                            <div class="col-12 col-md-4">
+                                <h5 class="mb-3">Versión Compacta</h5>
+                                <div class="stats-component debug-container" data-container-size="Compacto">
+                                    <div class="stats-grid">
+                                        <div class="stat-item">
+                                            <span class="stat-value">1,429</span>
+                                            <div class="stat-label">Usuarios</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value">94.2%</span>
+                                            <div class="stat-label">Uptime</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value">$45.2K</span>
+                                            <div class="stat-label">Ingresos</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value">127</span>
+                                            <div class="stat-label">Proyectos</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <!-- Estadísticas en contenedor mediano -->
+                            <div class="col-12 col-md-8">
+                                <h5 class="mb-3">Versión Expandida</h5>
+                                <div class="stats-component debug-container" data-container-size="Expandido">
+                                    <div class="stats-grid">
+                                        <div class="stat-item">
+                                            <span class="stat-value">1,429</span>
+                                            <div class="stat-label">Usuarios Activos</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value">94.2%</span>
+                                            <div class="stat-label">Tiempo Actividad</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value">$45.2K</span>
+                                            <div class="stat-label">Ingresos Mensuales</div>
+                                        </div>
+                                        <div class="stat-item">
+                                            <span class="stat-value">127</span>
+                                            <div class="stat-label">Proyectos Activos</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                    
+                    <!-- Sección 5: Casos Edge y Debugging -->
+                    <section class="mb-5">
+                        <h2 class="text-fluid-2xl fw-semibold mb-4">
+                            <i class="bi bi-exclamation-triangle text-danger me-2"></i>
+                            Casos Edge y Debugging
+                        </h2>
+                        <p class="text-fluid-base text-muted mb-4">
+                            Demostración de técnicas para manejar situaciones especiales y debugging avanzado.
+                        </p>
+                        
+                        <div class="row g-4">
+                            <div class="col-12 col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Fallbacks para Navegadores Antiguos</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            El código incluye fallbacks automáticos para navegadores que no soportan 
+                                            container queries, usando @supports y media queries tradicionales.
+                                        </p>
+                                        <code class="d-block bg-light p-2 rounded">
+                                            @supports not (container-type: inline-size) {<br>
+                                            &nbsp;&nbsp;/* Fallback styles */<br>
+                                            }
+                                        </code>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="col-12 col-md-6">
+                                <div class="card">
+                                    <div class="card-header">
+                                        <h5 class="card-title">Accesibilidad Avanzada</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <p class="card-text">
+                                            Respeta las preferencias del usuario como reduced motion y high contrast, 
+                                            adaptando automáticamente la experiencia.
+                                        </p>
+                                        <div class="d-flex gap-2 mt-3">
+                                            <button class="btn btn-outline-primary btn-sm" onclick="toggleReducedMotion()">
+                                                Toggle Reduced Motion
+                                            </button>
+                                            <button class="btn btn-outline-secondary btn-sm" onclick="toggleHighContrast()">
+                                                Toggle High Contrast
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </main>
+    
+    <!-- ========================================
+         FOOTER CON INFORMACIÓN TÉCNICA
+         ======================================== -->
+    <footer class="bg-dark text-light py-4 mt-5">
+        <div class="container">
+            <div class="row">
+                <div class="col-12 col-md-8">
+                    <h6 class="fw-semibold mb-3">Técnicas Implementadas</h6>
+                    <div class="row g-3">
+                        <div class="col-6 col-lg-3">
+                            <small class="text-muted">Container Queries</small>
+                            <div id="containerQueriesStatus" class="fw-medium">Verificando...</div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <small class="text-muted">CSS :has()</small>
+                            <div id="hasSelectorStatus" class="fw-medium">Verificando...</div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <small class="text-muted">CSS Nesting</small>
+                            <div id="nestingStatus" class="fw-medium">Verificando...</div>
+                        </div>
+                        <div class="col-6 col-lg-3">
+                            <small class="text-muted">CSS @layer</small>
+                            <div id="layerStatus" class="fw-medium">Verificando...</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 col-md-4 text-md-end">
+                    <small class="text-muted">Bootstrap 5.3+ CSS Moderno</small>
+                    <div class="fw-medium">Patrones Responsive Avanzados</div>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ========================================
+        // SISTEMA DE DEBUGGING Y MONITOREO
+        // ========================================
+        
+        /**
+         * Clase principal para gestionar el sistema avanzado
+         * Implementa patrones de debugging profesional
+         */
+        class AdvancedCSSSystem {
+            constructor() {
+                this.debugMode = false;
+                this.theme = localStorage.getItem('advanced-theme') || 'light';
+                this.reducedMotion = false;
+                this.highContrast = false;
+                
+                this.init();
+            }
+            
+            /**
+             * Inicializa todos los sistemas
+             */
+            init() {
+                this.setupTheme();
+                this.detectFeatureSupport();
+                this.setupEventListeners();
+                this.startPerformanceMonitoring();
+                this.updateDebugInfo();
+                
+                console.log('🎯 Sistema CSS Avanzado inicializado');
+                console.log('📊 Detectando soporte para características modernas...');
+            }
+            
+            /**
+             * Detecta soporte para características CSS modernas
+             * Información crucial para debugging y fallbacks
+             */
+            detectFeatureSupport() {
+                const support = {
+                    containerQueries: this.supportsContainerQueries(),
+                    hasSelector: this.supportsHasSelector(),
+                    cssNesting: this.supportsCSSNesting(),
+                    cssLayers: this.supportsCSSLayers()
+                };
+                
+                // Actualizar UI con resultados
+                this.updateSupportStatus(support);
+                
+                // Logging para debugging
+                console.log('🔍 Soporte de características:', support);
+                
+                // Agregar clases al body para CSS condicional
+                Object.keys(support).forEach(feature => {
+                    document.body.classList.add(
+                        support[feature] ? `supports-${feature}` : `no-${feature}`
+                    );
+                });
+                
+                return support;
+            }
+            
+            /**
+             * Verifica soporte para Container Queries
+             */
+            supportsContainerQueries() {
+                return CSS.supports('container-type', 'inline-size');
+            }
+            
+            /**
+             * Verifica soporte para selector :has()
+             */
+            supportsHasSelector() {
+                try {
+                    return CSS.supports('selector(:has(*))');
+                } catch {
+                    return false;
+                }
+            }
+            
+            /**
+             * Verifica soporte para CSS Nesting
+             */
+            supportsCSSNesting() {
+                try {
+                    // Test simple de nesting
+                    const testStyle = document.createElement('style');
+                    testStyle.textContent = '.test { .nested { color: red; } }';
+                    document.head.appendChild(testStyle);
+                    
+                    const rules = testStyle.sheet?.cssRules || [];
+                    const hasNestedRule = Array.from(rules).some(rule => 
+                        rule.cssText.includes('.test .nested')
+                    );
+                    
+                    document.head.removeChild(testStyle);
+                    return hasNestedRule;
+                } catch {
+                    return false;
+                }
+            }
+            
+            /**
+             * Verifica soporte para CSS @layer
+             */
+            supportsCSSLayers() {
+                return CSS.supports('@supports', '@layer');
+            }
+            
+            /**
+             * Actualiza la UI con el estado del soporte
+             */
+            updateSupportStatus(support) {
+                const statusElements = {
+                    containerQueries: 'containerQueriesStatus',
+                    hasSelector: 'hasSelectorStatus',
+                    cssNesting: 'nestingStatus',
+                    cssLayers: 'layerStatus'
+                };
+                
+                Object.keys(statusElements).forEach(feature => {
+                    const element = document.getElementById(statusElements[feature]);
+                    if (element) {
+                        const isSupported = support[feature];
+                        element.textContent = isSupported ? '✅ Soportado' : '❌ No soportado';
+                        element.className = `fw-medium ${isSupported ? 'text-success' : 'text-danger'}`;
+                    }
+                });
+                
+                // Actualizar debug info
+                const debugElements = {
+                    containerSupport: support.containerQueries ? '✅' : '❌',
+                    hasSupport: support.hasSelector ? '✅' : '❌',
+                    nestingSupport: support.cssNesting ? '✅' : '❌'
+                };
+                
+                Object.keys(debugElements).forEach(id => {
+                    const element = document.getElementById(id);
+                    if (element) {
+                        element.textContent = debugElements[id];
+                    }
+                });
+            }
+            
+            /**
+             * Configura event listeners para interacciones
+             */
+            setupEventListeners() {
+                // Actualizar debug info en resize
+                let resizeTimeout;
+                window.addEventListener('resize', () => {
+                    clearTimeout(resizeTimeout);
+                    resizeTimeout = setTimeout(() => this.updateDebugInfo(), 100);
+                });
+                
+                // Monitorear cambios de container queries
+                if (this.supportsContainerQueries()) {
+                    this.setupContainerQueryMonitoring();
+                }
+            }
+            
+            /**
+             * Monitorea cambios en container queries para debugging
+             */
+            setupContainerQueryMonitoring() {
+                const containers = document.querySelectorAll('[data-container-size]');
+                
+                containers.forEach(container => {
+                    // Crear ResizeObserver para monitorear cambios
+                    const observer = new ResizeObserver(entries => {
+                        entries.forEach(entry => {
+                            const width = entry.contentRect.width;
+                            const containerName = container.dataset.containerSize;
+                            
+                            console.log(`📏 Container "${containerName}": ${width}px`);
+                            
+                            // Actualizar indicador visual
+                            if (container.classList.contains('debug-container')) {
+                                container.dataset.containerSize = `${containerName} (${width}px)`;
+                            }
+                        });
+                    });
+                    
+                    observer.observe(container);
+                });
+            }
+            
+            /**
+             * Inicia monitoreo de performance
+             */
+            startPerformanceMonitoring() {
+                // Marcar punto de inicio
+                performance.mark('advanced-css-start');
+                
+                // Monitorear tiempo de primera pintura
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        console.log(`🎨 ${entry.name}: ${entry.startTime.toFixed(2)}ms`);
+                    }
+                }).observe({ entryTypes: ['paint'] });
+                
+                // Monitorear largest contentful paint
+                new PerformanceObserver((list) => {
+                    for (const entry of list.getEntries()) {
+                        console.log(`📊 LCP: ${entry.startTime.toFixed(2)}ms`);
+                    }
+                }).observe({ entryTypes: ['largest-contentful-paint'] });
+            }
+            
+            /**
+             * Actualiza información de debug
+             */
+            updateDebugInfo() {
+                const viewportElement = document.getElementById('viewportSize');
+                if (viewportElement) {
+                    viewportElement.textContent = `${window.innerWidth}x${window.innerHeight}`;
+                }
+            }
+            
+            /**
+             * Toggle del modo debug
+             */
+            toggleDebugMode() {
+                this.debugMode = !this.debugMode;
+                document.body.classList.toggle('debug-mode', this.debugMode);
+                
+                const button = document.getElementById('debugToggle');
+                if (button) {
+                    button.innerHTML = this.debugMode 
+                        ? '<i class="bi bi-bug-fill"></i> Debug ON'
+                        : '<i class="bi bi-bug"></i> Debug Mode';
+                    button.classList.toggle('btn-warning', this.debugMode);
+                    button.classList.toggle('btn-outline-light', !this.debugMode);
+                }
+                
+                console.log(`🐛 Debug mode: ${this.debugMode ? 'ON' : 'OFF'}`);
+            }
+            
+            /**
+             * Toggle del tema
+             */
+            toggleTheme() {
+                this.theme = this.theme === 'dark' ? 'light' : 'dark';
+                document.documentElement.setAttribute('data-bs-theme', this.theme);
+                localStorage.setItem('advanced-theme', this.theme);
+                
+                const icon = document.getElementById('themeIcon');
+                if (icon) {
+                    icon.className = this.theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+                }
+                
+                console.log(`🎨 Tema cambiado a: ${this.theme}`);
+            }
+            
+            /**
+             * Setup inicial del tema
+             */
+            setupTheme() {
+                document.documentElement.setAttribute('data-bs-theme', this.theme);
+                const icon = document.getElementById('themeIcon');
+                if (icon) {
+                    icon.className = this.theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+                }
+            }
+            
+            /**
+             * Toggle de reduced motion
+             */
+            toggleReducedMotion() {
+                this.reducedMotion = !this.reducedMotion;
+                
+                if (this.reducedMotion) {
+                    document.body.style.setProperty('--animation-duration', '0.01ms');
+                    document.body.style.setProperty('--transition-duration', '0.01ms');
+                } else {
+                    document.body.style.removeProperty('--animation-duration');
+                    document.body.style.removeProperty('--transition-duration');
+                }
+                
+                const button = document.getElementById('motionToggle');
+                if (button) {
+                    button.innerHTML = this.reducedMotion
+                        ? '<i class="bi bi-play-circle"></i> Enable Motion'
+                        : '<i class="bi bi-pause-circle"></i> Reduce Motion';
+                }
+                
+                console.log(`♿ Reduced motion: ${this.reducedMotion ? 'ON' : 'OFF'}`);
+            }
+            
+            /**
+             * Toggle de high contrast
+             */
+            toggleHighContrast() {
+                this.highContrast = !this.highContrast;
+                document.body.classList.toggle('high-contrast-mode', this.highContrast);
+                
+                console.log(`🔍 High contrast: ${this.highContrast ? 'ON' : 'OFF'}`);
+            }
+            
+            /**
+             * Función de debugging para inspeccionar container queries
+             */
+            debugContainerQueries() {
+                const containers = document.querySelectorAll('[style*="container-type"]');
+                const info = Array.from(containers).map(container => ({
+                    element: container,
+                    containerType: getComputedStyle(container).containerType,
+                    containerName: getComputedStyle(container).containerName,
+                    width: container.getBoundingClientRect().width,
+                    height: container.getBoundingClientRect().height
+                }));
+                
+                console.table(info);
+                return info;
+            }
+        }
+        
+        // ========================================
+        // FUNCIONES GLOBALES PARA INTERACCIÓN
+        // ========================================
+        
+        let advancedSystem;
+        
+        function toggleDebugMode() {
+            advancedSystem.toggleDebugMode();
+        }
+        
+        function toggleTheme() {
+            advancedSystem.toggleTheme();
+        }
+        
+        function toggleReducedMotion() {
+            advancedSystem.toggleReducedMotion();
+        }
+        
+        function toggleHighContrast() {
+            advancedSystem.toggleHighContrast();
+        }
+        
+        // ========================================
+        // INICIALIZACIÓN DEL SISTEMA
+        // ========================================
+        
+        document.addEventListener('DOMContentLoaded', function() {
+            // Inicializar sistema avanzado
+            advancedSystem = new AdvancedCSSSystem();
+            
+            // Funciones de debugging disponibles globalmente
+            window.debugContainerQueries = () => advancedSystem.debugContainerQueries();
+            window.advancedSystem = advancedSystem;
+            
+            // Mensaje de bienvenida para desarrolladores
+            console.log(`
+🚀 CSS Moderno Lab inicializado
+
+🔧 Funciones de debugging disponibles:
+- debugContainerQueries() - Inspecciona todos los containers
+- advancedSystem.detectFeatureSupport() - Re-detecta soporte
+- advancedSystem.toggleDebugMode() - Toggle debug visual
+
+📋 Características implementadas:
+- Container Queries con fallbacks
+- CSS Nesting moderno  
+- Selector :has() con detección
+- Sistema @layer para cascada
+- Espaciado y tipografía fluidos
+- Debugging visual avanzado
+- Monitoreo de performance
+
+💡 Tip: Abre DevTools y redimensiona para ver container queries en acción!
+            `);
+            
+            // Performance mark final
+            performance.mark('advanced-css-end');
+            performance.measure('advanced-css-total', 'advanced-css-start', 'advanced-css-end');
+            
+            const loadTime = performance.getEntriesByName('advanced-css-total')[0];
+            console.log(`⚡ Tiempo total de inicialización: ${loadTime.duration.toFixed(2)}ms`);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timing Functions CSS - Demostración Interactiva</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 2rem;
+            font-size: 2.5rem;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .timing-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 3rem;
+        }
+        
+        .timing-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            border: 2px solid transparent;
+            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+        }
+        
+        .timing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            border-color: #667eea;
+        }
+        
+        .timing-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 0.5rem;
+        }
+        
+        .timing-function {
+            font-family: 'Courier New', monospace;
+            background: #f8f9fa;
+            padding: 0.5rem;
+            border-radius: 5px;
+            font-size: 0.9rem;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+        
+        .animation-track {
+            height: 60px;
+            background: linear-gradient(90deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 30px;
+            position: relative;
+            overflow: hidden;
+            cursor: pointer;
+            border: 2px solid #dee2e6;
+        }
+        
+        .animation-ball {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(45deg, #ff6b6b, #ee5a52);
+            border-radius: 50%;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+            box-shadow: 0 5px 15px rgba(255, 107, 107, 0.4);
+            transition: transform 2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.8rem;
+        }
+        
+        /* Timing Functions Específicas */
+        .linear { transition-timing-function: linear; }
+        .ease { transition-timing-function: ease; }
+        .ease-in { transition-timing-function: ease-in; }
+        .ease-out { transition-timing-function: ease-out; }
+        .ease-in-out { transition-timing-function: ease-in-out; }
+        .bounce { transition-timing-function: cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .elastic { transition-timing-function: cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .smooth { transition-timing-function: cubic-bezier(0.25, 0.46, 0.45, 0.94); }
+        
+        .controls {
+            text-align: center;
+            margin: 2rem 0;
+        }
+        
+        .btn {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(102, 126, 234, 0.4);
+        }
+        
+        .performance-tips {
+            background: linear-gradient(135deg, #ffeaa7, #fdcb6e);
+            padding: 1.5rem;
+            border-radius: 15px;
+            margin-top: 2rem;
+        }
+        
+        .performance-tips h3 {
+            color: #2d3436;
+            margin-bottom: 1rem;
+        }
+        
+        .tip {
+            background: rgba(255, 255, 255, 0.8);
+            padding: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #e17055;
+        }
+        
+        .animated {
+            transform: translateX(calc(100% - 60px));
+        }
+        
+        @media (max-width: 768px) {
+            .timing-demo {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .container {
+                padding: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎬 Timing Functions CSS Interactivas</h1>
+        
+        <div class="timing-demo">
+            <div class="timing-card">
+                <div class="timing-title">Linear</div>
+                <div class="timing-function">transition-timing-function: linear;</div>
+                <div class="animation-track">
+                    <div class="animation-ball linear">📐</div>
+                </div>
+            </div>
+            
+            <div class="timing-card">
+                <div class="timing-title">Ease (Default)</div>
+                <div class="timing-function">transition-timing-function: ease;</div>
+                <div class="animation-track">
+                    <div class="animation-ball ease">🎯</div>
+                </div>
+            </div>
+            
+            <div class="timing-card">
+                <div class="timing-title">Ease-In</div>
+                <div class="timing-function">transition-timing-function: ease-in;</div>
+                <div class="animation-track">
+                    <div class="animation-ball ease-in">🚀</div>
+                </div>
+            </div>
+            
+            <div class="timing-card">
+                <div class="timing-title">Ease-Out</div>
+                <div class="timing-function">transition-timing-function: ease-out;</div>
+                <div class="animation-track">
+                    <div class="animation-ball ease-out">🛬</div>
+                </div>
+            </div>
+            
+            <div class="timing-card">
+                <div class="timing-title">Ease-In-Out</div>
+                <div class="timing-function">transition-timing-function: ease-in-out;</div>
+                <div class="animation-track">
+                    <div class="animation-ball ease-in-out">🌊</div>
+                </div>
+            </div>
+            
+            <div class="timing-card">
+                <div class="timing-title">Bounce</div>
+                <div class="timing-function">cubic-bezier(0.68, -0.55, 0.265, 1.55)</div>
+                <div class="animation-track">
+                    <div class="animation-ball bounce">⚽</div>
+                </div>
+            </div>
+            
+            <div class="timing-card">
+                <div class="timing-title">Elastic</div>
+                <div class="timing-function">cubic-bezier(0.175, 0.885, 0.32, 1.275)</div>
+                <div class="animation-track">
+                    <div class="animation-ball elastic">🎈</div>
+                </div>
+            </div>
+            
+            <div class="timing-card">
+                <div class="timing-title">Smooth</div>
+                <div class="timing-function">cubic-bezier(0.25, 0.46, 0.45, 0.94)</div>
+                <div class="animation-track">
+                    <div class="animation-ball smooth">✨</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="controls">
+            <button class="btn" onclick="animateAll()">🎬 Animar Todas</button>
+            <button class="btn" onclick="resetAll()">🔄 Reiniciar</button>
+        </div>
+        
+        <div class="performance-tips">
+            <h3>💡 Tips de Performance para Animaciones</h3>
+            <div class="tip">
+                <strong>🎯 Solo anima propiedades GPU-friendly:</strong> transform, opacity, filter. Evita width, height, top, left.
+            </div>
+            <div class="tip">
+                <strong>🚀 Usa will-change:</strong> Prepara al navegador para animaciones con will-change: transform.
+            </div>
+            <div class="tip">
+                <strong>📱 Respeta prefer-reduced-motion:</strong> Siempre incluye @media (prefers-reduced-motion: reduce).
+            </div>
+            <div class="tip">
+                <strong>⚡ 60fps es el objetivo:</strong> Mantén animaciones por debajo de 16.67ms por frame.
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function animateAll() {
+            const balls = document.querySelectorAll('.animation-ball');
+            balls.forEach(ball => {
+                ball.classList.add('animated');
+            });
+        }
+        
+        function resetAll() {
+            const balls = document.querySelectorAll('.animation-ball');
+            balls.forEach(ball => {
+                ball.classList.remove('animated');
+            });
+        }
+        
+        // Animar individualmente al hacer clic
+        document.querySelectorAll('.animation-track').forEach(track => {
+            track.addEventListener('click', function() {
+                const ball = this.querySelector('.animation-ball');
+                ball.classList.toggle('animated');
+            });
+        });
+        
+        // Auto-demo cada 5 segundos
+        setInterval(() => {
+            resetAll();
+            setTimeout(animateAll, 500);
+        }, 5000);
+    </script>
+</body>
+</html>

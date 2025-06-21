@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Día 8: CSS Moderno y Container Queries</title>
+    <style>
+        /* =================================================================
+           CONFIGURACIÓN BASE Y CAPAS CSS
+           ================================================================= */
+        
+        /* Definimos las capas para mejor organización */
+        @layer reset, base, layout, components, utilities;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+        
+        @layer base {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                color: #333;
+                background: #f8f9fa;
+            }
+            
+            h1, h2, h3 {
+                margin-bottom: 1rem;
+            }
+            
+            p {
+                margin-bottom: 1rem;
+            }
+        }
+        
+        @layer layout {
+            .container {
+                max-width: 1200px;
+                margin: 0 auto;
+                padding: 2rem;
+            }
+            
+            .grid {
+                display: grid;
+                gap: 2rem;
+                grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            }
+        }
+        
+        /* =================================================================
+           DEMOSTRACIÓN DE CONTAINER QUERIES
+           ================================================================= */
+        
+        @layer components {
+            /* Configuración del contenedor de consulta */
+            .card-container {
+                container-type: inline-size;
+                container-name: product-card;
+                border: 2px dashed #6c757d;
+                padding: 1rem;
+                margin-bottom: 2rem;
+                background: white;
+                border-radius: 8px;
+            }
+            
+            .card {
+                background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+                color: white;
+                padding: 1.5rem;
+                border-radius: 8px;
+                display: flex;
+                flex-direction: column;
+                gap: 1rem;
+                transition: all 0.3s ease;
+                
+                /* CSS Nesting en acción */
+                & .card-image {
+                    width: 100%;
+                    height: 200px;
+                    background: rgba(255, 255, 255, 0.2);
+                    border-radius: 6px;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-size: 3rem;
+                }
+                
+                & .card-content {
+                    flex: 1;
+                    
+                    & h3 {
+                        margin-bottom: 0.5rem;
+                        font-size: 1.25rem;
+                    }
+                    
+                    & p {
+                        opacity: 0.9;
+                        font-size: 0.9rem;
+                    }
+                }
+                
+                & .card-actions {
+                    display: flex;
+                    gap: 0.5rem;
+                    flex-wrap: wrap;
+                    
+                    & .btn {
+                        padding: 0.5rem 1rem;
+                        border: 1px solid rgba(255, 255, 255, 0.3);
+                        background: rgba(255, 255, 255, 0.1);
+                        color: white;
+                        border-radius: 4px;
+                        text-decoration: none;
+                        font-size: 0.85rem;
+                        transition: all 0.2s ease;
+                        
+                        &:hover {
+                            background: rgba(255, 255, 255, 0.2);
+                            transform: translateY(-1px);
+                        }
+                    }
+                }
+            }
+            
+            /* ¡AQUÍ ESTÁ LA MAGIA! - Container Queries */
+            @container product-card (min-width: 500px) {
+                .card {
+                    flex-direction: row;
+                    align-items: center;
+                    
+                    & .card-image {
+                        width: 150px;
+                        height: 120px;
+                        flex-shrink: 0;
+                    }
+                    
+                    & .card-content h3 {
+                        font-size: 1.5rem;
+                    }
+                }
+            }
+            
+            @container product-card (min-width: 700px) {
+                .card {
+                    & .card-image {
+                        width: 200px;
+                        height: 150px;
+                    }
+                    
+                    & .card-actions {
+                        flex-direction: column;
+                        
+                        & .btn {
+                            text-align: center;
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           DEMOSTRACIÓN DEL SELECTOR :has()
+           ================================================================= */
+        
+        @layer components {
+            .notification-area {
+                background: white;
+                border-radius: 8px;
+                padding: 1.5rem;
+                margin-bottom: 2rem;
+                border: 1px solid #dee2e6;
+                
+                /* Si tiene notificaciones urgentes, cambia el estilo */
+                &:has(.notification--urgent) {
+                    border-color: #dc3545;
+                    background: #fff5f5;
+                    box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.1);
+                }
+                
+                /* Si tiene notificaciones de éxito, cambia el estilo */
+                &:has(.notification--success) {
+                    border-color: #28a745;
+                    background: #f8fff9;
+                }
+            }
+            
+            .notification {
+                padding: 1rem;
+                margin-bottom: 1rem;
+                border-radius: 6px;
+                border-left: 4px solid #6c757d;
+                
+                &--urgent {
+                    border-left-color: #dc3545;
+                    background: #f8d7da;
+                    color: #721c24;
+                    animation: pulse-urgent 2s infinite;
+                }
+                
+                &--success {
+                    border-left-color: #28a745;
+                    background: #d4edda;
+                    color: #155724;
+                }
+                
+                &:last-child {
+                    margin-bottom: 0;
+                }
+            }
+        }
+        
+        /* =================================================================
+           ANIMACIONES Y UTILIDADES
+           ================================================================= */
+        
+        @layer utilities {
+            .demo-controls {
+                background: white;
+                padding: 1.5rem;
+                border-radius: 8px;
+                margin-bottom: 2rem;
+                border: 1px solid #dee2e6;
+                
+                & label {
+                    display: block;
+                    margin-bottom: 0.5rem;
+                    font-weight: 600;
+                }
+                
+                & input[type="range"] {
+                    width: 100%;
+                    margin-bottom: 1rem;
+                }
+                
+                & .current-width {
+                    font-family: monospace;
+                    background: #f8f9fa;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 4px;
+                    font-size: 0.85rem;
+                }
+            }
+            
+            @keyframes pulse-urgent {
+                0%, 100% {
+                    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.4);
+                }
+                50% {
+                    box-shadow: 0 0 0 8px rgba(220, 53, 69, 0);
+                }
+            }
+        }
+        
+        /* Información visual para entender qué está pasando */
+        .info-panel {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .info-panel h3 {
+            color: #1565c0;
+            margin-bottom: 1rem;
+        }
+        
+        .info-panel code {
+            background: rgba(33, 150, 243, 0.1);
+            padding: 0.2rem 0.4rem;
+            border-radius: 3px;
+            font-family: 'Courier New', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🚀 Día 8: CSS Moderno y Container Queries</h1>
+        
+        <div class="info-panel">
+            <h3>📚 Conceptos que estamos aprendiendo:</h3>
+            <p><strong>Container Queries:</strong> Permiten que los componentes se adapten al tamaño de su contenedor padre, no del viewport.</p>
+            <p><strong>CSS Nesting:</strong> Escribir CSS anidado sin necesidad de preprocessadores.</p>
+            <p><strong>:has() Selector:</strong> Seleccionar elementos padre basándose en sus elementos hijos.</p>
+            <p><strong>@layer:</strong> Control explícito de la cascada CSS para mejor organización.</p>
+        </div>
+        
+        <!-- Demostración Interactive de Container Queries -->
+        <section>
+            <h2>🎛️ Demostración Interactiva: Container Queries</h2>
+            
+            <div class="demo-controls">
+                <label for="container-width">Ancho del Contenedor: <span class="current-width" id="width-display">600px</span></label>
+                <input type="range" id="container-width" min="300" max="900" value="600" step="10">
+                <p><em>Mueve el deslizador y observa cómo la tarjeta se adapta al tamaño del contenedor, no de la ventana.</em></p>
+            </div>
+            
+            <div class="card-container" id="demo-container">
+                <div class="card">
+                    <div class="card-image">🖼️</div>
+                    <div class="card-content">
+                        <h3>Producto Innovador</h3>
+                        <p>Esta tarjeta se adapta automáticamente usando Container Queries. Observa cómo cambia su layout cuando cambias el ancho del contenedor.</p>
+                    </div>
+                    <div class="card-actions">
+                        <a href="#" class="btn">Ver Detalles</a>
+                        <a href="#" class="btn">Comprar</a>
+                        <a href="#" class="btn">Favoritos</a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Demostración del Selector :has() -->
+        <section>
+            <h2>🎯 Demostración: Selector :has()</h2>
+            
+            <p>El área de notificaciones cambia su apariencia basándose en el tipo de notificaciones que contiene:</p>
+            
+            <div class="notification-area">
+                <div class="notification">
+                    ℹ️ Esta es una notificación normal.
+                </div>
+                <div class="notification notification--success">
+                    ✅ ¡Operación completada exitosamente!
+                </div>
+            </div>
+            
+            <div class="notification-area">
+                <div class="notification notification--urgent">
+                    ⚠️ ¡Atención! Esta es una notificación urgente.
+                </div>
+                <div class="notification">
+                    ℹ️ Notificación adicional en el mismo contenedor.
+                </div>
+            </div>
+            
+            <div class="info-panel">
+                <h3>🔍 Cómo funciona el :has()</h3>
+                <p>El contenedor con la clase <code>.notification-area:has(.notification--urgent)</code> automáticamente recibe estilos especiales cuando contiene una notificación urgente.</p>
+                <p>Esto era imposible antes sin JavaScript. ¡Ahora es CSS puro!</p>
+            </div>
+        </section>
+        
+        <section>
+            <h2>📝 Código de Ejemplo: CSS Nesting</h2>
+            <div class="info-panel">
+                <h3>Antes (CSS tradicional):</h3>
+                <pre><code>.card { background: blue; }
+.card .card-title { font-size: 1.5rem; }
+.card .card-title:hover { color: red; }</code></pre>
+                
+                <h3>Ahora (CSS Nesting):</h3>
+                <pre><code>.card {
+    background: blue;
+    
+    & .card-title {
+        font-size: 1.5rem;
+        
+        &:hover {
+            color: red;
+        }
+    }
+}</code></pre>
+            </div>
+        </section>
+    </div>
+    
+    <script>
+        // JavaScript para la demostración interactiva
+        const containerWidthSlider = document.getElementById('container-width');
+        const demoContainer = document.getElementById('demo-container');
+        const widthDisplay = document.getElementById('width-display');
+        
+        containerWidthSlider.addEventListener('input', function() {
+            const width = this.value + 'px';
+            demoContainer.style.width = width;
+            widthDisplay.textContent = width;
+        });
+        
+        // Configuración inicial
+        demoContainer.style.width = containerWidthSlider.value + 'px';
+        
+        // Agregar información de debugging para entender container queries
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const width = Math.round(entry.contentRect.width);
+                console.log(`Container width: ${width}px`);
+                
+                // Mostrar en qué breakpoint estamos
+                if (width >= 700) {
+                    console.log('✅ Container query activa: min-width 700px');
+                } else if (width >= 500) {
+                    console.log('✅ Container query activa: min-width 500px');
+                } else {
+                    console.log('📱 Layout móvil (sin container queries)');
+                }
+            }
+        });
+        
+        observer.observe(demoContainer);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1145 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Pestañas Adaptativas con Container Queries</title>
+    <style>
+        /* =================================================================
+           SISTEMA BASE: TOKENS Y FUNDAMENTOS PARA PESTAÑAS
+           ================================================================= */
+        
+        @layer reset, tokens, base, tab-components, adaptive-behavior, interactions;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+        
+        @layer tokens {
+            :root {
+                /* Tokens específicos para sistemas de pestañas */
+                --tab-bg: #ffffff;
+                --tab-bg-active: #3b82f6;
+                --tab-bg-hover: #f1f5f9;
+                --tab-border: #e2e8f0;
+                --tab-border-active: #3b82f6;
+                --tab-text: #64748b;
+                --tab-text-active: #ffffff;
+                --tab-text-hover: #334155;
+                
+                /* Tokens de espaciado para pestañas */
+                --tab-padding-xs: 0.5rem;
+                --tab-padding-sm: 0.75rem;
+                --tab-padding-md: 1rem;
+                --tab-padding-lg: 1.25rem;
+                --tab-padding-xl: 1.5rem;
+                
+                /* Tokens de tipografía */
+                --tab-font-xs: 0.75rem;
+                --tab-font-sm: 0.875rem;
+                --tab-font-md: 1rem;
+                --tab-font-lg: 1.125rem;
+                
+                /* Tokens de animación */
+                --tab-transition-fast: 0.15s ease-out;
+                --tab-transition-medium: 0.3s ease-out;
+                --tab-transition-slow: 0.5s ease-out;
+                
+                /* Tokens de sombra y elevación */
+                --tab-shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+                --tab-shadow-md: 0 4px 6px rgba(0,0,0,0.07);
+                --tab-shadow-lg: 0 10px 15px rgba(0,0,0,0.1);
+                
+                /* Tokens para estados colapsados */
+                --tab-dropdown-bg: #ffffff;
+                --tab-dropdown-border: #e2e8f0;
+                --tab-dropdown-shadow: 0 10px 25px rgba(0,0,0,0.15);
+                
+                /* Tokens de z-index */
+                --tab-z-dropdown: 1000;
+                --tab-z-overlay: 1010;
+            }
+        }
+        
+        @layer base {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                background: #f8fafc;
+                color: #334155;
+                padding: 2rem;
+            }
+            
+            .demo-section {
+                background: white;
+                border: 2px dashed var(--tab-border);
+                border-radius: 1rem;
+                padding: var(--tab-padding-xl);
+                margin-bottom: var(--tab-padding-xl);
+                
+                /* Cada sección de demo es un contexto de container query */
+                container-type: inline-size;
+                container-name: tab-container;
+            }
+            
+            .demo-label {
+                background: var(--tab-bg-active);
+                color: white;
+                padding: var(--tab-padding-sm) var(--tab-padding-md);
+                border-radius: 0.5rem;
+                font-size: var(--tab-font-sm);
+                font-weight: 600;
+                margin-bottom: var(--tab-padding-lg);
+                display: inline-block;
+            }
+        }
+        
+        /* =================================================================
+           COMPONENTE PRINCIPAL: SISTEMA DE PESTAÑAS ADAPTATIVAS
+           ================================================================= */
+        
+        @layer tab-components {
+            .adaptive-tabs {
+                /* El sistema de pestañas es su propio contexto de container query */
+                container-type: inline-size;
+                container-name: adaptive-tabs;
+                
+                background: var(--tab-bg);
+                border: 1px solid var(--tab-border);
+                border-radius: 0.75rem;
+                box-shadow: var(--tab-shadow-sm);
+                overflow: hidden;
+                
+                /* Estructura del componente */
+                & .tab-header {
+                    position: relative;
+                    background: var(--tab-bg);
+                    border-bottom: 1px solid var(--tab-border);
+                    
+                    /* Lista de pestañas */
+                    & .tab-list {
+                        list-style: none;
+                        display: flex;
+                        margin: 0;
+                        padding: 0;
+                        position: relative;
+                        
+                        /* Scroll horizontal suave por defecto */
+                        overflow-x: auto;
+                        scroll-behavior: smooth;
+                        scrollbar-width: none; /* Firefox */
+                        
+                        &::-webkit-scrollbar {
+                            display: none; /* Chrome/Safari */
+                        }
+                        
+                        /* Items de pestaña */
+                        & .tab-item {
+                            flex-shrink: 0;
+                            position: relative;
+                            
+                            & .tab-button {
+                                background: none;
+                                border: none;
+                                padding: var(--tab-padding-md) var(--tab-padding-lg);
+                                color: var(--tab-text);
+                                font-size: var(--tab-font-md);
+                                font-weight: 500;
+                                cursor: pointer;
+                                transition: all var(--tab-transition-fast);
+                                white-space: nowrap;
+                                position: relative;
+                                display: flex;
+                                align-items: center;
+                                gap: var(--tab-padding-sm);
+                                
+                                /* Icono de pestaña */
+                                & .tab-icon {
+                                    font-size: var(--tab-font-sm);
+                                    opacity: 0.7;
+                                    transition: opacity var(--tab-transition-fast);
+                                }
+                                
+                                /* Badge/contador en pestaña */
+                                & .tab-badge {
+                                    background: var(--tab-text);
+                                    color: white;
+                                    font-size: var(--tab-font-xs);
+                                    font-weight: 600;
+                                    padding: 0.125rem 0.375rem;
+                                    border-radius: 0.75rem;
+                                    min-width: 1.25rem;
+                                    text-align: center;
+                                    line-height: 1;
+                                }
+                                
+                                /* Estados de interacción */
+                                &:hover {
+                                    color: var(--tab-text-hover);
+                                    background: var(--tab-bg-hover);
+                                    
+                                    & .tab-icon {
+                                        opacity: 1;
+                                    }
+                                }
+                                
+                                &:focus-visible {
+                                    outline: 2px solid var(--tab-bg-active);
+                                    outline-offset: -2px;
+                                    z-index: 1;
+                                }
+                                
+                                /* Estado activo */
+                                &.active {
+                                    color: var(--tab-text-active);
+                                    background: var(--tab-bg-active);
+                                    
+                                    & .tab-icon {
+                                        opacity: 1;
+                                    }
+                                    
+                                    & .tab-badge {
+                                        background: rgba(255,255,255,0.2);
+                                        color: white;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    /* Controles de navegación para scroll */
+                    & .tab-nav-controls {
+                        position: absolute;
+                        top: 0;
+                        right: 0;
+                        height: 100%;
+                        display: none; /* Oculto por defecto, se muestra según container queries */
+                        align-items: center;
+                        background: linear-gradient(90deg, transparent, var(--tab-bg) 30%);
+                        padding-left: var(--tab-padding-xl);
+                        padding-right: var(--tab-padding-md);
+                        
+                        & .nav-button {
+                            background: var(--tab-bg);
+                            border: 1px solid var(--tab-border);
+                            color: var(--tab-text);
+                            width: 32px;
+                            height: 32px;
+                            border-radius: 0.375rem;
+                            cursor: pointer;
+                            transition: all var(--tab-transition-fast);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            font-size: var(--tab-font-sm);
+                            margin-left: var(--tab-padding-xs);
+                            
+                            &:hover {
+                                background: var(--tab-bg-hover);
+                                border-color: var(--tab-border-active);
+                            }
+                            
+                            &:disabled {
+                                opacity: 0.5;
+                                cursor: not-allowed;
+                            }
+                        }
+                    }
+                    
+                    /* Dropdown toggle para estado colapsado */
+                    & .tab-dropdown-toggle {
+                        display: none; /* Oculto por defecto */
+                        width: 100%;
+                        background: var(--tab-bg);
+                        border: none;
+                        padding: var(--tab-padding-md) var(--tab-padding-lg);
+                        color: var(--tab-text);
+                        font-size: var(--tab-font-md);
+                        font-weight: 500;
+                        cursor: pointer;
+                        transition: all var(--tab-transition-fast);
+                        text-align: left;
+                        
+                        &:hover {
+                            background: var(--tab-bg-hover);
+                        }
+                        
+                        & .toggle-content {
+                            display: flex;
+                            align-items: center;
+                            justify-content: space-between;
+                            
+                            & .current-tab {
+                                display: flex;
+                                align-items: center;
+                                gap: var(--tab-padding-sm);
+                                
+                                & .tab-icon {
+                                    font-size: var(--tab-font-sm);
+                                }
+                            }
+                            
+                            & .dropdown-arrow {
+                                font-size: var(--tab-font-sm);
+                                transition: transform var(--tab-transition-fast);
+                            }
+                        }
+                        
+                        &.open .dropdown-arrow {
+                            transform: rotate(180deg);
+                        }
+                    }
+                    
+                    /* Menú dropdown para estado colapsado */
+                    & .tab-dropdown-menu {
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        right: 0;
+                        background: var(--tab-dropdown-bg);
+                        border: 1px solid var(--tab-dropdown-border);
+                        border-top: none;
+                        border-radius: 0 0 0.75rem 0.75rem;
+                        box-shadow: var(--tab-dropdown-shadow);
+                        z-index: var(--tab-z-dropdown);
+                        max-height: 300px;
+                        overflow-y: auto;
+                        opacity: 0;
+                        visibility: hidden;
+                        transform: translateY(-10px);
+                        transition: all var(--tab-transition-medium);
+                        
+                        &.open {
+                            opacity: 1;
+                            visibility: visible;
+                            transform: translateY(0);
+                        }
+                        
+                        & .dropdown-item {
+                            padding: var(--tab-padding-sm) var(--tab-padding-lg);
+                            color: var(--tab-text);
+                            cursor: pointer;
+                            transition: all var(--tab-transition-fast);
+                            display: flex;
+                            align-items: center;
+                            gap: var(--tab-padding-sm);
+                            border-bottom: 1px solid var(--tab-border);
+                            
+                            &:last-child {
+                                border-bottom: none;
+                            }
+                            
+                            & .tab-icon {
+                                font-size: var(--tab-font-sm);
+                                opacity: 0.7;
+                            }
+                            
+                            & .tab-badge {
+                                background: var(--tab-text);
+                                color: white;
+                                font-size: var(--tab-font-xs);
+                                font-weight: 600;
+                                padding: 0.125rem 0.375rem;
+                                border-radius: 0.75rem;
+                                min-width: 1.25rem;
+                                text-align: center;
+                                margin-left: auto;
+                            }
+                            
+                            &:hover {
+                                background: var(--tab-bg-hover);
+                                color: var(--tab-text-hover);
+                                
+                                & .tab-icon {
+                                    opacity: 1;
+                                }
+                            }
+                            
+                            &.active {
+                                background: var(--tab-bg-active);
+                                color: var(--tab-text-active);
+                                
+                                & .tab-icon {
+                                    opacity: 1;
+                                }
+                                
+                                & .tab-badge {
+                                    background: rgba(255,255,255,0.2);
+                                }
+                            }
+                        }
+                    }
+                }
+                
+                /* Contenido de las pestañas */
+                & .tab-content {
+                    padding: var(--tab-padding-xl);
+                    min-height: 200px;
+                    
+                    & .tab-panel {
+                        display: none;
+                        animation: fadeIn var(--tab-transition-medium) ease-out;
+                        
+                        &.active {
+                            display: block;
+                        }
+                        
+                        & h3 {
+                            margin-bottom: var(--tab-padding-md);
+                            color: #1e293b;
+                            font-weight: 600;
+                        }
+                        
+                        & p {
+                            color: #64748b;
+                            line-height: 1.6;
+                            margin-bottom: var(--tab-padding-sm);
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           COMPORTAMIENTO ADAPTATIVO CON CONTAINER QUERIES
+           ================================================================= */
+        
+        @layer adaptive-behavior {
+            /* Estado Móvil Extremo: < 400px - Dropdown completo */
+            @container adaptive-tabs (max-width: 399px) {
+                .adaptive-tabs {
+                    & .tab-header {
+                        & .tab-list {
+                            display: none; /* Ocultamos las pestañas horizontales */
+                        }
+                        
+                        & .tab-dropdown-toggle {
+                            display: block; /* Mostramos el toggle dropdown */
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Móvil: 400px - 599px - Scroll horizontal con indicadores */
+            @container adaptive-tabs (min-width: 400px) and (max-width: 599px) {
+                .adaptive-tabs {
+                    & .tab-header {
+                        & .tab-list {
+                            & .tab-item {
+                                & .tab-button {
+                                    padding: var(--tab-padding-sm) var(--tab-padding-md);
+                                    font-size: var(--tab-font-sm);
+                                    
+                                    /* En móvil, ocultamos texto de algunos elementos menos importantes */
+                                    &.secondary .tab-text {
+                                        display: none;
+                                    }
+                                    
+                                    & .tab-badge {
+                                        font-size: 10px;
+                                        padding: 0.125rem 0.25rem;
+                                        min-width: 1rem;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        & .tab-nav-controls {
+                            display: flex; /* Mostramos controles de navegación */
+                        }
+                    }
+                    
+                    & .tab-content {
+                        padding: var(--tab-padding-lg);
+                    }
+                }
+            }
+            
+            /* Estado Tablet: 600px - 899px - Pestañas completas con scroll */
+            @container adaptive-tabs (min-width: 600px) and (max-width: 899px) {
+                .adaptive-tabs {
+                    & .tab-header {
+                        & .tab-list {
+                            & .tab-item {
+                                & .tab-button {
+                                    padding: var(--tab-padding-md) var(--tab-padding-lg);
+                                    
+                                    /* Restauramos texto oculto */
+                                    & .tab-text {
+                                        display: inline;
+                                    }
+                                }
+                            }
+                        }
+                        
+                        & .tab-nav-controls {
+                            display: flex;
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Desktop: 900px - 1199px - Todas las pestañas visibles */
+            @container adaptive-tabs (min-width: 900px) and (max-width: 1199px) {
+                .adaptive-tabs {
+                    & .tab-header {
+                        & .tab-list {
+                            overflow-x: visible; /* No necesitamos scroll */
+                            
+                            & .tab-item {
+                                flex: 1; /* Las pestañas se distribuyen uniformemente */
+                                
+                                & .tab-button {
+                                    width: 100%;
+                                    justify-content: center;
+                                    padding: var(--tab-padding-lg) var(--tab-padding-xl);
+                                }
+                            }
+                        }
+                        
+                        & .tab-nav-controls {
+                            display: none; /* No necesitamos controles de navegación */
+                        }
+                    }
+                }
+            }
+            
+            /* Estado Desktop Premium: 1200px+ - Layout expandido con características premium */
+            @container adaptive-tabs (min-width: 1200px) {
+                .adaptive-tabs {
+                    & .tab-header {
+                        & .tab-list {
+                            & .tab-item {
+                                & .tab-button {
+                                    font-size: var(--tab-font-lg);
+                                    padding: var(--tab-padding-xl);
+                                    
+                                    & .tab-icon {
+                                        font-size: var(--tab-font-md);
+                                    }
+                                    
+                                    & .tab-badge {
+                                        font-size: var(--tab-font-sm);
+                                        padding: 0.25rem 0.5rem;
+                                        min-width: 1.5rem;
+                                    }
+                                    
+                                    /* En el estado premium, agregamos tooltips informativos */
+                                    &::after {
+                                        content: attr(data-tooltip);
+                                        position: absolute;
+                                        bottom: calc(100% + 0.5rem);
+                                        left: 50%;
+                                        transform: translateX(-50%);
+                                        background: #1e293b;
+                                        color: white;
+                                        padding: var(--tab-padding-sm) var(--tab-padding-md);
+                                        border-radius: 0.375rem;
+                                        font-size: var(--tab-font-xs);
+                                        white-space: nowrap;
+                                        opacity: 0;
+                                        visibility: hidden;
+                                        transition: all var(--tab-transition-fast);
+                                        z-index: var(--tab-z-overlay);
+                                    }
+                                    
+                                    &:hover::after {
+                                        opacity: 1;
+                                        visibility: visible;
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    & .tab-content {
+                        padding: var(--tab-padding-xl) var(--tab-padding-xl) var(--tab-padding-xl) var(--tab-padding-xl);
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           INTERACCIONES Y ANIMACIONES
+           ================================================================= */
+        
+        @layer interactions {
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                    transform: translateY(10px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateY(0);
+                }
+            }
+            
+            @keyframes slideIn {
+                from {
+                    opacity: 0;
+                    transform: translateX(-20px);
+                }
+                to {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+            
+            /* Efectos especiales para cambios de estado */
+            .tab-button {
+                position: relative;
+                overflow: hidden;
+                
+                &::before {
+                    content: '';
+                    position: absolute;
+                    top: 0;
+                    left: -100%;
+                    width: 100%;
+                    height: 100%;
+                    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+                    transition: left var(--tab-transition-slow);
+                }
+                
+                &:hover::before {
+                    left: 100%;
+                }
+            }
+            
+            /* Utilidades de demostración */
+            .demo-controls {
+                background: white;
+                border: 1px solid var(--tab-border);
+                border-radius: 0.75rem;
+                padding: var(--tab-padding-xl);
+                margin-bottom: var(--tab-padding-xl);
+                
+                & .control-group {
+                    margin-bottom: var(--tab-padding-lg);
+                    
+                    &:last-child {
+                        margin-bottom: 0;
+                    }
+                    
+                    & label {
+                        display: block;
+                        font-weight: 600;
+                        margin-bottom: var(--tab-padding-sm);
+                        color: #374151;
+                    }
+                    
+                    & input[type="range"] {
+                        width: 100%;
+                        margin-bottom: var(--tab-padding-sm);
+                    }
+                    
+                    & .current-value {
+                        font-family: 'Courier New', monospace;
+                        background: #f3f4f6;
+                        padding: 0.25rem 0.5rem;
+                        border-radius: 0.25rem;
+                        font-size: var(--tab-font-xs);
+                        color: #6b7280;
+                    }
+                }
+            }
+            
+            .info-panel {
+                background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+                border: 1px solid var(--tab-bg-active);
+                border-radius: 0.75rem;
+                padding: var(--tab-padding-xl);
+                margin-bottom: var(--tab-padding-xl);
+                
+                & h3 {
+                    color: #1e40af;
+                    margin-bottom: var(--tab-padding-lg);
+                    font-weight: 600;
+                }
+                
+                & p {
+                    margin-bottom: var(--tab-padding-sm);
+                    line-height: 1.6;
+                }
+                
+                & code {
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    font-family: 'Courier New', monospace;
+                    font-size: var(--tab-font-xs);
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1400px; margin: 0 auto;">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: #1e293b;">📑 Sistema de Pestañas Adaptativas: De Horizontal a Dropdown</h1>
+        
+        <div class="info-panel">
+            <h3>🎯 Concepto: Navegación por Pestañas Contextual</h3>
+            <p>Este sistema de pestañas demuestra la evolución inteligente de la navegación horizontal. En lugar de simplemente apilar o truncar pestañas en espacios pequeños, el sistema se transforma completamente para ofrecer la mejor experiencia según el contexto disponible.</p>
+            
+            <p><strong>Los cinco modos adaptativos del sistema de pestañas:</strong></p>
+            <p>📱 <strong>Móvil Extremo (&lt; 400px):</strong> Dropdown completo con selección de pestaña activa</p>
+            <p>📱 <strong>Móvil (400px-599px):</strong> Scroll horizontal con controles de navegación e iconos prioritarios</p>
+            <p>💻 <strong>Tablet (600px-899px):</strong> Scroll horizontal completo con todas las pestañas visibles</p>
+            <p>🖥️ <strong>Desktop (900px-1199px):</strong> Distribución uniforme de pestañas sin scroll</p>
+            <p>🎯 <strong>Desktop Premium (1200px+):</strong> Layout expandido con tooltips informativos</p>
+        </div>
+        
+        <div class="demo-controls">
+            <div class="control-group">
+                <label for="tab-width">Ancho del Contenedor:</label>
+                <input type="range" id="tab-width" min="320" max="1400" value="900" step="20">
+                <div class="current-value" id="width-display">900px</div>
+            </div>
+        </div>
+        
+        <!-- Demostración: Pestañas de Dashboard -->
+        <div class="demo-section" id="demo-section-1">
+            <div class="demo-label">Sistema de Pestañas de Dashboard</div>
+            <div class="adaptive-tabs" id="dashboard-tabs">
+                <div class="tab-header">
+                    <!-- Toggle para estado dropdown -->
+                    <button class="tab-dropdown-toggle" id="dropdown-toggle-1">
+                        <div class="toggle-content">
+                            <div class="current-tab">
+                                <span class="tab-icon">📊</span>
+                                <span>Analytics</span>
+                            </div>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                    </button>
+                    
+                    <!-- Lista horizontal de pestañas -->
+                    <ul class="tab-list" id="tab-list-1">
+                        <li class="tab-item">
+                            <button class="tab-button active" data-tab="overview" data-tooltip="Vista general del dashboard">
+                                <span class="tab-icon">📊</span>
+                                <span class="tab-text">Analytics</span>
+                                <span class="tab-badge">3</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button" data-tab="users" data-tooltip="Gestión de usuarios del sistema">
+                                <span class="tab-icon">👥</span>
+                                <span class="tab-text">Usuarios</span>
+                                <span class="tab-badge">127</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="reports" data-tooltip="Reportes y estadísticas detalladas">
+                                <span class="tab-icon">📈</span>
+                                <span class="tab-text">Reportes</span>
+                                <span class="tab-badge">8</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="settings" data-tooltip="Configuración del sistema">
+                                <span class="tab-icon">⚙️</span>
+                                <span class="tab-text">Configuración</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="billing" data-tooltip="Facturación y pagos">
+                                <span class="tab-icon">💳</span>
+                                <span class="tab-text">Facturación</span>
+                                <span class="tab-badge">2</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="support" data-tooltip="Centro de ayuda y soporte">
+                                <span class="tab-icon">❓</span>
+                                <span class="tab-text">Soporte</span>
+                                <span class="tab-badge">5</span>
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <!-- Controles de navegación -->
+                    <div class="tab-nav-controls">
+                        <button class="nav-button" id="nav-left-1">‹</button>
+                        <button class="nav-button" id="nav-right-1">›</button>
+                    </div>
+                    
+                    <!-- Menú dropdown -->
+                    <div class="tab-dropdown-menu" id="dropdown-menu-1">
+                        <div class="dropdown-item active" data-tab="overview">
+                            <span class="tab-icon">📊</span>
+                            <span>Analytics</span>
+                            <span class="tab-badge">3</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="users">
+                            <span class="tab-icon">👥</span>
+                            <span>Usuarios</span>
+                            <span class="tab-badge">127</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="reports">
+                            <span class="tab-icon">📈</span>
+                            <span>Reportes</span>
+                            <span class="tab-badge">8</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="settings">
+                            <span class="tab-icon">⚙️</span>
+                            <span>Configuración</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="billing">
+                            <span class="tab-icon">💳</span>
+                            <span>Facturación</span>
+                            <span class="tab-badge">2</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="support">
+                            <span class="tab-icon">❓</span>
+                            <span>Soporte</span>
+                            <span class="tab-badge">5</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content">
+                    <div class="tab-panel active" id="overview">
+                        <h3>📊 Panel de Analytics</h3>
+                        <p>Vista general de las métricas principales del sistema. Aquí encontrarás un resumen de la actividad, conversiones, y KPIs más importantes.</p>
+                        <p>Los datos se actualizan en tiempo real y incluyen comparaciones con períodos anteriores para ayudarte a identificar tendencias y oportunidades de mejora.</p>
+                    </div>
+                    <div class="tab-panel" id="users">
+                        <h3>👥 Gestión de Usuarios</h3>
+                        <p>Panel completo para la administración de usuarios del sistema. Incluye herramientas para crear, editar, y gestionar permisos de usuarios.</p>
+                        <p>Actualmente hay 127 usuarios activos en el sistema, con diferentes niveles de acceso y roles asignados.</p>
+                    </div>
+                    <div class="tab-panel" id="reports">
+                        <h3>📈 Centro de Reportes</h3>
+                        <p>Accede a reportes detallados y análisis avanzados. Genera reportes personalizados o utiliza las plantillas predefinidas.</p>
+                        <p>Tienes 8 reportes pendientes de revisión y varios reportes programados para generación automática.</p>
+                    </div>
+                    <div class="tab-panel" id="settings">
+                        <h3>⚙️ Configuración del Sistema</h3>
+                        <p>Panel de configuración general del sistema. Aquí puedes ajustar preferencias, configurar integraciones, y personalizar la experiencia.</p>
+                        <p>Todas las configuraciones se sincronizan automáticamente y algunos cambios pueden requerir reinicio del sistema.</p>
+                    </div>
+                    <div class="tab-panel" id="billing">
+                        <h3>💳 Centro de Facturación</h3>
+                        <p>Gestiona tu facturación, revisa el historial de pagos, y actualiza métodos de pago. Tienes 2 facturas pendientes de revisión.</p>
+                        <p>Tu próximo ciclo de facturación es el 15 del próximo mes. Puedes configurar pagos automáticos para mayor comodidad.</p>
+                    </div>
+                    <div class="tab-panel" id="support">
+                        <h3>❓ Centro de Soporte</h3>
+                        <p>Accede a documentación, envía tickets de soporte, y consulta el estado de tus solicitudes. Tienes 5 conversaciones activas.</p>
+                        <p>Nuestro equipo de soporte está disponible 24/7 para ayudarte con cualquier consulta o problema técnico.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Demostración: Pestañas de E-commerce -->
+        <div class="demo-section" id="demo-section-2">
+            <div class="demo-label">Sistema de Pestañas de E-commerce</div>
+            <div class="adaptive-tabs" id="ecommerce-tabs">
+                <div class="tab-header">
+                    <button class="tab-dropdown-toggle" id="dropdown-toggle-2">
+                        <div class="toggle-content">
+                            <div class="current-tab">
+                                <span class="tab-icon">🛍️</span>
+                                <span>Productos</span>
+                            </div>
+                            <span class="dropdown-arrow">▼</span>
+                        </div>
+                    </button>
+                    
+                    <ul class="tab-list" id="tab-list-2">
+                        <li class="tab-item">
+                            <button class="tab-button active" data-tab="products" data-tooltip="Catálogo completo de productos">
+                                <span class="tab-icon">🛍️</span>
+                                <span class="tab-text">Productos</span>
+                                <span class="tab-badge">1.2K</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button" data-tab="categories" data-tooltip="Gestión de categorías">
+                                <span class="tab-icon">📂</span>
+                                <span class="tab-text">Categorías</span>
+                                <span class="tab-badge">24</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="inventory" data-tooltip="Control de inventario">
+                                <span class="tab-icon">📦</span>
+                                <span class="tab-text">Inventario</span>
+                                <span class="tab-badge">47</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="orders" data-tooltip="Gestión de pedidos">
+                                <span class="tab-icon">📋</span>
+                                <span class="tab-text">Pedidos</span>
+                                <span class="tab-badge">156</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="customers" data-tooltip="Base de datos de clientes">
+                                <span class="tab-icon">👤</span>
+                                <span class="tab-text">Clientes</span>
+                                <span class="tab-badge">892</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="analytics" data-tooltip="Métricas de ventas">
+                                <span class="tab-icon">📊</span>
+                                <span class="tab-text">Analytics</span>
+                            </button>
+                        </li>
+                        <li class="tab-item">
+                            <button class="tab-button secondary" data-tab="marketing" data-tooltip="Campañas de marketing">
+                                <span class="tab-icon">📢</span>
+                                <span class="tab-text">Marketing</span>
+                                <span class="tab-badge">7</span>
+                            </button>
+                        </li>
+                    </ul>
+                    
+                    <div class="tab-nav-controls">
+                        <button class="nav-button" id="nav-left-2">‹</button>
+                        <button class="nav-button" id="nav-right-2">›</button>
+                    </div>
+                    
+                    <div class="tab-dropdown-menu" id="dropdown-menu-2">
+                        <div class="dropdown-item active" data-tab="products">
+                            <span class="tab-icon">🛍️</span>
+                            <span>Productos</span>
+                            <span class="tab-badge">1.2K</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="categories">
+                            <span class="tab-icon">📂</span>
+                            <span>Categorías</span>
+                            <span class="tab-badge">24</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="inventory">
+                            <span class="tab-icon">📦</span>
+                            <span>Inventario</span>
+                            <span class="tab-badge">47</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="orders">
+                            <span class="tab-icon">📋</span>
+                            <span>Pedidos</span>
+                            <span class="tab-badge">156</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="customers">
+                            <span class="tab-icon">👤</span>
+                            <span>Clientes</span>
+                            <span class="tab-badge">892</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="analytics">
+                            <span class="tab-icon">📊</span>
+                            <span>Analytics</span>
+                        </div>
+                        <div class="dropdown-item" data-tab="marketing">
+                            <span class="tab-icon">📢</span>
+                            <span>Marketing</span>
+                            <span class="tab-badge">7</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="tab-content">
+                    <div class="tab-panel active" id="products">
+                        <h3>🛍️ Catálogo de Productos</h3>
+                        <p>Gestiona tu catálogo completo de productos. Actualmente tienes 1,247 productos activos en tu inventario.</p>
+                        <p>Puedes agregar nuevos productos, editar existentes, gestionar precios y promociones, y configurar opciones de envío.</p>
+                    </div>
+                    <div class="tab-panel" id="categories">
+                        <h3>📂 Gestión de Categorías</h3>
+                        <p>Organiza tus productos en categorías para facilitar la navegación. Tienes 24 categorías principales configuradas.</p>
+                        <p>Las categorías incluyen jerarquías anidadas y metadatos para SEO y filtrado avanzado.</p>
+                    </div>
+                    <!-- Más paneles según necesidad... -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>🔍 Análisis Técnico: Arquitectura de Transformación</h3>
+            <p>El sistema de pestañas adaptativas implementa una <strong>arquitectura de transformación escalonada</strong>, donde cada estado responsive no es solo una variación visual sino una reorganización funcional completa del componente.</p>
+            
+            <p>En lugar de simplemente ocultar elementos overflow, el sistema prioriza inteligentemente la información según el contexto. Los badges se mantienen visibles porque proporcionan información crítica, mientras que el texto descriptivo se oculta progresivamente según la disponibilidad de espacio.</p>
+            
+            <p><strong>Técnicas avanzadas implementadas:</strong></p>
+            <p>🔄 <strong>Transformación Morfológica:</strong> El componente cambia de horizontal a dropdown completo</p>
+            <p>📊 <strong>Priorización Inteligente:</strong> Los elementos se ocultan/muestran según importancia contextual</p>
+            <p>⚡ <strong>Scroll Inteligente:</strong> Navegación horizontal fluida con controles de dirección</p>
+            <p>🎯 <strong>Estados Híbridos:</strong> Combinaciones de técnicas según el espacio específico disponible</p>
+            
+            <p>La clave del sistema es que cada transformación preserva la funcionalidad completa. Un usuario puede acceder a cualquier pestaña independientemente del estado visual activo, manteniendo consistencia en la experiencia de navegación.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Sistema de control para demostraciones
+        const tabWidthSlider = document.getElementById('tab-width');
+        const widthDisplay = document.getElementById('width-display');
+        const demoSections = document.querySelectorAll('.demo-section');
+        
+        // Actualizar ancho de contenedores
+        function updateTabWidth() {
+            const width = tabWidthSlider.value + 'px';
+            demoSections.forEach(section => {
+                section.style.width = width;
+            });
+            widthDisplay.textContent = width;
+        }
+        
+        tabWidthSlider.addEventListener('input', updateTabWidth);
+        updateTabWidth();
+        
+        // Funcionalidad de pestañas para ambos sistemas
+        function initTabSystem(tabsId, toggleId, menuId, listId, navLeftId, navRightId) {
+            const tabsContainer = document.getElementById(tabsId);
+            const dropdownToggle = document.getElementById(toggleId);
+            const dropdownMenu = document.getElementById(menuId);
+            const tabList = document.getElementById(listId);
+            const navLeft = document.getElementById(navLeftId);
+            const navRight = document.getElementById(navRightId);
+            
+            let currentTab = 'overview';
+            
+            // Toggle del dropdown
+            dropdownToggle?.addEventListener('click', () => {
+                dropdownToggle.classList.toggle('open');
+                dropdownMenu.classList.toggle('open');
+            });
+            
+            // Navegación con botones
+            navLeft?.addEventListener('click', () => {
+                tabList.scrollBy({ left: -200, behavior: 'smooth' });
+            });
+            
+            navRight?.addEventListener('click', () => {
+                tabList.scrollBy({ left: 200, behavior: 'smooth' });
+            });
+            
+            // Manejar clicks en pestañas
+            tabsContainer.addEventListener('click', (e) => {
+                const tabButton = e.target.closest('.tab-button, .dropdown-item');
+                if (!tabButton) return;
+                
+                const tabId = tabButton.getAttribute('data-tab');
+                if (!tabId) return;
+                
+                // Actualizar pestaña activa
+                setActiveTab(tabId, tabsContainer);
+                
+                // Cerrar dropdown si está abierto
+                dropdownToggle?.classList.remove('open');
+                dropdownMenu?.classList.remove('open');
+                
+                // Actualizar contenido del dropdown toggle
+                if (dropdownToggle) {
+                    const icon = tabButton.querySelector('.tab-icon')?.textContent || '';
+                    const text = tabButton.querySelector('.tab-text')?.textContent || tabButton.textContent;
+                    
+                    const currentTabDiv = dropdownToggle.querySelector('.current-tab');
+                    if (currentTabDiv) {
+                        currentTabDiv.innerHTML = `
+                            <span class="tab-icon">${icon}</span>
+                            <span>${text}</span>
+                        `;
+                    }
+                }
+            });
+            
+            function setActiveTab(tabId, container) {
+                // Remover active de todos los botones de pestaña
+                container.querySelectorAll('.tab-button, .dropdown-item').forEach(btn => {
+                    btn.classList.remove('active');
+                });
+                
+                // Agregar active al botón seleccionado
+                container.querySelectorAll(`[data-tab="${tabId}"]`).forEach(btn => {
+                    btn.classList.add('active');
+                });
+                
+                // Cambiar panel de contenido
+                container.querySelectorAll('.tab-panel').forEach(panel => {
+                    panel.classList.remove('active');
+                });
+                
+                const activePanel = container.querySelector(`#${tabId}`);
+                if (activePanel) {
+                    activePanel.classList.add('active');
+                }
+            }
+        }
+        
+        // Inicializar ambos sistemas de pestañas
+        initTabSystem('dashboard-tabs', 'dropdown-toggle-1', 'dropdown-menu-1', 'tab-list-1', 'nav-left-1', 'nav-right-1');
+        initTabSystem('ecommerce-tabs', 'dropdown-toggle-2', 'dropdown-menu-2', 'tab-list-2', 'nav-left-2', 'nav-right-2');
+        
+        // Observador para debugging
+        const adaptiveTabs = document.querySelectorAll('.adaptive-tabs');
+        
+        adaptiveTabs.forEach((tabs, index) => {
+            const observer = new ResizeObserver(entries => {
+                for (let entry of entries) {
+                    const width = Math.round(entry.contentRect.width);
+                    
+                    let estado;
+                    if (width < 400) {
+                        estado = '📱 Dropdown Completo';
+                    } else if (width < 600) {
+                        estado = '📱 Scroll con Controles';
+                    } else if (width < 900) {
+                        estado = '💻 Scroll Horizontal';
+                    } else if (width < 1200) {
+                        estado = '🖥️ Distribución Uniforme';
+                    } else {
+                        estado = '🎯 Layout Premium';
+                    }
+                    
+                    console.log(`Pestañas ${index + 1}: ${width}px - Estado: ${estado}`);
+                }
+            });
+            
+            observer.observe(tabs);
+        });
+        
+        // Cerrar dropdowns cuando se hace click fuera
+        document.addEventListener('click', (e) => {
+            if (!e.target.closest('.tab-header')) {
+                document.querySelectorAll('.tab-dropdown-toggle').forEach(toggle => {
+                    toggle.classList.remove('open');
+                });
+                document.querySelectorAll('.tab-dropdown-menu').forEach(menu => {
+                    menu.classList.remove('open');
+                });
+            }
+        });
+        
+        // Navegación con teclado
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'ArrowLeft') {
+                const focused = document.activeElement;
+                if (focused.classList.contains('tab-button')) {
+                    const tabs = Array.from(focused.closest('.tab-list').querySelectorAll('.tab-button'));
+                    const currentIndex = tabs.indexOf(focused);
+                    
+                    let nextIndex;
+                    if (e.key === 'ArrowRight') {
+                        nextIndex = currentIndex < tabs.length - 1 ? currentIndex + 1 : 0;
+                    } else {
+                        nextIndex = currentIndex > 0 ? currentIndex - 1 : tabs.length - 1;
+                    }
+                    
+                    tabs[nextIndex].focus();
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
+</body>
+</html>

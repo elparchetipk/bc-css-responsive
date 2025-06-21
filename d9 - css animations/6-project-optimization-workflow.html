@@ -1,0 +1,1104 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Workflow de Optimización - Proyecto en Producción</title>
+    <style>
+        /* 
+        =============================================================================
+        SISTEMA DE DESIGN TOKENS PARA CONSISTENCIA
+        =============================================================================
+        En proyectos reales, este archivo estaría separado y se importaría.
+        Los design tokens aseguran consistencia visual y facilitan el mantenimiento.
+        */
+        :root {
+            /* Color System - Basado en investigación de UI/UX */
+            --color-primary: #3b82f6;
+            --color-primary-dark: #1d4ed8;
+            --color-success: #10b981;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-neutral-50: #f8fafc;
+            --color-neutral-100: #f1f5f9;
+            --color-neutral-200: #e2e8f0;
+            --color-neutral-600: #475569;
+            --color-neutral-800: #1e293b;
+            --color-neutral-900: #0f172a;
+            
+            /* Spacing System - Múltiplos de 8px para consistencia */
+            --space-0: 0;
+            --space-1: 0.25rem;  /* 4px */
+            --space-2: 0.5rem;   /* 8px */
+            --space-3: 0.75rem;  /* 12px */
+            --space-4: 1rem;     /* 16px - base unit */
+            --space-5: 1.25rem;  /* 20px */
+            --space-6: 1.5rem;   /* 24px */
+            --space-8: 2rem;     /* 32px */
+            --space-10: 2.5rem;  /* 40px */
+            --space-12: 3rem;    /* 48px */
+            
+            /* Typography Scale - Basada en proporción áurea */
+            --text-xs: 0.75rem;     /* 12px */
+            --text-sm: 0.875rem;    /* 14px */
+            --text-base: 1rem;      /* 16px - baseline */
+            --text-lg: 1.125rem;    /* 18px */
+            --text-xl: 1.25rem;     /* 20px */
+            --text-2xl: 1.5rem;     /* 24px */
+            --text-3xl: 1.875rem;   /* 30px */
+            --text-4xl: 2.25rem;    /* 36px */
+            
+            /* Animation System - Duraciones basadas en investigación UX */
+            --duration-instant: 100ms;  /* Para feedback inmediato */
+            --duration-fast: 200ms;     /* Para microinteracciones */
+            --duration-normal: 300ms;   /* Para transiciones estándar */
+            --duration-slow: 500ms;     /* Para animaciones complejas */
+            --duration-slower: 800ms;   /* Para transiciones de página */
+            
+            /* Easing Functions - Curvas naturales basadas en física */
+            --ease-linear: linear;
+            --ease-in: cubic-bezier(0.4, 0, 1, 1);
+            --ease-out: cubic-bezier(0, 0, 0.2, 1);
+            --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+            --ease-back: cubic-bezier(0.34, 1.56, 0.64, 1);
+            --ease-elastic: cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            --ease-expo-out: cubic-bezier(0.16, 1, 0.3, 1);
+            
+            /* Shadows - Sistema progresivo de elevación */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+            
+            /* Radius System - Consistencia en bordes redondeados */
+            --radius-sm: 0.25rem;   /* 4px */
+            --radius-md: 0.5rem;    /* 8px */
+            --radius-lg: 0.75rem;   /* 12px */
+            --radius-xl: 1rem;      /* 16px */
+            --radius-2xl: 1.5rem;   /* 24px */
+        }
+
+        /*
+        =============================================================================
+        BASE STYLES Y RESET
+        =============================================================================
+        Establecemos una base sólida para la optimización.
+        */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            /* Suavizado de fuentes optimizado para legibilidad */
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+            
+            /* Configuración de scroll suave SOLO si el usuario no prefiere movimiento reducido */
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, var(--color-neutral-900) 0%, var(--color-neutral-800) 100%);
+            color: var(--color-neutral-50);
+            line-height: 1.6;
+            
+            /* Optimización para rendering de texto */
+            text-rendering: optimizeLegibility;
+            
+            /* Preparación para animaciones scroll-based */
+            overflow-x: hidden;
+        }
+
+        /*
+        =============================================================================
+        LAYOUT COMPONENTS OPTIMIZADOS
+        =============================================================================
+        */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: var(--space-6) var(--space-4);
+            
+            /* Contenedores siempre usan will-change cuando van a animarse */
+            will-change: transform;
+        }
+
+        .workflow-header {
+            text-align: center;
+            margin-bottom: var(--space-12);
+            
+            /* Animación de entrada optimizada */
+            opacity: 0;
+            transform: translateY(30px);
+            animation: slideInFromBottom var(--duration-slow) var(--ease-expo-out) forwards;
+        }
+
+        .workflow-title {
+            font-size: var(--text-4xl);
+            font-weight: 900;
+            margin-bottom: var(--space-4);
+            
+            /* Gradient text con fallback sólido para accesibilidad */
+            background: linear-gradient(135deg, var(--color-primary), var(--color-success));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            
+            /* Fallback para navegadores que no soportan background-clip */
+            color: var(--color-primary);
+        }
+
+        .workflow-subtitle {
+            font-size: var(--text-lg);
+            color: var(--color-neutral-200);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.7;
+        }
+
+        /*
+        =============================================================================
+        PHASE CARDS - COMPONENTE PRINCIPAL DE LA INTERFAZ
+        =============================================================================
+        */
+        .phases-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: var(--space-6);
+            margin-bottom: var(--space-12);
+        }
+
+        .phase-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            
+            /* Optimización crítica: Preparar para hover animations */
+            will-change: transform, box-shadow;
+            
+            /* Transición optimizada usando solo propiedades GPU-friendly */
+            transition: 
+                transform var(--duration-normal) var(--ease-expo-out),
+                box-shadow var(--duration-normal) var(--ease-expo-out),
+                border-color var(--duration-fast) var(--ease-out);
+                
+            /* Backdrop filter para efecto glassmorphism moderno */
+            backdrop-filter: blur(20px);
+            
+            /* Cursor pointer para indicar interactividad */
+            cursor: pointer;
+            
+            /* Animaciones de entrada escalonadas */
+            opacity: 0;
+            transform: translateY(40px);
+            animation: slideInFromBottom var(--duration-slow) var(--ease-expo-out) forwards;
+        }
+
+        /* Delays escalonados para animaciones de entrada */
+        .phase-card:nth-child(1) { animation-delay: 100ms; }
+        .phase-card:nth-child(2) { animation-delay: 200ms; }
+        .phase-card:nth-child(3) { animation-delay: 300ms; }
+        .phase-card:nth-child(4) { animation-delay: 400ms; }
+        .phase-card:nth-child(5) { animation-delay: 500ms; }
+
+        .phase-card:hover {
+            /* Transform optimizado: solo scale y translate, nunca width/height */
+            transform: translateY(-8px) scale(1.02);
+            
+            /* Box-shadow con GPU acceleration */
+            box-shadow: var(--shadow-xl), 0 0 0 1px rgba(59, 130, 246, 0.3);
+            
+            /* Border color change para feedback visual */
+            border-color: rgba(59, 130, 246, 0.4);
+        }
+
+        /* Estado activo para indicar fase actual */
+        .phase-card.active {
+            border-color: var(--color-primary);
+            box-shadow: 0 0 0 1px var(--color-primary);
+        }
+
+        .phase-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 40px;
+            height: 40px;
+            background: var(--color-primary);
+            color: white;
+            border-radius: 50%;
+            font-weight: 700;
+            margin-bottom: var(--space-4);
+            
+            /* Micro-animación en hover del card padre */
+            transition: transform var(--duration-fast) var(--ease-back);
+        }
+
+        .phase-card:hover .phase-number {
+            transform: rotate(360deg) scale(1.1);
+        }
+
+        .phase-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-3);
+            color: var(--color-neutral-50);
+        }
+
+        .phase-description {
+            color: var(--color-neutral-200);
+            margin-bottom: var(--space-4);
+            line-height: 1.6;
+        }
+
+        .phase-tools {
+            display: flex;
+            flex-wrap: wrap;
+            gap: var(--space-2);
+            margin-bottom: var(--space-4);
+        }
+
+        .tool-tag {
+            padding: var(--space-1) var(--space-3);
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--color-primary);
+            border-radius: var(--radius-md);
+            font-size: var(--text-sm);
+            font-weight: 500;
+            
+            /* Micro-animación de hover */
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+
+        .tool-tag:hover {
+            background: rgba(59, 130, 246, 0.3);
+            transform: translateY(-1px);
+        }
+
+        /*
+        =============================================================================
+        CHECKLIST INTERACTIVO - COMPONENTE AVANZADO
+        =============================================================================
+        */
+        .checklist {
+            list-style: none;
+            margin-top: var(--space-4);
+        }
+
+        .checklist-item {
+            display: flex;
+            align-items: flex-start;
+            gap: var(--space-3);
+            padding: var(--space-2) 0;
+            
+            /* Transición suave para cambios de estado */
+            transition: opacity var(--duration-normal) var(--ease-out);
+        }
+
+        .checklist-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--color-neutral-600);
+            border-radius: var(--radius-sm);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            
+            /* Preparar para animación de check */
+            transition: all var(--duration-fast) var(--ease-back);
+        }
+
+        .checklist-checkbox:hover {
+            border-color: var(--color-primary);
+            background: rgba(59, 130, 246, 0.1);
+        }
+
+        .checklist-checkbox.checked {
+            background: var(--color-success);
+            border-color: var(--color-success);
+            
+            /* Micro-animación de confirmación */
+            animation: checkboxSuccess var(--duration-normal) var(--ease-back);
+        }
+
+        .checklist-checkbox.checked::after {
+            content: '✓';
+            color: white;
+            font-weight: bold;
+            font-size: var(--text-sm);
+        }
+
+        .checklist-text {
+            flex: 1;
+            color: var(--color-neutral-200);
+            line-height: 1.5;
+            
+            /* Transición para estado completado */
+            transition: color var(--duration-normal) var(--ease-out);
+        }
+
+        .checklist-item.completed .checklist-text {
+            color: var(--color-neutral-600);
+            text-decoration: line-through;
+        }
+
+        /*
+        =============================================================================
+        PERFORMANCE METRICS DASHBOARD
+        =============================================================================
+        */
+        .metrics-dashboard {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            margin-bottom: var(--space-8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .metrics-title {
+            font-size: var(--text-2xl);
+            font-weight: 700;
+            margin-bottom: var(--space-6);
+            text-align: center;
+        }
+
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--space-4);
+        }
+
+        .metric-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            text-align: center;
+            
+            /* Preparar para animaciones de update */
+            transition: all var(--duration-normal) var(--ease-out);
+        }
+
+        .metric-value {
+            font-size: var(--text-3xl);
+            font-weight: 900;
+            margin-bottom: var(--space-2);
+            
+            /* Animación de counter cuando cambia el valor */
+            transition: transform var(--duration-fast) var(--ease-back);
+        }
+
+        .metric-label {
+            font-size: var(--text-sm);
+            color: var(--color-neutral-400);
+            font-weight: 500;
+        }
+
+        .metric-good { color: var(--color-success); }
+        .metric-warning { color: var(--color-warning); }
+        .metric-danger { color: var(--color-danger); }
+
+        /*
+        =============================================================================
+        KEYFRAMES - ANIMACIONES OPTIMIZADAS
+        =============================================================================
+        */
+        @keyframes slideInFromBottom {
+            from {
+                opacity: 0;
+                transform: translateY(40px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes checkboxSuccess {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+
+        @keyframes metricUpdate {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+
+        /*
+        =============================================================================
+        RESPONSIVE DESIGN OPTIMIZADO
+        =============================================================================
+        */
+        @media (max-width: 768px) {
+            .container {
+                padding: var(--space-4) var(--space-2);
+            }
+            
+            .phases-container {
+                grid-template-columns: 1fr;
+                gap: var(--space-4);
+            }
+            
+            .workflow-title {
+                font-size: var(--text-3xl);
+            }
+            
+            .phase-card {
+                padding: var(--space-4);
+            }
+            
+            /* Reducir intensidad de animaciones en móvil */
+            .phase-card:hover {
+                transform: translateY(-4px) scale(1.01);
+            }
+        }
+
+        /*
+        =============================================================================
+        ACCESIBILIDAD Y REDUCED MOTION
+        =============================================================================
+        */
+        @media (prefers-reduced-motion: reduce) {
+            /*
+            CRÍTICO: Usuarios con sensibilidad al movimiento necesitan
+            animaciones mínimas o nulas para evitar mareos/convulsiones
+            */
+            * {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            .phase-card:hover {
+                /* Mantener feedback visual pero sin movimiento */
+                transform: none;
+                box-shadow: 0 0 0 2px var(--color-primary);
+            }
+        }
+
+        /*
+        =============================================================================
+        ESTADOS DE FOCUS PARA NAVEGACIÓN POR TECLADO
+        =============================================================================
+        */
+        .phase-card:focus-visible,
+        .checklist-checkbox:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /*
+        =============================================================================
+        OPTIMIZACIONES ESPECÍFICAS PARA DIFERENTES DISPOSITIVOS
+        =============================================================================
+        */
+        
+        /* Dispositivos con update rate bajo (e-readers, algunos móviles antiguos) */
+        @media (update: slow) {
+            .phase-card,
+            .checklist-checkbox,
+            .metric-card {
+                transition: none;
+            }
+        }
+
+        /* Dispositivos con poca memoria */
+        @supports not (backdrop-filter: blur(20px)) {
+            .phase-card {
+                backdrop-filter: none;
+                background: rgba(255, 255, 255, 0.1);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header Section -->
+        <header class="workflow-header">
+            <h1 class="workflow-title">🎯 Workflow de Optimización Profesional</h1>
+            <p class="workflow-subtitle">
+                Sistema paso a paso para transformar proyectos de prototipo a producción.
+                Aplicar a tus proyectos de Bootstrap, TailwindCSS, y CSS Grid del bootcamp.
+            </p>
+        </header>
+
+        <!-- Performance Metrics Dashboard -->
+        <section class="metrics-dashboard">
+            <h2 class="metrics-title">📊 Métricas de Performance en Tiempo Real</h2>
+            <div class="metrics-grid">
+                <div class="metric-card">
+                    <div class="metric-value metric-good" id="fps-metric">60</div>
+                    <div class="metric-label">FPS Promedio</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value metric-good" id="frame-time-metric">16.7</div>
+                    <div class="metric-label">Tiempo/Frame (ms)</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value metric-warning" id="issues-metric">3</div>
+                    <div class="metric-label">Issues Detectados</div>
+                </div>
+                <div class="metric-card">
+                    <div class="metric-value metric-good" id="score-metric">87</div>
+                    <div class="metric-label">Score Optimización</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Workflow Phases -->
+        <section class="phases-container">
+            <!-- Fase 1: Assessment -->
+            <article class="phase-card active" tabindex="0" role="button" aria-label="Fase 1: Assessment y Auditoría">
+                <div class="phase-number">1</div>
+                <h2 class="phase-title">🔍 Assessment y Auditoría</h2>
+                <p class="phase-description">
+                    Análisis sistemático del estado actual. Identificar bottlenecks reales
+                    antes de hacer cambios. Esta fase establece la baseline contra la cual
+                    mediremos mejoras.
+                </p>
+                <div class="phase-tools">
+                    <span class="tool-tag">Chrome DevTools</span>
+                    <span class="tool-tag">Performance API</span>
+                    <span class="tool-tag">Lighthouse</span>
+                    <span class="tool-tag">Web Vitals</span>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Ejecutar Lighthouse audit completo</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Identificar animaciones que causan reflow</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Medir FPS baseline en dispositivos target</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Documentar issues de accesibilidad</span>
+                    </li>
+                </ul>
+            </article>
+
+            <!-- Fase 2: Critical Path Optimization -->
+            <article class="phase-card" tabindex="0" role="button" aria-label="Fase 2: Optimización del Critical Path">
+                <div class="phase-number">2</div>
+                <h2 class="phase-title">⚡ Critical Path Optimization</h2>
+                <p class="phase-description">
+                    Optimizar el critical rendering path. Eliminar bloqueos del main thread
+                    y asegurar que el initial paint sea lo más rápido posible.
+                </p>
+                <div class="phase-tools">
+                    <span class="tool-tag">Critical CSS</span>
+                    <span class="tool-tag">Resource Hints</span>
+                    <span class="tool-tag">Code Splitting</span>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Extraer critical CSS para above-the-fold</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Implementar resource hints (preload, prefetch)</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Minimizar y comprimir CSS/JS</span>
+                    </li>
+                </ul>
+            </article>
+
+            <!-- Fase 3: Animation Optimization -->
+            <article class="phase-card" tabindex="0" role="button" aria-label="Fase 3: Optimización de Animaciones">
+                <div class="phase-number">3</div>
+                <h2 class="phase-title">🎬 Animation Optimization</h2>
+                <p class="phase-description">
+                    Convertir todas las animaciones a GPU-friendly. Implementar will-change
+                    strategy y eliminar cualquier animación que cause layout thrashing.
+                </p>
+                <div class="phase-tools">
+                    <span class="tool-tag">transform</span>
+                    <span class="tool-tag">will-change</span>
+                    <span class="tool-tag">Intersection Observer</span>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Reemplazar width/height animations con transform</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Implementar will-change strategy</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Agregar Intersection Observer para scroll animations</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Optimizar timing y easing curves</span>
+                    </li>
+                </ul>
+            </article>
+
+            <!-- Fase 4: Cross-Device Testing -->
+            <article class="phase-card" tabindex="0" role="button" aria-label="Fase 4: Testing Cross-Device">
+                <div class="phase-number">4</div>
+                <h2 class="phase-title">📱 Cross-Device Testing</h2>
+                <p class="phase-description">
+                    Testing exhaustivo en diferentes dispositivos y condiciones de red.
+                    Validar que las optimizaciones funcionen consistentemente.
+                </p>
+                <div class="phase-tools">
+                    <span class="tool-tag">BrowserStack</span>
+                    <span class="tool-tag">Device Emulation</span>
+                    <span class="tool-tag">Network Throttling</span>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Testing en dispositivos móviles de gama baja</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Validar en conexiones lentas (3G simulado)</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Verificar prefer-reduced-motion compliance</span>
+                    </li>
+                </ul>
+            </article>
+
+            <!-- Fase 5: Production Deployment -->
+            <article class="phase-card" tabindex="0" role="button" aria-label="Fase 5: Deployment y Monitoring">
+                <div class="phase-number">5</div>
+                <h2 class="phase-title">🚀 Production & Monitoring</h2>
+                <p class="phase-description">
+                    Deployment con configuración de monitoring continuo. Establecer alertas
+                    para regression de performance y mantener quality gates.
+                </p>
+                <div class="phase-tools">
+                    <span class="tool-tag">Core Web Vitals</span>
+                    <span class="tool-tag">Real User Monitoring</span>
+                    <span class="tool-tag">Performance Budget</span>
+                </div>
+                <ul class="checklist">
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Configurar Real User Monitoring (RUM)</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Establecer performance budget alerts</span>
+                    </li>
+                    <li class="checklist-item">
+                        <div class="checklist-checkbox" onclick="toggleCheck(this)"></div>
+                        <span class="checklist-text">Documentar optimizaciones para el equipo</span>
+                    </li>
+                </ul>
+            </article>
+        </section>
+    </div>
+
+    <script>
+        /*
+        =============================================================================
+        SISTEMA DE MONITORING DE PERFORMANCE EDUCATIVO
+        =============================================================================
+        Este código demuestra cómo implementar monitoring de performance
+        en tiempo real para detectar regresiones durante el desarrollo.
+        */
+
+        class OptimizationWorkflowMonitor {
+            constructor() {
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.fps = 60;
+                this.frameTime = 16.7;
+                this.detectedIssues = [];
+                this.optimizationScore = 100;
+                
+                this.initializeMonitoring();
+                this.detectDeviceCapabilities();
+                this.analyzeCurrentPage();
+            }
+
+            initializeMonitoring() {
+                /*
+                Monitoring continuo de FPS para detectar degradación de performance
+                en tiempo real. Esto es especialmente útil durante desarrollo
+                cuando estás agregando nuevas animaciones.
+                */
+                const monitor = () => {
+                    this.frameCount++;
+                    const currentTime = performance.now();
+                    const deltaTime = currentTime - this.lastTime;
+
+                    // Calcular métricas cada segundo
+                    if (deltaTime >= 1000) {
+                        this.fps = Math.round((this.frameCount * 1000) / deltaTime);
+                        this.frameTime = deltaTime / this.frameCount;
+                        
+                        this.updateMetricsDisplay();
+                        this.assessPerformanceIssues();
+                        
+                        this.frameCount = 0;
+                        this.lastTime = currentTime;
+                    }
+
+                    requestAnimationFrame(monitor);
+                };
+
+                requestAnimationFrame(monitor);
+            }
+
+            updateMetricsDisplay() {
+                /*
+                Actualizar las métricas visuales en tiempo real.
+                Esto ayuda a ver el impacto inmediato de cambios en el código.
+                */
+                document.getElementById('fps-metric').textContent = this.fps;
+                document.getElementById('frame-time-metric').textContent = this.frameTime.toFixed(1);
+                document.getElementById('issues-metric').textContent = this.detectedIssues.length;
+                document.getElementById('score-metric').textContent = this.optimizationScore;
+
+                // Actualizar colores basado en performance
+                this.updateMetricColors();
+            }
+
+            updateMetricColors() {
+                /*
+                Sistema de colores que indica visualmente la salud de la performance.
+                Verde = bueno, Amarillo = advertencia, Rojo = crítico
+                */
+                const fpsElement = document.getElementById('fps-metric');
+                const frameTimeElement = document.getElementById('frame-time-metric');
+                const scoreElement = document.getElementById('score-metric');
+
+                // FPS Color Coding
+                fpsElement.className = 'metric-value ' + (
+                    this.fps >= 55 ? 'metric-good' : 
+                    this.fps >= 30 ? 'metric-warning' : 
+                    'metric-danger'
+                );
+
+                // Frame Time Color Coding
+                frameTimeElement.className = 'metric-value ' + (
+                    this.frameTime <= 18 ? 'metric-good' : 
+                    this.frameTime <= 33 ? 'metric-warning' : 
+                    'metric-danger'
+                );
+
+                // Score Color Coding
+                scoreElement.className = 'metric-value ' + (
+                    this.optimizationScore >= 80 ? 'metric-good' : 
+                    this.optimizationScore >= 60 ? 'metric-warning' : 
+                    'metric-danger'
+                );
+            }
+
+            assessPerformanceIssues() {
+                /*
+                Evaluación automática de issues de performance.
+                Este sistema detecta problemas comunes y sugiere soluciones.
+                */
+                this.detectedIssues = []; // Reset issues array
+
+                // Issue 1: FPS bajo
+                if (this.fps < 50) {
+                    this.detectedIssues.push({
+                        type: 'performance',
+                        severity: 'high',
+                        message: `FPS bajo detectado: ${this.fps}`,
+                        suggestion: 'Revisar animaciones que causen reflow'
+                    });
+                }
+
+                // Issue 2: Frame time alto
+                if (this.frameTime > 20) {
+                    this.detectedIssues.push({
+                        type: 'performance',
+                        severity: 'medium',
+                        message: `Frame time alto: ${this.frameTime.toFixed(1)}ms`,
+                        suggestion: 'Optimizar propiedades animadas'
+                    });
+                }
+
+                // Issue 3: Detectar animaciones problemáticas
+                this.detectProblematicAnimations();
+
+                // Calcular score basado en issues
+                this.calculateOptimizationScore();
+
+                // Log issues para debugging
+                if (this.detectedIssues.length > 0) {
+                    console.group('🔍 Issues de Performance Detectados');
+                    this.detectedIssues.forEach(issue => {
+                        console.warn(`${issue.message} - ${issue.suggestion}`);
+                    });
+                    console.groupEnd();
+                }
+            }
+
+            detectProblematicAnimations() {
+                /*
+                Análisis automático del CSS para detectar patrones problemáticos.
+                Esto es útil para code reviews automáticos.
+                */
+                const problematicProps = ['width', 'height', 'left', 'top', 'margin', 'padding', 'border-width'];
+                const styleSheets = Array.from(document.styleSheets);
+                
+                styleSheets.forEach(sheet => {
+                    try {
+                        const rules = Array.from(sheet.cssRules || []);
+                        rules.forEach(rule => {
+                            if (rule.style && rule.style.transition) {
+                                const transitionProps = rule.style.transitionProperty || rule.style.transition;
+                                
+                                problematicProps.forEach(prop => {
+                                    if (transitionProps.includes(prop)) {
+                                        this.detectedIssues.push({
+                                            type: 'css',
+                                            severity: 'high',
+                                            message: `Animación problemática: ${prop}`,
+                                            suggestion: `Reemplazar con transform equivalente`
+                                        });
+                                    }
+                                });
+                            }
+                        });
+                    } catch (e) {
+                        // Ignorar errores CORS con stylesheets externos
+                    }
+                });
+            }
+
+            calculateOptimizationScore() {
+                /*
+                Sistema de scoring que combina múltiples factores de performance.
+                Similar a como Lighthouse calcula sus scores.
+                */
+                let score = 100;
+
+                // Penalizar por FPS bajo
+                if (this.fps < 60) {
+                    score -= (60 - this.fps) * 2;
+                }
+
+                // Penalizar por frame time alto
+                if (this.frameTime > 16.67) {
+                    score -= (this.frameTime - 16.67) * 2;
+                }
+
+                // Penalizar por issues detectados
+                this.detectedIssues.forEach(issue => {
+                    const penalty = issue.severity === 'high' ? 15 : 
+                                   issue.severity === 'medium' ? 10 : 5;
+                    score -= penalty;
+                });
+
+                this.optimizationScore = Math.max(0, Math.round(score));
+            }
+
+            detectDeviceCapabilities() {
+                /*
+                Detección de capacidades del dispositivo para ajustar expectativas.
+                En producción esto se usaría para servir diferentes assets.
+                */
+                const capabilities = {
+                    cores: navigator.hardwareConcurrency || 'unknown',
+                    memory: navigator.deviceMemory || 'unknown',
+                    connection: navigator.connection?.effectiveType || 'unknown',
+                    reducedMotion: window.matchMedia('(prefers-reduced-motion: reduce)').matches
+                };
+
+                console.log('📱 Capacidades del Dispositivo:', capabilities);
+
+                // Ajustar expectativas basado en hardware
+                if (capabilities.cores <= 2 || capabilities.memory <= 2) {
+                    console.log('⚡ Dispositivo de baja potencia - ajustando expectativas de FPS');
+                    // En un caso real, aquí ajustarías los thresholds de performance
+                }
+
+                if (capabilities.reducedMotion) {
+                    console.log('♿ Usuario prefiere movimiento reducido - animaciones simplificadas');
+                }
+            }
+
+            analyzeCurrentPage() {
+                /*
+                Análisis inicial de la página para detectar oportunidades de optimización.
+                Esto simula lo que haría una herramienta de auditoría automática.
+                */
+                setTimeout(() => {
+                    console.group('🎯 Análisis Inicial de la Página');
+                    
+                    // Contar elementos animados
+                    const animatedElements = document.querySelectorAll('[style*="transition"], [class*="animate"]');
+                    console.log(`Elementos con animaciones: ${animatedElements.length}`);
+                    
+                    // Detectar uso de will-change
+                    const willChangeElements = document.querySelectorAll('[style*="will-change"]');
+                    console.log(`Elementos con will-change: ${willChangeElements.length}`);
+                    
+                    // Sugerir optimizaciones
+                    if (animatedElements.length > willChangeElements.length) {
+                        console.warn('💡 Sugerencia: Agregar will-change a elementos animados');
+                    }
+                    
+                    console.groupEnd();
+                }, 1000);
+            }
+        }
+
+        /*
+        =============================================================================
+        SISTEMA DE CHECKLIST INTERACTIVO
+        =============================================================================
+        */
+        function toggleCheck(checkbox) {
+            /*
+            Sistema de checklist que trackea progreso y proporciona feedback visual.
+            En una aplicación real, esto se sincronizaría con un backend.
+            */
+            const isChecked = checkbox.classList.toggle('checked');
+            const listItem = checkbox.closest('.checklist-item');
+            
+            if (isChecked) {
+                listItem.classList.add('completed');
+                
+                // Micro-feedback háptico si está disponible
+                if (navigator.vibrate) {
+                    navigator.vibrate(50);
+                }
+                
+                // Audio feedback opcional
+                playSuccessSound();
+            } else {
+                listItem.classList.remove('completed');
+            }
+            
+            // Actualizar progreso general
+            updateWorkflowProgress();
+        }
+
+        function playSuccessSound() {
+            /*
+            Audio feedback sutil para completar tareas.
+            Mejora la sensación de logro y gamificación del proceso.
+            */
+            if (window.AudioContext || window.webkitAudioContext) {
+                const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                const oscillator = audioCtx.createOscillator();
+                const gainNode = audioCtx.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioCtx.destination);
+                
+                oscillator.frequency.setValueAtTime(800, audioCtx.currentTime);
+                oscillator.frequency.setValueAtTime(1000, audioCtx.currentTime + 0.1);
+                
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime);
+                gainNode.gain.setValueAtTime(0.1, audioCtx.currentTime + 0.01);
+                gainNode.gain.setValueAtTime(0, audioCtx.currentTime + 0.2);
+                
+                oscillator.start(audioCtx.currentTime);
+                oscillator.stop(audioCtx.currentTime + 0.2);
+            }
+        }
+
+        function updateWorkflowProgress() {
+            /*
+            Calculadora de progreso del workflow.
+            Proporciona feedback visual sobre el avance general.
+            */
+            const allCheckboxes = document.querySelectorAll('.checklist-checkbox');
+            const checkedBoxes = document.querySelectorAll('.checklist-checkbox.checked');
+            const progress = (checkedBoxes.length / allCheckboxes.length) * 100;
+            
+            console.log(`📈 Progreso del Workflow: ${progress.toFixed(1)}%`);
+            
+            // En una implementación real, actualizarías una barra de progreso visual
+            if (progress === 100) {
+                console.log('🎉 ¡Workflow de optimización completado!');
+                showCompletionCelebration();
+            }
+        }
+
+        function showCompletionCelebration() {
+            /*
+            Celebración visual cuando se completa todo el workflow.
+            Refuerza positivamente el comportamiento de seguir buenas prácticas.
+            */
+            console.log('🎉 ¡Felicitaciones! Has completado el workflow de optimización');
+            
+            // En una implementación real, esto mostraría confetti o alguna animación celebratoria
+            // que respete prefer-reduced-motion
+        }
+
+        /*
+        =============================================================================
+        KEYBOARD NAVIGATION PARA ACCESIBILIDAD
+        =============================================================================
+        */
+        document.addEventListener('keydown', (e) => {
+            /*
+            Navegación por teclado para usuarios que no pueden usar mouse.
+            Esto es crítico para accesibilidad web.
+            */
+            if (e.key === 'Enter' || e.key === ' ') {
+                const focusedElement = document.activeElement;
+                
+                if (focusedElement.classList.contains('phase-card')) {
+                    // Activar/desactivar fase
+                    e.preventDefault();
+                    focusedElement.classList.toggle('active');
+                }
+                
+                if (focusedElement.classList.contains('checklist-checkbox')) {
+                    // Toggle checkbox
+                    e.preventDefault();
+                    toggleCheck(focusedElement);
+                }
+            }
+        });
+
+        /*
+        =============================================================================
+        INICIALIZACIÓN DEL SISTEMA
+        =============================================================================
+        */
+        
+        // Inicializar monitoring cuando el DOM esté listo
+        document.addEventListener('DOMContentLoaded', () => {
+            const monitor = new OptimizationWorkflowMonitor();
+            
+            console.log('🚀 Sistema de Workflow de Optimización Iniciado');
+            console.log('📝 Usa las fases para guiar tu proceso de optimización');
+            console.log('🎯 Observa las métricas de performance mientras trabajas');
+        });
+
+        // Log educativo inicial
+        console.log('==================================================');
+        console.log('🎓 BOOTCAMP CSS RESPONSIVE - DÍA 9');
+        console.log('📚 Workflow de Optimización para Producción');
+        console.log('==================================================');
+        console.log('Este sistema te guía paso a paso para optimizar');
+        console.log('cualquier proyecto CSS para producción profesional.');
+        console.log('==================================================');
+    </script>
+</body>
+</html>

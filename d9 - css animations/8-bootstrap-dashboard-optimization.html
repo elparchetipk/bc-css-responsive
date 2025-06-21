@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Optimización Dashboard Bootstrap - Caso Empresarial</title>
+    <style>
+        /*
+        =============================================================================
+        SISTEMA DE DESIGN TOKENS - ENTERPRISE GRADE
+        =============================================================================
+        En proyectos empresariales, la consistencia visual es crítica.
+        Estos tokens se basan en investigación de UX específica para dashboards.
+        */
+        :root {
+            /* Color System - Optimizado para lectura prolongada */
+            --color-primary: #0056b3;      /* Bootstrap primary optimizado */
+            --color-primary-light: #4a9eff;
+            --color-secondary: #6c757d;
+            --color-success: #198754;
+            --color-warning: #fd7e14;
+            --color-danger: #dc3545;
+            --color-info: #0dcaf0;
+            
+            /* Neutral palette - Optimizado para fatiga visual */
+            --color-gray-50: #f8f9fa;
+            --color-gray-100: #e9ecef;
+            --color-gray-200: #dee2e6;
+            --color-gray-300: #ced4da;
+            --color-gray-600: #6c757d;
+            --color-gray-700: #495057;
+            --color-gray-800: #343a40;
+            --color-gray-900: #212529;
+            
+            /* Spacing System - Basado en Bootstrap pero optimizado */
+            --space-1: 0.25rem;  /* 4px */
+            --space-2: 0.5rem;   /* 8px */
+            --space-3: 0.75rem;  /* 12px */
+            --space-4: 1rem;     /* 16px */
+            --space-5: 1.25rem;  /* 20px */
+            --space-6: 1.5rem;   /* 24px */
+            --space-8: 2rem;     /* 32px */
+            --space-10: 2.5rem;  /* 40px */
+            
+            /* Typography - Optimizado para dashboards empresariales */
+            --font-size-xs: 0.75rem;   /* 12px */
+            --font-size-sm: 0.875rem;  /* 14px */
+            --font-size-base: 1rem;    /* 16px */
+            --font-size-lg: 1.125rem;  /* 18px */
+            --font-size-xl: 1.25rem;   /* 20px */
+            --font-size-2xl: 1.5rem;   /* 24px */
+            --font-size-3xl: 1.875rem; /* 30px */
+            
+            /* Animation System - Duración basada en investigación UX empresarial */
+            --duration-instant: 75ms;   /* Para feedback inmediato de botones */
+            --duration-fast: 150ms;     /* Para microinteracciones */
+            --duration-normal: 250ms;   /* Para transiciones principales */
+            --duration-slow: 400ms;     /* Para cambios de layout */
+            --duration-slower: 600ms;   /* Para transiciones de página */
+            
+            /* Easing System - Curvas específicas para contexto empresarial */
+            --ease-linear: linear;
+            --ease-in-quad: cubic-bezier(0.55, 0.085, 0.68, 0.53);
+            --ease-out-quad: cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            --ease-in-out-quad: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+            --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);        /* Para elementos que aparecen */
+            --ease-in-back: cubic-bezier(0.6, -0.28, 0.735, 0.045); /* Para elementos que salen */
+            --ease-out-back: cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Para confirmaciones */
+            
+            /* Shadows - Sistema de elevación para jerarquía visual */
+            --shadow-sm: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+            --shadow-md: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+            --shadow-lg: 0 1rem 3rem rgba(0, 0, 0, 0.175);
+            --shadow-xl: 0 2rem 4rem rgba(0, 0, 0, 0.2);
+            
+            /* Z-index System - Jerarquía clara para evitar conflictos */
+            --z-dropdown: 1000;
+            --z-sticky: 1020;
+            --z-fixed: 1030;
+            --z-modal-backdrop: 1040;
+            --z-modal: 1050;
+            --z-popover: 1060;
+            --z-tooltip: 1070;
+        }
+
+        /*
+        =============================================================================
+        BASE STYLES Y RESET OPTIMIZADO
+        =============================================================================
+        */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            font-size: 16px; /* Base font size para rem calculations */
+            line-height: 1.5;
+            -webkit-text-size-adjust: 100%;
+            -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            font-size: var(--font-size-base);
+            font-weight: 400;
+            line-height: 1.5;
+            color: var(--color-gray-900);
+            background-color: var(--color-gray-50);
+            
+            /* Optimización para rendering de texto */
+            text-rendering: optimizeLegibility;
+            
+            /* Preparación para scroll optimizado */
+            overflow-x: hidden;
+        }
+
+        /*
+        =============================================================================
+        LAYOUT PRINCIPAL - SIDEBAR + MAIN CONTENT
+        =============================================================================
+        */
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+            
+            /* 
+            ✅ OPTIMIZACIÓN: will-change preparado para transformaciones
+            del sidebar collapse
+            */
+            will-change: transform;
+        }
+
+        /*
+        =============================================================================
+        SIDEBAR - VERSIÓN PROBLEMÁTICA VS OPTIMIZADA
+        =============================================================================
+        */
+        
+        /* ❌ SIDEBAR PROBLEMÁTICO */
+        .sidebar-problematic {
+            width: 280px;
+            background: var(--color-gray-800);
+            color: white;
+            padding: var(--space-4);
+            
+            /* 
+            ❌ PROBLEMA: Animar width causa reflow masivo
+            Cada frame de la animación recalcula el layout del main content
+            */
+            transition: width var(--duration-slow) ease-in-out;
+            
+            /* Sin will-change - la capa se crea tardíamente */
+        }
+
+        .sidebar-problematic.collapsed {
+            /* ❌ Cambiar width directamente es muy costoso */
+            width: 60px;
+            overflow: hidden; /* Esto causa repaint adicional */
+        }
+
+        /* ✅ SIDEBAR OPTIMIZADO */
+        .sidebar-optimized {
+            width: 280px;
+            background: var(--color-gray-800);
+            color: white;
+            padding: var(--space-4);
+            
+            /* 
+            ✅ SOLUCIÓN: Preparar capa de composición
+            will-change le dice al navegador que optimice este elemento
+            */
+            will-change: transform;
+            
+            /* 
+            ✅ OPTIMIZACIÓN: Usar transform en lugar de width
+            Transform solo afecta la capa de composición, no el layout
+            */
+            transition: transform var(--duration-normal) var(--ease-out-expo);
+            
+            /* Preparar para efectos de backdrop */
+            backdrop-filter: blur(0);
+            transition: backdrop-filter var(--duration-normal) ease;
+        }
+
+        .sidebar-optimized.collapsed {
+            /* 
+            ✅ Transform no causa reflow - solo recomposición GPU
+            El main content mantiene su width original
+            */
+            transform: translateX(-220px);
+        }
+
+        .sidebar-nav {
+            list-style: none;
+            padding: 0;
+            margin-top: var(--space-6);
+        }
+
+        .sidebar-nav-item {
+            margin-bottom: var(--space-2);
+        }
+
+        .sidebar-nav-link {
+            display: flex;
+            align-items: center;
+            padding: var(--space-3) var(--space-4);
+            color: rgba(255, 255, 255, 0.8);
+            text-decoration: none;
+            border-radius: 8px;
+            
+            /* 
+            ✅ OPTIMIZACIÓN: Preparar para hover states
+            Micro-optimización que elimina jank en hover
+            */
+            will-change: background-color, transform;
+            transition: all var(--duration-fast) var(--ease-out-quad);
+        }
+
+        .sidebar-nav-link:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            /* Transform sutil para feedback táctil */
+            transform: translateX(4px);
+        }
+
+        .sidebar-nav-link.active {
+            background-color: var(--color-primary);
+            color: white;
+        }
+
+        .sidebar-nav-icon {
+            width: 20px;
+            height: 20px;
+            margin-right: var(--space-3);
+            
+            /* Optimización para iconos SVG */
+            transition: transform var(--duration-fast) var(--ease-out-back);
+        }
+
+        .sidebar-nav-link:hover .sidebar-nav-icon {
+            transform: scale(1.1);
+        }
+
+        /*
+        =============================================================================
+        MAIN CONTENT AREA
+        =============================================================================
+        */
+        .main-content {
+            flex: 1;
+            background: var(--color-gray-50);
+            
+            /* 
+            ✅ OPTIMIZACIÓN CRÍTICA: Evitar que el contenido principal
+            se redimensione cuando el sidebar se colapsa
+            */
+            will-change: transform;
+            transition: transform var(--duration-normal) var(--ease-out-expo);
+        }
+
+        /* Cuando sidebar está colapsado, ajustar main content */
+        .dashboard-container.sidebar-collapsed .main-content {
+            /* 
+            ✅ Usar transform para simular el resize sin reflow real
+            Esto mantiene el DOM estable mientras da feedback visual
+            */
+            transform: translateX(-220px);
+        }
+
+        /*
+        =============================================================================
+        HEADER OPTIMIZADO
+        =============================================================================
+        */
+        .dashboard-header {
+            background: white;
+            border-bottom: 1px solid var(--color-gray-200);
+            padding: var(--space-4) var(--space-6);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            
+            /* Preparar para sticky positioning */
+            position: sticky;
+            top: 0;
+            z-index: var(--z-sticky);
+            
+            /* Backdrop filter para glassmorphism sutil */
+            backdrop-filter: saturate(180%) blur(20px);
+            background-color: rgba(255, 255, 255, 0.95);
+        }
+
+        .header-title {
+            font-size: var(--font-size-xl);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin: 0;
+        }
+
+        .sidebar-toggle {
+            background: none;
+            border: none;
+            color: var(--color-gray-600);
+            font-size: var(--font-size-lg);
+            cursor: pointer;
+            padding: var(--space-2);
+            border-radius: 6px;
+            
+            /* Optimizar para interacción */
+            will-change: background-color, transform;
+            transition: all var(--duration-fast) var(--ease-out-quad);
+        }
+
+        .sidebar-toggle:hover {
+            background-color: var(--color-gray-100);
+            transform: scale(1.05);
+        }
+
+        .sidebar-toggle:active {
+            transform: scale(0.95);
+        }
+
+        /*
+        =============================================================================
+        CARDS SYSTEM - VERSIÓN PROBLEMÁTICA VS OPTIMIZADA
+        =============================================================================
+        */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--space-6);
+            padding: var(--space-6);
+        }
+
+        /* ❌ CARD PROBLEMÁTICA */
+        .dashboard-card-problematic {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-gray-200);
+            
+            /* 
+            ❌ PROBLEMA: Animar box-shadow directamente es costoso
+            Cada frame de hover recalcula sombras complejas
+            */
+            transition: box-shadow var(--duration-normal) ease;
+        }
+
+        .dashboard-card-problematic:hover {
+            /* ❌ Box-shadow animado causa repaint costoso */
+            box-shadow: var(--shadow-lg);
+        }
+
+        /* ✅ CARD OPTIMIZADA */
+        .dashboard-card-optimized {
+            background: white;
+            border-radius: 12px;
+            padding: var(--space-6);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--color-gray-200);
+            
+            /* 
+            ✅ SOLUCIÓN: Preparar capa de composición
+            will-change optimiza para transform y opacity
+            */
+            will-change: transform, box-shadow;
+            transition: 
+                transform var(--duration-normal) var(--ease-out-expo),
+                box-shadow var(--duration-normal) var(--ease-out-expo);
+                
+            /* Preparar pseudo-elemento para sombra optimizada */
+            position: relative;
+        }
+
+        .dashboard-card-optimized::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+            opacity: 0;
+            transition: opacity var(--duration-normal) var(--ease-out-expo);
+            z-index: -1;
+        }
+
+        .dashboard-card-optimized:hover {
+            /* ✅ Transform es GPU-friendly */
+            transform: translateY(-4px);
+        }
+
+        .dashboard-card-optimized:hover::before {
+            /* ✅ Animar opacity del pseudo-elemento es eficiente */
+            opacity: 1;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: var(--space-4);
+        }
+
+        .card-title {
+            font-size: var(--font-size-lg);
+            font-weight: 600;
+            color: var(--color-gray-900);
+            margin: 0;
+        }
+
+        .card-icon {
+            width: 24px;
+            height: 24px;
+            color: var(--color-primary);
+            
+            /* Micro-animación para iconos */
+            transition: transform var(--duration-fast) var(--ease-out-back);
+        }
+
+        .dashboard-card-optimized:hover .card-icon {
+            transform: rotate(5deg) scale(1.1);
+        }
+
+        .card-content {
+            color: var(--color-gray-600);
+            line-height: 1.6;
+        }
+
+        .card-metric {
+            font-size: var(--font-size-2xl);
+            font-weight: 700;
+            color: var(--color-primary);
+            margin-bottom: var(--space-2);
+            
+            /* Preparar para animaciones de counter */
+            will-change: transform;
+            transition: transform var(--duration-fast) var(--ease-out-back);
+        }
+
+        .dashboard-card-optimized:hover .card-metric {
+            transform: scale(1.05);
+        }
+
+        /*
+        =============================================================================
+        SISTEMA DE BADGES Y INDICADORES
+        =============================================================================
+        */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            padding: var(--space-1) var(--space-3);
+            border-radius: 20px;
+            font-size: var(--font-size-xs);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            
+            /* Preparar para micro-animaciones */
+            will-change: transform;
+            transition: transform var(--duration-fast) var(--ease-out-back);
+        }
+
+        .status-badge:hover {
+            transform: scale(1.05);
+        }
+
+        .status-badge.success {
+            background-color: rgba(25, 135, 84, 0.1);
+            color: var(--color-success);
+        }
+
+        .status-badge.warning {
+            background-color: rgba(253, 126, 20, 0.1);
+            color: var(--color-warning);
+        }
+
+        .status-badge.danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            color: var(--color-danger);
+        }
+
+        /*
+        =============================================================================
+        SISTEMA DE MÉTRICAS EN TIEMPO REAL
+        =============================================================================
+        */
+        .performance-metrics {
+            position: fixed;
+            top: var(--space-4);
+            right: var(--space-4);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: var(--space-4);
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: var(--font-size-sm);
+            z-index: var(--z-modal);
+            backdrop-filter: blur(10px);
+            min-width: 200px;
+        }
+
+        .metric-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: var(--space-2);
+        }
+
+        .metric-value {
+            font-weight: bold;
+        }
+
+        .metric-good { color: #4ade80; }
+        .metric-warning { color: #fbbf24; }
+        .metric-bad { color: #f87171; }
+
+        /*
+        =============================================================================
+        LOADING STATES OPTIMIZADOS
+        =============================================================================
+        */
+        .loading-skeleton {
+            background: linear-gradient(
+                90deg,
+                var(--color-gray-200) 25%,
+                var(--color-gray-100) 50%,
+                var(--color-gray-200) 75%
+            );
+            background-size: 200% 100%;
+            border-radius: 4px;
+            
+            /* Animación optimizada usando transform */
+            animation: shimmer 2s infinite;
+        }
+
+        @keyframes shimmer {
+            0% {
+                background-position: -200% 0;
+            }
+            100% {
+                background-position: 200% 0;
+            }
+        }
+
+        .loading-text {
+            height: 1rem;
+            margin-bottom: var(--space-2);
+        }
+
+        .loading-text:last-child {
+            width: 60%;
+        }
+
+        /*
+        =============================================================================
+        RESPONSIVE DESIGN OPTIMIZADO
+        =============================================================================
+        */
+        @media (max-width: 768px) {
+            .sidebar-optimized,
+            .sidebar-problematic {
+                position: fixed;
+                left: 0;
+                top: 0;
+                height: 100vh;
+                z-index: var(--z-modal);
+                
+                /* En móvil, siempre usar transform para mejor performance */
+                transform: translateX(-100%);
+                transition: transform var(--duration-normal) var(--ease-out-expo);
+            }
+            
+            .sidebar-optimized.show,
+            .sidebar-problematic.show {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                width: 100%;
+                transform: none !important;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+                padding: var(--space-4);
+                gap: var(--space-4);
+            }
+            
+            .performance-metrics {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: var(--space-4);
+            }
+        }
+
+        /*
+        =============================================================================
+        ACCESIBILIDAD Y REDUCED MOTION
+        =============================================================================
+        */
+        @media (prefers-reduced-motion: reduce) {
+            *,
+            *::before,
+            *::after {
+                animation-duration: 0.01ms !important;
+                animation-iteration-count: 1 !important;
+                transition-duration: 0.01ms !important;
+                scroll-behavior: auto !important;
+            }
+            
+            /* Mantener feedback visual pero sin movimiento */
+            .dashboard-card-optimized:hover,
+            .dashboard-card-problematic:hover {
+                transform: none;
+                box-shadow: 0 0 0 2px var(--color-primary);
+            }
+        }
+
+        /* Focus states para navegación por teclado */
+        .sidebar-toggle:focus-visible,
+        .sidebar-nav-link:focus-visible {
+            outline: 2px solid var(--color-primary);
+            outline-offset: 2px;
+        }
+
+        /*
+        =============================================================================
+        OPTIMIZACIONES ESPECÍFICAS PARA DISPOSITIVOS
+        =============================================================================
+        */
+        
+        /* Dispositivos con poca memoria o CPU limitada */
+        @media (max-width: 768px) and (max-resolution: 150dpi) {
+            :root {
+                --duration-normal: 150ms;
+                --duration-slow: 250ms;
+            }
+            
+            .dashboard-card-optimized::before {
+                display: none; /* Simplificar sombras en dispositivos limitados */
+            }
+        }
+
+        /* Dispositivos con update rate bajo */
+        @media (update: slow) {
+            .loading-skeleton {
+                animation: none;
+                background: var(--color-gray-200);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Performance Metrics Monitor -->
+    <div class="performance-metrics">
+        <div class="metric-row">
+            <span>FPS:</span>
+            <span class="metric-value" id="fps-counter">60</span>
+        </div>
+        <div class="metric-row">
+            <span>Frame Time:</span>
+            <span class="metric-value" id="frame-time">16.7ms</span>
+        </div>
+        <div class="metric-row">
+            <span>Reflows:</span>
+            <span class="metric-value" id="reflow-counter">0</span>
+        </div>
+        <div class="metric-row">
+            <span>Memory:</span>
+            <span class="metric-value" id="memory-usage">45MB</span>
+        </div>
+        <div class="metric-row">
+            <span>Mode:</span>
+            <span class="metric-value" id="current-mode">Optimized</span>
+        </div>
+    </div>
+
+    <!-- Dashboard Container -->
+    <div class="dashboard-container" id="dashboard-container">
+        <!-- Sidebar - Versión que se puede alternar -->
+        <nav class="sidebar-optimized" id="sidebar">
+            <div class="sidebar-header">
+                <h2 style="color: white; font-size: 1.25rem; margin-bottom: 1rem;">
+                    Dashboard Pro
+                </h2>
+                <button class="btn btn-sm btn-outline-light" onclick="toggleOptimizationMode()" id="mode-toggle">
+                    Cambiar a Problemático
+                </button>
+            </div>
+            
+            <ul class="sidebar-nav">
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link active">
+                        <span class="sidebar-nav-icon">📊</span>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">👥</span>
+                        Usuarios
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">📈</span>
+                        Analytics
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">⚙️</span>
+                        Settings
+                    </a>
+                </li>
+                <li class="sidebar-nav-item">
+                    <a href="#" class="sidebar-nav-link">
+                        <span class="sidebar-nav-icon">🔒</span>
+                        Security
+                    </a>
+                </li>
+            </ul>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="dashboard-header">
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button class="sidebar-toggle" onclick="toggleSidebar()" aria-label="Toggle sidebar">
+                        ☰
+                    </button>
+                    <h1 class="header-title">Dashboard Overview</h1>
+                </div>
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <span class="status-badge success">Sistema Online</span>
+                    <button class="btn btn-primary">
+                        Nuevo Reporte
+                    </button>
+                </div>
+            </header>
+
+            <!-- Dashboard Content -->
+            <div class="dashboard-grid">
+                <!-- Métricas Cards -->
+                <div class="dashboard-card-optimized" id="card-1">
+                    <div class="card-header">
+                        <h3 class="card-title">Usuarios Activos</h3>
+                        <span class="card-icon">👥</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-metric">2,847</div>
+                        <p>+12% desde el mes pasado</p>
+                        <span class="status-badge success">En crecimiento</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card-optimized" id="card-2">
+                    <div class="card-header">
+                        <h3 class="card-title">Ingresos</h3>
+                        <span class="card-icon">💰</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-metric">$45,231</div>
+                        <p>+8% desde la semana pasada</p>
+                        <span class="status-badge success">Meta alcanzada</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card-optimized" id="card-3">
+                    <div class="card-header">
+                        <h3 class="card-title">Conversión</h3>
+                        <span class="card-icon">📈</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-metric">3.24%</div>
+                        <p>-2% desde ayer</p>
+                        <span class="status-badge warning">Necesita atención</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card-optimized" id="card-4">
+                    <div class="card-header">
+                        <h3 class="card-title">Tiempo de Carga</h3>
+                        <span class="card-icon">⚡</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-metric">1.2s</div>
+                        <p>Promedio de las últimas 24h</p>
+                        <span class="status-badge success">Óptimo</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card-optimized" id="card-5">
+                    <div class="card-header">
+                        <h3 class="card-title">Errores del Sistema</h3>
+                        <span class="card-icon">🚨</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-metric">23</div>
+                        <p>En las últimas 12 horas</p>
+                        <span class="status-badge danger">Crítico</span>
+                    </div>
+                </div>
+
+                <div class="dashboard-card-optimized" id="card-6">
+                    <div class="card-header">
+                        <h3 class="card-title">Satisfacción</h3>
+                        <span class="card-icon">😊</span>
+                    </div>
+                    <div class="card-content">
+                        <div class="card-metric">4.7/5</div>
+                        <p>Basado en 1,234 reviews</p>
+                        <span class="status-badge success">Excelente</span>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        /*
+        =============================================================================
+        SISTEMA DE MONITORING DE PERFORMANCE EMPRESARIAL
+        =============================================================================
+        Este código demuestra técnicas de monitoring que se usan en dashboards
+        de producción para detectar regresiones de performance en tiempo real.
+        */
+
+        class EnterprisePerformanceMonitor {
+            constructor() {
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.fps = 60;
+                this.frameTime = 16.7;
+                this.reflowCount = 0;
+                this.memoryUsage = 0;
+                this.isOptimizedMode = true;
+                
+                this.initializeMonitoring();
+                this.setupPerformanceObserver();
+                this.detectEnterpriseConstraints();
+            }
+
+            initializeMonitoring() {
+                const monitor = () => {
+                    this.frameCount++;
+                    const currentTime = performance.now();
+                    const deltaTime = currentTime - this.lastTime;
+
+                    if (deltaTime >= 1000) {
+                        this.fps = Math.round((this.frameCount * 1000) / deltaTime);
+                        this.frameTime = deltaTime / this.frameCount;
+                        
+                        this.updateMemoryUsage();
+                        this.updateMetricsDisplay();
+                        this.checkPerformanceThresholds();
+                        
+                        this.frameCount = 0;
+                        this.lastTime = currentTime;
+                    }
+
+                    requestAnimationFrame(monitor);
+                };
+
+                requestAnimationFrame(monitor);
+            }
+
+            updateMemoryUsage() {
+                // Simular medición de memoria (en producción usarías performance.memory)
+                if (performance.memory) {
+                    this.memoryUsage = Math.round(performance.memory.usedJSHeapSize / 1048576);
+                } else {
+                    // Fallback para navegadores que no soportan performance.memory
+                    this.memoryUsage = Math.round(40 + Math.random() * 20);
+                }
+            }
+
+            updateMetricsDisplay() {
+                document.getElementById('fps-counter').textContent = this.fps;
+                document.getElementById('frame-time').textContent = this.frameTime.toFixed(1) + 'ms';
+                document.getElementById('reflow-counter').textContent = this.reflowCount;
+                document.getElementById('memory-usage').textContent = this.memoryUsage + 'MB';
+                document.getElementById('current-mode').textContent = this.isOptimizedMode ? 'Optimized' : 'Problematic';
+
+                // Color coding basado en performance
+                this.updateMetricColors();
+            }
+
+            updateMetricColors() {
+                const fpsElement = document.getElementById('fps-counter');
+                const frameTimeElement = document.getElementById('frame-time');
+                const memoryElement = document.getElementById('memory-usage');
+
+                // FPS Thresholds para contexto empresarial
+                fpsElement.className = 'metric-value ' + (
+                    this.fps >= 58 ? 'metric-good' : 
+                    this.fps >= 45 ? 'metric-warning' : 
+                    'metric-bad'
+                );
+
+                // Frame Time Thresholds
+                frameTimeElement.className = 'metric-value ' + (
+                    this.frameTime <= 18 ? 'metric-good' : 
+                    this.frameTime <= 25 ? 'metric-warning' : 
+                    'metric-bad'
+                );
+
+                // Memory Thresholds
+                memoryElement.className = 'metric-value ' + (
+                    this.memoryUsage <= 60 ? 'metric-good' : 
+                    this.memoryUsage <= 100 ? 'metric-warning' : 
+                    'metric-bad'
+                );
+            }
+
+            checkPerformanceThresholds() {
+                /*
+                En contextos empresariales, es crítico detectar regresiones
+                de performance automáticamente y alertar a los desarrolladores.
+                */
+                if (this.fps < 45) {
+                    console.warn('🚨 ALERTA EMPRESARIAL: FPS crítico detectado', {
+                        fps: this.fps,
+                        frameTime: this.frameTime,
+                        mode: this.isOptimizedMode ? 'optimized' : 'problematic',
+                        timestamp: new Date().toISOString()
+                    });
+                }
+
+                if (this.memoryUsage > 100) {
+                    console.warn('🚨 ALERTA EMPRESARIAL: Uso de memoria elevado', {
+                        memory: this.memoryUsage,
+                        timestamp: new Date().toISOString()
+                    });
+                }
+            }
+
+            setupPerformanceObserver() {
+                /*
+                Performance Observer para detectar long tasks que pueden
+                indicar problemas de performance en dashboards complejos.
+                */
+                if ('PerformanceObserver' in window) {
+                    const observer = new PerformanceObserver((list) => {
+                        list.getEntries().forEach((entry) => {
+                            if (entry.entryType === 'longtask' && entry.duration > 50) {
+                                console.warn('⏳ Long Task detectada en dashboard:', {
+                                    duration: entry.duration,
+                                    startTime: entry.startTime,
+                                    mode: this.isOptimizedMode ? 'optimized' : 'problematic'
+                                });
+                            }
+                        });
+                    });
+
+                    try {
+                        observer.observe({ entryTypes: ['longtask'] });
+                    } catch (e) {
+                        console.log('ℹ️ Long task observer no disponible');
+                    }
+                }
+            }
+
+            detectEnterpriseConstraints() {
+                /*
+                En entornos empresariales, es común encontrar:
+                - Hardware corporativo más antiguo
+                - Navegadores desactualizados
+                - Restricciones de red
+                - Múltiples aplicaciones ejecutándose
+                */
+                const constraints = {
+                    cores: navigator.hardwareConcurrency || 'unknown',
+                    memory: navigator.deviceMemory || 'unknown',
+                    connection: navigator.connection?.effectiveType || 'unknown',
+                    platform: navigator.platform,
+                    userAgent: navigator.userAgent.includes('Chrome') ? 'Chrome' : 'Other'
+                };
+
+                console.log('🏢 Análisis de Entorno Empresarial:', constraints);
+
+                // Ajustar optimizaciones basado en el entorno
+                if (constraints.cores <= 4 || constraints.memory <= 4) {
+                    console.log('⚡ Entorno empresarial limitado - aplicando optimizaciones adicionales');
+                    this.applyEnterpriseOptimizations();
+                }
+            }
+
+            applyEnterpriseOptimizations() {
+                /*
+                Optimizaciones específicas para entornos empresariales con recursos limitados.
+                */
+                document.documentElement.style.setProperty('--duration-normal', '200ms');
+                document.documentElement.style.setProperty('--duration-slow', '300ms');
+                
+                console.log('🔧 Optimizaciones empresariales aplicadas');
+            }
+
+            recordReflow() {
+                this.reflowCount++;
+                console.warn(`⚠️ Reflow detectado - Total: ${this.reflowCount}`);
+            }
+
+            setMode(isOptimized) {
+                this.isOptimizedMode = isOptimized;
+                this.reflowCount = 0; // Reset counter al cambiar modo
+            }
+        }
+
+        /*
+        =============================================================================
+        FUNCIONALIDAD DEL DASHBOARD
+        =============================================================================
+        */
+
+        let sidebarCollapsed = false;
+        let optimizationMode = true; // true = optimized, false = problematic
+        let performanceMonitor;
+
+        function toggleSidebar() {
+            const container = document.getElementById('dashboard-container');
+            const sidebar = document.getElementById('sidebar');
+            
+            sidebarCollapsed = !sidebarCollapsed;
+            
+            if (sidebarCollapsed) {
+                container.classList.add('sidebar-collapsed');
+                sidebar.classList.add('collapsed');
+            } else {
+                container.classList.remove('sidebar-collapsed');
+                sidebar.classList.remove('collapsed');
+            }
+            
+            // Simular reflow si está en modo problemático
+            if (!optimizationMode) {
+                performanceMonitor.recordReflow();
+                performanceMonitor.recordReflow(); // Múltiples reflows en modo problemático
+            }
+            
+            console.log(`Sidebar ${sidebarCollapsed ? 'collapsed' : 'expanded'} - Mode: ${optimizationMode ? 'optimized' : 'problematic'}`);
+        }
+
+        function toggleOptimizationMode() {
+            const sidebar = document.getElementById('sidebar');
+            const cards = document.querySelectorAll('[class*="dashboard-card"]');
+            const toggleButton = document.getElementById('mode-toggle');
+            
+            optimizationMode = !optimizationMode;
+            performanceMonitor.setMode(optimizationMode);
+            
+            if (optimizationMode) {
+                // Cambiar a modo optimizado
+                sidebar.className = 'sidebar-optimized';
+                cards.forEach(card => {
+                    card.className = card.className.replace('dashboard-card-problematic', 'dashboard-card-optimized');
+                });
+                toggleButton.textContent = 'Cambiar a Problemático';
+                console.log('✅ Modo optimizado activado');
+            } else {
+                // Cambiar a modo problemático
+                sidebar.className = 'sidebar-problematic';
+                cards.forEach(card => {
+                    card.className = card.className.replace('dashboard-card-optimized', 'dashboard-card-problematic');
+                });
+                toggleButton.textContent = 'Cambiar a Optimizado';
+                console.log('❌ Modo problemático activado - observa la degradación de performance');
+            }
+        }
+
+        /*
+        =============================================================================
+        SIMULACIÓN DE DATOS EN TIEMPO REAL
+        =============================================================================
+        */
+        function simulateRealtimeUpdates() {
+            /*
+            Simular actualizaciones de métricas en tiempo real como las que
+            tendría un dashboard empresarial real.
+            */
+            const metrics = document.querySelectorAll('.card-metric');
+            
+            setInterval(() => {
+                metrics.forEach(metric => {
+                    const currentValue = parseInt(metric.textContent.replace(/[^\d]/g, ''));
+                    const variation = Math.floor(Math.random() * 10) - 5; // -5 a +5
+                    const newValue = Math.max(0, currentValue + variation);
+                    
+                    // Animar el cambio de valor
+                    metric.style.transform = 'scale(1.1)';
+                    setTimeout(() => {
+                        metric.textContent = metric.textContent.replace(/\d+/, newValue);
+                        metric.style.transform = 'scale(1)';
+                    }, 150);
+                });
+            }, 5000); // Actualizar cada 5 segundos
+        }
+
+        /*
+        =============================================================================
+        NAVEGACIÓN POR TECLADO PARA ACCESIBILIDAD
+        =============================================================================
+        */
+        document.addEventListener('keydown', (e) => {
+            /*
+            En dashboards empresariales, la navegación por teclado es crítica
+            para usuarios que dependen de tecnologías de asistencia.
+            */
+            if (e.ctrlKey && e.key === 'b') {
+                e.preventDefault();
+                toggleSidebar();
+            }
+            
+            if (e.ctrlKey && e.shiftKey && e.key === 'P') {
+                e.preventDefault();
+                toggleOptimizationMode();
+            }
+        });
+
+        /*
+        =============================================================================
+        INICIALIZACIÓN DEL SISTEMA
+        =============================================================================
+        */
+        document.addEventListener('DOMContentLoaded', () => {
+            // Inicializar monitor de performance
+            performanceMonitor = new EnterprisePerformanceMonitor();
+            
+            // Iniciar simulación de datos en tiempo real
+            simulateRealtimeUpdates();
+            
+            // Logs educativos
+            console.log('🏢 Dashboard Empresarial Iniciado');
+            console.log('🎯 Shortcuts: Ctrl+B (toggle sidebar), Ctrl+Shift+P (toggle mode)');
+            console.log('📊 Observa las métricas de performance en tiempo real');
+            console.log('⚡ Prueba ambos modos para ver la diferencia de performance');
+        });
+    </script>
+</body>
+</html>

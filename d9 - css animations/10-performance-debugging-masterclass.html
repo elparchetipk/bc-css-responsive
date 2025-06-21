@@ -1,0 +1,1289 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Masterclass: Performance Debugging Avanzado</title>
+    <style>
+        /*
+        =============================================================================
+        DESIGN SYSTEM PARA HERRAMIENTAS DE DEBUGGING PROFESIONAL
+        =============================================================================
+        */
+        :root {
+            /* Color System - Optimizado para análisis técnico */
+            --color-primary: #1f2937;
+            --color-secondary: #374151;
+            --color-accent: #06d6a0;
+            --color-warning: #f59e0b;
+            --color-danger: #ef4444;
+            --color-success: #10b981;
+            --color-info: #3b82f6;
+            
+            /* Performance Status Colors */
+            --color-optimal: #10b981;
+            --color-good: #84cc16;
+            --color-needs-improvement: #f59e0b;
+            --color-poor: #ef4444;
+            --color-critical: #dc2626;
+            
+            /* Background System */
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --bg-surface: rgba(255, 255, 255, 0.05);
+            --bg-overlay: rgba(0, 0, 0, 0.8);
+            
+            /* Text Colors */
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+            --text-accent: #06d6a0;
+            
+            /* Spacing System */
+            --space-1: 0.25rem;
+            --space-2: 0.5rem;
+            --space-3: 0.75rem;
+            --space-4: 1rem;
+            --space-6: 1.5rem;
+            --space-8: 2rem;
+            --space-12: 3rem;
+            
+            /* Typography */
+            --text-xs: 0.75rem;
+            --text-sm: 0.875rem;
+            --text-base: 1rem;
+            --text-lg: 1.125rem;
+            --text-xl: 1.25rem;
+            --text-2xl: 1.5rem;
+            --text-3xl: 1.875rem;
+            
+            /* Animation System */
+            --duration-instant: 50ms;
+            --duration-fast: 150ms;
+            --duration-normal: 250ms;
+            --duration-slow: 400ms;
+            
+            /* Professional Easing */
+            --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+            --ease-bounce: cubic-bezier(0.68, -0.55, 0.265, 1.55);
+            --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+            
+            /* Border Radius */
+            --radius-sm: 0.375rem;
+            --radius-md: 0.5rem;
+            --radius-lg: 0.75rem;
+            --radius-xl: 1rem;
+            
+            /* Shadows */
+            --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', 'SF Mono', 'Monaco', 'Inconsolata', 'Fira Code', monospace;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, var(--bg-secondary) 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .debugging-container {
+            max-width: 1800px;
+            margin: 0 auto;
+            padding: var(--space-6);
+        }
+
+        .debugging-header {
+            text-align: center;
+            margin-bottom: var(--space-12);
+            position: relative;
+        }
+
+        .debugging-title {
+            font-size: var(--text-3xl);
+            font-weight: 800;
+            margin-bottom: var(--space-4);
+            background: linear-gradient(135deg, var(--color-accent), var(--color-info));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .debugging-subtitle {
+            color: var(--text-secondary);
+            max-width: 700px;
+            margin: 0 auto;
+            font-size: var(--text-lg);
+        }
+
+        /*
+        =============================================================================
+        DEBUGGING DASHBOARD LAYOUT
+        =============================================================================
+        */
+        .debugging-dashboard {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: var(--space-8);
+            margin-bottom: var(--space-12);
+        }
+
+        .debugging-panel {
+            background: var(--bg-surface);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: var(--radius-xl);
+            padding: var(--space-6);
+            backdrop-filter: blur(20px);
+            
+            /* Preparar para animaciones */
+            will-change: transform, box-shadow;
+            transition: all var(--duration-normal) var(--ease-out);
+        }
+
+        .debugging-panel:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-xl);
+            border-color: rgba(6, 214, 160, 0.3);
+        }
+
+        .panel-title {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-6);
+            display: flex;
+            align-items: center;
+            gap: var(--space-3);
+            color: var(--text-accent);
+        }
+
+        /*
+        =============================================================================
+        PERFORMANCE PROFILER - HERRAMIENTA PRINCIPAL
+        =============================================================================
+        */
+        .performance-profiler {
+            background: #000;
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            border: 1px solid var(--color-accent);
+            margin-bottom: var(--space-6);
+        }
+
+        .profiler-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-4);
+            padding-bottom: var(--space-2);
+            border-bottom: 1px solid rgba(6, 214, 160, 0.3);
+        }
+
+        .profiler-title {
+            color: var(--color-accent);
+            font-weight: 600;
+        }
+
+        .profiler-status {
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .status-indicator {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--color-success);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        .profiler-metrics {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: var(--space-4);
+            margin-bottom: var(--space-4);
+        }
+
+        .metric-item {
+            text-align: center;
+            padding: var(--space-3);
+            background: rgba(6, 214, 160, 0.1);
+            border-radius: var(--radius-md);
+        }
+
+        .metric-value {
+            font-size: var(--text-xl);
+            font-weight: 700;
+            margin-bottom: var(--space-1);
+            
+            /* Preparar para animaciones de cambio */
+            will-change: transform;
+            transition: transform var(--duration-fast) var(--ease-bounce);
+        }
+
+        .metric-label {
+            font-size: var(--text-xs);
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .metric-optimal { color: var(--color-optimal); }
+        .metric-good { color: var(--color-good); }
+        .metric-needs-improvement { color: var(--color-needs-improvement); }
+        .metric-poor { color: var(--color-poor); }
+        .metric-critical { color: var(--color-critical); }
+
+        /*
+        =============================================================================
+        FLAME GRAPH - VISUALIZACIÓN AVANZADA
+        =============================================================================
+        */
+        .flame-graph {
+            background: #111;
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .flame-graph-title {
+            color: var(--text-accent);
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+        }
+
+        .flame-stack {
+            display: flex;
+            flex-direction: column;
+            gap: var(--space-1);
+            height: 200px;
+            justify-content: flex-end;
+        }
+
+        .flame-layer {
+            display: flex;
+            gap: var(--space-1);
+            height: 20px;
+        }
+
+        .flame-segment {
+            height: 100%;
+            border-radius: var(--radius-sm);
+            position: relative;
+            cursor: pointer;
+            
+            /* Preparar para hover states */
+            will-change: transform, box-shadow;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+
+        .flame-segment:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+            z-index: 10;
+        }
+
+        .flame-segment.expensive {
+            background: linear-gradient(135deg, var(--color-danger), #dc2626);
+        }
+
+        .flame-segment.moderate {
+            background: linear-gradient(135deg, var(--color-warning), #d97706);
+        }
+
+        .flame-segment.efficient {
+            background: linear-gradient(135deg, var(--color-success), #059669);
+        }
+
+        .flame-tooltip {
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--bg-overlay);
+            color: white;
+            padding: var(--space-2) var(--space-3);
+            border-radius: var(--radius-md);
+            font-size: var(--text-xs);
+            white-space: nowrap;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity var(--duration-fast) ease;
+            z-index: 20;
+        }
+
+        .flame-segment:hover .flame-tooltip {
+            opacity: 1;
+        }
+
+        /*
+        =============================================================================
+        BOTTLENECK ANALYZER
+        =============================================================================
+        */
+        .bottleneck-analyzer {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--color-danger);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+            margin-bottom: var(--space-6);
+        }
+
+        .bottleneck-title {
+            color: var(--color-danger);
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .bottleneck-list {
+            list-style: none;
+        }
+
+        .bottleneck-item {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-3);
+            border-left: 4px solid var(--color-danger);
+        }
+
+        .bottleneck-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .bottleneck-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-2);
+        }
+
+        .bottleneck-name {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .bottleneck-impact {
+            background: var(--color-danger);
+            color: white;
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .bottleneck-description {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-2);
+        }
+
+        .bottleneck-solution {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--color-success);
+            border-radius: var(--radius-sm);
+            padding: var(--space-2);
+            color: var(--color-success);
+            font-size: var(--text-sm);
+        }
+
+        /*
+        =============================================================================
+        OPTIMIZATION RECOMMENDATIONS
+        =============================================================================
+        */
+        .optimization-recommendations {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--color-success);
+            border-radius: var(--radius-lg);
+            padding: var(--space-4);
+        }
+
+        .recommendations-title {
+            color: var(--color-success);
+            font-weight: 600;
+            margin-bottom: var(--space-4);
+            display: flex;
+            align-items: center;
+            gap: var(--space-2);
+        }
+
+        .recommendation-list {
+            list-style: none;
+        }
+
+        .recommendation-item {
+            background: rgba(0, 0, 0, 0.2);
+            border-radius: var(--radius-md);
+            padding: var(--space-3);
+            margin-bottom: var(--space-3);
+            border-left: 4px solid var(--color-success);
+            cursor: pointer;
+            
+            /* Preparar para hover */
+            will-change: transform, background-color;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+
+        .recommendation-item:hover {
+            transform: translateX(4px);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .recommendation-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--space-2);
+        }
+
+        .recommendation-title {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .recommendation-priority {
+            padding: var(--space-1) var(--space-2);
+            border-radius: var(--radius-sm);
+            font-size: var(--text-xs);
+            font-weight: 600;
+        }
+
+        .priority-high {
+            background: var(--color-danger);
+            color: white;
+        }
+
+        .priority-medium {
+            background: var(--color-warning);
+            color: white;
+        }
+
+        .priority-low {
+            background: var(--color-info);
+            color: white;
+        }
+
+        .recommendation-description {
+            color: var(--text-secondary);
+            font-size: var(--text-sm);
+            margin-bottom: var(--space-2);
+        }
+
+        .recommendation-code {
+            background: #000;
+            border-radius: var(--radius-sm);
+            padding: var(--space-2);
+            font-size: var(--text-xs);
+            color: var(--color-accent);
+            overflow-x: auto;
+        }
+
+        /*
+        =============================================================================
+        DEBUGGING CONTROLS
+        =============================================================================
+        */
+        .debugging-controls {
+            display: flex;
+            gap: var(--space-4);
+            margin-bottom: var(--space-8);
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+
+        .debug-button {
+            background: var(--color-accent);
+            color: white;
+            border: none;
+            padding: var(--space-3) var(--space-6);
+            border-radius: var(--radius-md);
+            font-weight: 600;
+            cursor: pointer;
+            font-family: inherit;
+            font-size: var(--text-sm);
+            
+            /* Optimización para interacciones */
+            will-change: transform, background-color;
+            transition: all var(--duration-fast) var(--ease-out);
+        }
+
+        .debug-button:hover {
+            background: var(--color-info);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .debug-button:active {
+            transform: translateY(0);
+        }
+
+        .debug-button.danger {
+            background: var(--color-danger);
+        }
+
+        .debug-button.warning {
+            background: var(--color-warning);
+        }
+
+        .debug-button:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /*
+        =============================================================================
+        LIVE CODE EDITOR
+        =============================================================================
+        */
+        .live-code-editor {
+            background: #000;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: var(--radius-lg);
+            overflow: hidden;
+            margin-bottom: var(--space-6);
+        }
+
+        .editor-header {
+            background: var(--bg-tertiary);
+            padding: var(--space-3) var(--space-4);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .editor-title {
+            color: var(--text-primary);
+            font-weight: 600;
+        }
+
+        .editor-actions {
+            display: flex;
+            gap: var(--space-2);
+        }
+
+        .editor-button {
+            background: transparent;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: var(--text-secondary);
+            padding: var(--space-1) var(--space-3);
+            border-radius: var(--radius-sm);
+            cursor: pointer;
+            font-size: var(--text-xs);
+            
+            transition: all var(--duration-fast) ease;
+        }
+
+        .editor-button:hover {
+            background: rgba(255, 255, 255, 0.1);
+            color: var(--text-primary);
+        }
+
+        .editor-content {
+            padding: var(--space-4);
+            font-size: var(--text-sm);
+            line-height: 1.5;
+            color: var(--text-secondary);
+            min-height: 200px;
+            font-family: inherit;
+        }
+
+        .code-line {
+            margin-bottom: var(--space-1);
+        }
+
+        .code-problem {
+            background: rgba(239, 68, 68, 0.2);
+            border-left: 3px solid var(--color-danger);
+            padding-left: var(--space-2);
+            margin-left: -var(--space-2);
+        }
+
+        .code-solution {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 3px solid var(--color-success);
+            padding-left: var(--space-2);
+            margin-left: -var(--space-2);
+        }
+
+        .code-comment {
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        /*
+        =============================================================================
+        RESPONSIVE DESIGN
+        =============================================================================
+        */
+        @media (max-width: 768px) {
+            .debugging-dashboard {
+                grid-template-columns: 1fr;
+                gap: var(--space-6);
+            }
+            
+            .profiler-metrics {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .debugging-controls {
+                flex-direction: column;
+            }
+            
+            .debug-button {
+                width: 100%;
+            }
+        }
+
+        /*
+        =============================================================================
+        ACCESSIBILITY
+        =============================================================================
+        */
+        @media (prefers-reduced-motion: reduce) {
+            * {
+                animation-duration: 0.01ms !important;
+                transition-duration: 0.01ms !important;
+            }
+        }
+
+        .debug-button:focus-visible,
+        .editor-button:focus-visible {
+            outline: 2px solid var(--color-accent);
+            outline-offset: 2px;
+        }
+    </style>
+</head>
+<body>
+    <div class="debugging-container">
+        <!-- Header -->
+        <header class="debugging-header">
+            <h1 class="debugging-title">🔬 Performance Debugging Masterclass</h1>
+            <p class="debugging-subtitle">
+                Técnicas avanzadas de debugging y optimización utilizadas por equipos elite.
+                Aprende a diagnosticar y resolver problemas de performance como un senior developer.
+            </p>
+        </header>
+
+        <!-- Debugging Controls -->
+        <div class="debugging-controls">
+            <button class="debug-button" onclick="startProfiling()">
+                📊 Iniciar Profiling
+            </button>
+            <button class="debug-button warning" onclick="triggerBottleneck()">
+                ⚠️ Simular Bottleneck
+            </button>
+            <button class="debug-button" onclick="runOptimizations()">
+                ⚡ Aplicar Optimizaciones
+            </button>
+            <button class="debug-button danger" onclick="resetDebugger()">
+                🔄 Reset Debugger
+            </button>
+        </div>
+
+        <div class="debugging-dashboard">
+            <!-- Performance Profiler -->
+            <div class="debugging-panel">
+                <h2 class="panel-title">
+                    📊 Performance Profiler
+                </h2>
+                
+                <div class="performance-profiler">
+                    <div class="profiler-header">
+                        <span class="profiler-title">Real-time Performance Monitor</span>
+                        <div class="profiler-status">
+                            <span class="status-indicator"></span>
+                            <span>Active</span>
+                        </div>
+                    </div>
+                    
+                    <div class="profiler-metrics">
+                        <div class="metric-item">
+                            <div class="metric-value metric-good" id="fps-metric">60</div>
+                            <div class="metric-label">FPS</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value metric-good" id="frame-time-metric">16.7</div>
+                            <div class="metric-label">Frame Time (ms)</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value metric-optimal" id="gpu-usage-metric">45</div>
+                            <div class="metric-label">GPU Usage (%)</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value metric-good" id="memory-metric">67</div>
+                            <div class="metric-label">Memory (MB)</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value metric-optimal" id="reflows-metric">0</div>
+                            <div class="metric-label">Reflows</div>
+                        </div>
+                        <div class="metric-item">
+                            <div class="metric-value metric-good" id="paint-time-metric">2.3</div>
+                            <div class="metric-label">Paint Time (ms)</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Flame Graph -->
+                <div class="flame-graph">
+                    <div class="flame-graph-title">🔥 Call Stack Visualization</div>
+                    <div class="flame-stack">
+                        <div class="flame-layer">
+                            <div class="flame-segment efficient" style="flex: 3;">
+                                <div class="flame-tooltip">React.render() - 12ms</div>
+                            </div>
+                            <div class="flame-segment moderate" style="flex: 2;">
+                                <div class="flame-tooltip">Component.update() - 8ms</div>
+                            </div>
+                            <div class="flame-segment efficient" style="flex: 1;">
+                                <div class="flame-tooltip">DOM.commit() - 4ms</div>
+                            </div>
+                        </div>
+                        <div class="flame-layer">
+                            <div class="flame-segment efficient" style="flex: 2;">
+                                <div class="flame-tooltip">CSS.parse() - 3ms</div>
+                            </div>
+                            <div class="flame-segment expensive" style="flex: 1;">
+                                <div class="flame-tooltip">Layout.reflow() - 15ms ⚠️</div>
+                            </div>
+                            <div class="flame-segment moderate" style="flex: 2;">
+                                <div class="flame-tooltip">Paint.composite() - 7ms</div>
+                            </div>
+                        </div>
+                        <div class="flame-layer">
+                            <div class="flame-segment efficient" style="flex: 4;">
+                                <div class="flame-tooltip">Animation.tick() - 2ms</div>
+                            </div>
+                            <div class="flame-segment efficient" style="flex: 1;">
+                                <div class="flame-tooltip">Event.handler() - 1ms</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottleneck Analysis -->
+            <div class="debugging-panel">
+                <h2 class="panel-title">
+                    🚨 Bottleneck Analysis
+                </h2>
+                
+                <div class="bottleneck-analyzer">
+                    <div class="bottleneck-title">
+                        ⚠️ Critical Performance Issues Detected
+                    </div>
+                    <ul class="bottleneck-list">
+                        <li class="bottleneck-item">
+                            <div class="bottleneck-header">
+                                <span class="bottleneck-name">Layout Thrashing in Grid Component</span>
+                                <span class="bottleneck-impact">HIGH IMPACT</span>
+                            </div>
+                            <div class="bottleneck-description">
+                                Animating grid-template-columns is causing forced reflows on every frame,
+                                dropping FPS from 60 to 23 on low-end devices.
+                            </div>
+                            <div class="bottleneck-solution">
+                                ✅ Replace with transform-based animations using translateX()
+                            </div>
+                        </li>
+                        <li class="bottleneck-item">
+                            <div class="bottleneck-header">
+                                <span class="bottleneck-name">Missing will-change Declarations</span>
+                                <span class="bottleneck-impact">MEDIUM IMPACT</span>
+                            </div>
+                            <div class="bottleneck-description">
+                                Interactive elements creating composition layers on-demand,
+                                causing visible jank during first interaction.
+                            </div>
+                            <div class="bottleneck-solution">
+                                ✅ Add will-change: transform to animated elements
+                            </div>
+                        </li>
+                        <li class="bottleneck-item">
+                            <div class="bottleneck-header">
+                                <span class="bottleneck-name">Inefficient CSS Selectors</span>
+                                <span class="bottleneck-impact">LOW IMPACT</span>
+                            </div>
+                            <div class="bottleneck-description">
+                                Complex descendant selectors causing style recalculation delays.
+                                Detected 15ms average recalc time.
+                            </div>
+                            <div class="bottleneck-solution">
+                                ✅ Refactor to use class-based selectors with lower specificity
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Optimization Recommendations -->
+                <div class="optimization-recommendations">
+                    <div class="recommendations-title">
+                        💡 Optimization Recommendations
+                    </div>
+                    <ul class="recommendation-list">
+                        <li class="recommendation-item" onclick="applyOptimization(1)">
+                            <div class="recommendation-header">
+                                <span class="recommendation-title">Implement Transform-Based Animations</span>
+                                <span class="recommendation-priority priority-high">HIGH</span>
+                            </div>
+                            <div class="recommendation-description">
+                                Replace layout-triggering animations with GPU-accelerated transforms.
+                                Expected improvement: 60% FPS increase on low-end devices.
+                            </div>
+                            <div class="recommendation-code">
+/* Before (Problematic) */
+.grid { transition: grid-template-columns 500ms ease; }
+
+/* After (Optimized) */
+.grid { will-change: transform; transition: transform 300ms ease; }
+                            </div>
+                        </li>
+                        <li class="recommendation-item" onclick="applyOptimization(2)">
+                            <div class="recommendation-header">
+                                <span class="recommendation-title">Optimize Critical Rendering Path</span>
+                                <span class="recommendation-priority priority-medium">MEDIUM</span>
+                            </div>
+                            <div class="recommendation-description">
+                                Extract above-the-fold CSS and defer non-critical styles.
+                                Expected improvement: 40% faster initial paint.
+                            </div>
+                            <div class="recommendation-code">
+/* Critical CSS inline in &lt;head&gt; */
+.above-fold { display: block; }
+
+/* Non-critical CSS loaded asynchronously */
+&lt;link rel="preload" href="non-critical.css" as="style" onload="this.onload=null;this.rel='stylesheet'"&gt;
+                            </div>
+                        </li>
+                        <li class="recommendation-item" onclick="applyOptimization(3)">
+                            <div class="recommendation-header">
+                                <span class="recommendation-title">Implement Intersection Observer</span>
+                                <span class="recommendation-priority priority-low">LOW</span>
+                            </div>
+                            <div class="recommendation-description">
+                                Replace scroll-based animations with Intersection Observer for better performance.
+                                Expected improvement: 25% reduction in main thread blocking.
+                            </div>
+                            <div class="recommendation-code">
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      entry.target.classList.add('animate-in');
+    }
+  });
+});
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Live Code Editor -->
+        <div class="live-code-editor">
+            <div class="editor-header">
+                <span class="editor-title">📝 Live Performance Optimization</span>
+                <div class="editor-actions">
+                    <button class="editor-button" onclick="analyzeCode()">Analyze</button>
+                    <button class="editor-button" onclick="optimizeCode()">Optimize</button>
+                    <button class="editor-button" onclick="resetCode()">Reset</button>
+                </div>
+            </div>
+            <div class="editor-content" id="code-editor">
+                <div class="code-line code-comment">/* PROBLEMA: Animación que causa layout thrashing */</div>
+                <div class="code-line code-problem">.sidebar {</div>
+                <div class="code-line code-problem">  transition: width 500ms ease;</div>
+                <div class="code-line code-problem">}</div>
+                <div class="code-line code-problem">.sidebar.collapsed {</div>
+                <div class="code-line code-problem">  width: 60px; /* Fuerza reflow en cada frame */</div>
+                <div class="code-line code-problem">}</div>
+                <div class="code-line"></div>
+                <div class="code-line code-comment">/* SOLUCIÓN: Usar transform para GPU acceleration */</div>
+                <div class="code-line code-solution">.sidebar {</div>
+                <div class="code-line code-solution">  will-change: transform;</div>
+                <div class="code-line code-solution">  transition: transform 300ms cubic-bezier(0.16, 1, 0.3, 1);</div>
+                <div class="code-line code-solution">}</div>
+                <div class="code-line code-solution">.sidebar.collapsed {</div>
+                <div class="code-line code-solution">  transform: translateX(-220px); /* Solo composición GPU */</div>
+                <div class="code-line code-solution">}</div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        /*
+        =============================================================================
+        SISTEMA DE DEBUGGING AVANZADO - SIMULATION ENGINE
+        =============================================================================
+        */
+
+        class AdvancedPerformanceDebugger {
+            constructor() {
+                this.isProfilingActive = false;
+                this.frameCount = 0;
+                this.lastTime = performance.now();
+                this.metrics = {
+                    fps: 60,
+                    frameTime: 16.7,
+                    gpuUsage: 45,
+                    memory: 67,
+                    reflows: 0,
+                    paintTime: 2.3
+                };
+                this.bottlenecks = [];
+                this.optimizationsApplied = 0;
+                
+                this.initializeDebugger();
+                this.startRealTimeMonitoring();
+                this.simulateRealisticPerformance();
+            }
+
+            initializeDebugger() {
+                /*
+                Inicializar el debugging system con configuración profesional.
+                Simula herramientas como Chrome DevTools Performance tab.
+                */
+                console.log('🔬 Advanced Performance Debugger iniciado');
+                console.log('📊 Monitoring: FPS, Frame Time, GPU Usage, Memory, Reflows');
+                console.log('🎯 Detectando bottlenecks en tiempo real...');
+                
+                // Simular detección de issues reales
+                this.detectInitialBottlenecks();
+            }
+
+            startRealTimeMonitoring() {
+                /*
+                Monitoring continuo de métricas de performance.
+                En producción, esto usaría performance APIs reales.
+                */
+                const monitor = () => {
+                    this.frameCount++;
+                    const currentTime = performance.now();
+                    const deltaTime = currentTime - this.lastTime;
+
+                    if (deltaTime >= 1000) {
+                        this.calculateMetrics(deltaTime);
+                        this.updateMetricsDisplay();
+                        this.detectPerformanceAnomalies();
+                        
+                        this.frameCount = 0;
+                        this.lastTime = currentTime;
+                    }
+
+                    if (this.isProfilingActive) {
+                        requestAnimationFrame(monitor);
+                    }
+                };
+
+                this.isProfilingActive = true;
+                requestAnimationFrame(monitor);
+            }
+
+            calculateMetrics(deltaTime) {
+                /*
+                Calcular métricas de performance realistas.
+                Simula fluctuaciones que ocurren en aplicaciones reales.
+                */
+                const baseVariation = 0.1; // 10% de variación natural
+                
+                // FPS con variación realista
+                this.metrics.fps = Math.round(60 * (1 + (Math.random() - 0.5) * baseVariation));
+                
+                // Frame time basado en FPS
+                this.metrics.frameTime = 1000 / this.metrics.fps;
+                
+                // GPU usage con picos realistas
+                this.metrics.gpuUsage = Math.round(45 + Math.sin(Date.now() / 1000) * 15 + Math.random() * 10);
+                
+                // Memory usage con crecimiento gradual
+                this.metrics.memory += Math.random() * 2 - 1; // Fluctuación lenta
+                this.metrics.memory = Math.max(40, Math.min(120, this.metrics.memory));
+                
+                // Paint time correlacionado con GPU usage
+                this.metrics.paintTime = 2.3 + (this.metrics.gpuUsage - 45) * 0.1;
+            }
+
+            updateMetricsDisplay() {
+                /*
+                Actualizar métricas en la UI con color coding profesional.
+                */
+                this.updateMetricElement('fps-metric', this.metrics.fps, this.getFPSStatus(this.metrics.fps));
+                this.updateMetricElement('frame-time-metric', this.metrics.frameTime.toFixed(1), this.getFrameTimeStatus(this.metrics.frameTime));
+                this.updateMetricElement('gpu-usage-metric', this.metrics.gpuUsage, this.getGPUStatus(this.metrics.gpuUsage));
+                this.updateMetricElement('memory-metric', Math.round(this.metrics.memory), this.getMemoryStatus(this.metrics.memory));
+                this.updateMetricElement('reflows-metric', this.metrics.reflows, this.getReflowStatus(this.metrics.reflows));
+                this.updateMetricElement('paint-time-metric', this.metrics.paintTime.toFixed(1), this.getPaintTimeStatus(this.metrics.paintTime));
+            }
+
+            updateMetricElement(id, value, status) {
+                /*
+                Actualizar elemento individual con animación y color coding.
+                */
+                const element = document.getElementById(id);
+                if (element) {
+                    // Micro-animación para cambios de valor
+                    element.style.transform = 'scale(1.1)';
+                    
+                    setTimeout(() => {
+                        element.textContent = value;
+                        element.className = `metric-value metric-${status}`;
+                        element.style.transform = 'scale(1)';
+                    }, 100);
+                }
+            }
+
+            // Status calculators basados en thresholds profesionales
+            getFPSStatus(fps) {
+                if (fps >= 58) return 'optimal';
+                if (fps >= 45) return 'good';
+                if (fps >= 30) return 'needs-improvement';
+                return 'poor';
+            }
+
+            getFrameTimeStatus(frameTime) {
+                if (frameTime <= 17) return 'optimal';
+                if (frameTime <= 22) return 'good';
+                if (frameTime <= 33) return 'needs-improvement';
+                return 'poor';
+            }
+
+            getGPUStatus(usage) {
+                if (usage <= 60) return 'optimal';
+                if (usage <= 75) return 'good';
+                if (usage <= 90) return 'needs-improvement';
+                return 'poor';
+            }
+
+            getMemoryStatus(memory) {
+                if (memory <= 70) return 'optimal';
+                if (memory <= 90) return 'good';
+                if (memory <= 110) return 'needs-improvement';
+                return 'poor';
+            }
+
+            getReflowStatus(reflows) {
+                if (reflows === 0) return 'optimal';
+                if (reflows <= 2) return 'good';
+                if (reflows <= 5) return 'needs-improvement';
+                return 'poor';
+            }
+
+            getPaintTimeStatus(paintTime) {
+                if (paintTime <= 3) return 'optimal';
+                if (paintTime <= 5) return 'good';
+                if (paintTime <= 8) return 'needs-improvement';
+                return 'poor';
+            }
+
+            detectInitialBottlenecks() {
+                /*
+                Detectar bottlenecks comunes basados en análisis de código estático.
+                Simula lo que harían herramientas como Lighthouse o WebPageTest.
+                */
+                this.bottlenecks = [
+                    {
+                        type: 'layout-thrashing',
+                        severity: 'high',
+                        description: 'Layout thrashing detected in grid animations',
+                        location: 'portfolio-grid.css:23',
+                        impact: 'FPS drops from 60 to 23 on low-end devices'
+                    },
+                    {
+                        type: 'missing-will-change',
+                        severity: 'medium',
+                        description: 'Interactive elements missing will-change optimization',
+                        location: 'dashboard.css:156',
+                        impact: 'Jank during first interaction'
+                    },
+                    {
+                        type: 'inefficient-selectors',
+                        severity: 'low',
+                        description: 'Complex CSS selectors causing style recalc delays',
+                        location: 'global.css:89',
+                        impact: '15ms average style recalculation time'
+                    }
+                ];
+
+                console.log('🚨 Bottlenecks detectados:', this.bottlenecks.length);
+            }
+
+            detectPerformanceAnomalies() {
+                /*
+                Detectar anomalías de performance en tiempo real.
+                */
+                if (this.metrics.fps < 30) {
+                    console.warn('⚠️ CRITICAL: FPS crítico detectado:', this.metrics.fps);
+                }
+                
+                if (this.metrics.frameTime > 33) {
+                    console.warn('⚠️ WARNING: Frame time elevado:', this.metrics.frameTime.toFixed(1) + 'ms');
+                }
+                
+                if (this.metrics.memory > 100) {
+                    console.warn('⚠️ WARNING: Uso de memoria elevado:', this.metrics.memory + 'MB');
+                }
+            }
+
+            simulateRealisticPerformance() {
+                /*
+                Simular condiciones de performance variables como las que
+                ocurren en aplicaciones reales con usuarios reales.
+                */
+                setInterval(() => {
+                    // Simular picos de CPU ocasionales
+                    if (Math.random() < 0.1) {
+                        this.metrics.fps = Math.max(20, this.metrics.fps - 15);
+                        console.log('📉 CPU spike simulado - FPS temporalmente reducido');
+                    }
+                    
+                    // Simular garbage collection
+                    if (Math.random() < 0.05) {
+                        this.metrics.memory = Math.max(40, this.metrics.memory - 10);
+                        console.log('🗑️ Garbage collection simulada');
+                    }
+                }, 5000);
+            }
+
+            // Métodos públicos para controles de debugging
+            triggerBottleneck() {
+                /*
+                Simular un bottleneck específico para demostración educativa.
+                */
+                console.log('🚨 Simulando bottleneck: Layout thrashing');
+                this.metrics.reflows = 15;
+                this.metrics.fps = 23;
+                this.metrics.frameTime = 43;
+                
+                // Simular duración del bottleneck
+                setTimeout(() => {
+                    console.log('✅ Bottleneck resuelto');
+                    this.metrics.reflows = 0;
+                    this.metrics.fps = 60;
+                    this.metrics.frameTime = 16.7;
+                }, 3000);
+            }
+
+            runOptimizations() {
+                /*
+                Simular aplicación de optimizaciones.
+                */
+                this.optimizationsApplied++;
+                console.log(`⚡ Aplicando optimización #${this.optimizationsApplied}`);
+                
+                // Mejorar métricas
+                this.metrics.fps = Math.min(60, this.metrics.fps + 10);
+                this.metrics.frameTime = 1000 / this.metrics.fps;
+                this.metrics.reflows = Math.max(0, this.metrics.reflows - 5);
+                this.metrics.paintTime = Math.max(1, this.metrics.paintTime - 0.5);
+                
+                console.log('📈 Métricas mejoradas:', {
+                    fps: this.metrics.fps,
+                    frameTime: this.metrics.frameTime.toFixed(1) + 'ms',
+                    reflows: this.metrics.reflows
+                });
+            }
+
+            resetDebugger() {
+                /*
+                Reset del debugger a estado inicial.
+                */
+                console.log('🔄 Reseteando debugger...');
+                this.metrics = {
+                    fps: 60,
+                    frameTime: 16.7,
+                    gpuUsage: 45,
+                    memory: 67,
+                    reflows: 0,
+                    paintTime: 2.3
+                };
+                this.optimizationsApplied = 0;
+                console.log('✅ Debugger reseteado');
+            }
+        }
+
+        /*
+        =============================================================================
+        FUNCIONES GLOBALES PARA CONTROLES
+        =============================================================================
+        */
+        let debugger;
+
+        function startProfiling() {
+            console.log('📊 Iniciando profiling avanzado...');
+            debugger.isProfilingActive = true;
+        }
+
+        function triggerBottleneck() {
+            debugger.triggerBottleneck();
+        }
+
+        function runOptimizations() {
+            debugger.runOptimizations();
+        }
+
+        function resetDebugger() {
+            debugger.resetDebugger();
+        }
+
+        function applyOptimization(id) {
+            console.log(`💡 Aplicando optimización #${id}`);
+            debugger.runOptimizations();
+        }
+
+        function analyzeCode() {
+            console.log('🔍 Analizando código para issues de performance...');
+            const issues = [
+                'Layout-triggering animation detected',
+                'Missing will-change declaration',
+                'Complex CSS selector found'
+            ];
+            issues.forEach(issue => console.warn('⚠️ Issue:', issue));
+        }
+
+        function optimizeCode() {
+            console.log('⚡ Aplicando optimizaciones automáticas al código...');
+            console.log('✅ Transform-based animations implemented');
+            console.log('✅ will-change declarations added');
+            console.log('✅ CSS selectors optimized');
+        }
+
+        function resetCode() {
+            console.log('🔄 Código reseteado a estado original');
+        }
+
+        /*
+        =============================================================================
+        INICIALIZACIÓN
+        =============================================================================
+        */
+        document.addEventListener('DOMContentLoaded', () => {
+            debugger = new AdvancedPerformanceDebugger();
+            
+            console.log('🔬 Performance Debugging Masterclass iniciada');
+            console.log('🎯 Utiliza los controles para explorar técnicas avanzadas');
+            console.log('📈 Observa las métricas en tiempo real');
+        });
+    </script>
+</body>
+</html>

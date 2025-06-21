@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mega Menú Adaptativo con Container Queries</title>
+    <style>
+        /* =================================================================
+           FUNDAMENTOS: SISTEMA DE CAPAS Y TOKENS DE DISEÑO
+           ================================================================= */
+        
+        @layer reset, tokens, base, navigation-components, adaptive-behavior;
+        
+        @layer reset {
+            * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+            }
+        }
+        
+        @layer tokens {
+            :root {
+                /* Tokens semánticos para navegación */
+                --nav-bg-primary: #1e293b;
+                --nav-bg-secondary: #334155;
+                --nav-text-primary: #f1f5f9;
+                --nav-text-secondary: #cbd5e1;
+                --nav-text-active: #3b82f6;
+                --nav-border: #475569;
+                
+                /* Tokens de espaciado específicos para navegación */
+                --nav-padding-sm: 0.5rem;
+                --nav-padding-md: 1rem;
+                --nav-padding-lg: 1.5rem;
+                --nav-padding-xl: 2rem;
+                
+                /* Tokens de tipografía para navegación */
+                --nav-font-sm: 0.875rem;
+                --nav-font-md: 1rem;
+                --nav-font-lg: 1.125rem;
+                
+                /* Tokens de timing para animaciones */
+                --nav-transition-fast: 0.15s;
+                --nav-transition-medium: 0.3s;
+                --nav-transition-slow: 0.5s;
+                
+                /* Tokens de z-index para layering */
+                --nav-z-dropdown: 1000;
+                --nav-z-overlay: 1010;
+                --nav-z-modal: 1020;
+                
+                /* Tokens de sombra para profundidad */
+                --nav-shadow-sm: 0 1px 3px rgba(0,0,0,0.12);
+                --nav-shadow-md: 0 4px 6px rgba(0,0,0,0.15);
+                --nav-shadow-lg: 0 10px 25px rgba(0,0,0,0.2);
+            }
+        }
+        
+        @layer base {
+            body {
+                font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+                line-height: 1.6;
+                background: #f8fafc;
+                color: #1e293b;
+            }
+            
+            .demo-container {
+                background: white;
+                border: 2px dashed #e2e8f0;
+                border-radius: 0.75rem;
+                padding: var(--nav-padding-lg);
+                margin-bottom: var(--nav-padding-xl);
+                
+                /* Cada demo container es un contexto de container query */
+                container-type: inline-size;
+                container-name: navigation-container;
+            }
+            
+            .demo-label {
+                background: #3b82f6;
+                color: white;
+                padding: var(--nav-padding-sm) var(--nav-padding-md);
+                border-radius: 0.5rem;
+                font-size: var(--nav-font-sm);
+                font-weight: 600;
+                margin-bottom: var(--nav-padding-lg);
+                display: inline-block;
+            }
+        }
+        
+        /* =================================================================
+           COMPONENTE PRINCIPAL: MEGA MENÚ ADAPTATIVO
+           ================================================================= */
+        
+        @layer navigation-components {
+            .mega-menu {
+                background: var(--nav-bg-primary);
+                border-radius: 0.75rem;
+                box-shadow: var(--nav-shadow-lg);
+                overflow: hidden;
+                
+                /* El mega menú en sí mismo es un container query context */
+                container-type: inline-size;
+                container-name: mega-menu;
+                
+                /* Layout por defecto: versión compacta para espacios estrechos */
+                & .menu-header {
+                    background: var(--nav-bg-secondary);
+                    padding: var(--nav-padding-md);
+                    border-bottom: 1px solid var(--nav-border);
+                    display: flex;
+                    align-items: center;
+                    justify-content: space-between;
+                    
+                    & .menu-brand {
+                        color: var(--nav-text-primary);
+                        font-size: var(--nav-font-lg);
+                        font-weight: 700;
+                        text-decoration: none;
+                        
+                        & .brand-icon {
+                            margin-right: var(--nav-padding-sm);
+                            font-size: 1.25rem;
+                        }
+                    }
+                    
+                    & .menu-toggle {
+                        background: none;
+                        border: none;
+                        color: var(--nav-text-primary);
+                        font-size: 1.25rem;
+                        cursor: pointer;
+                        padding: var(--nav-padding-sm);
+                        border-radius: 0.375rem;
+                        transition: background-color var(--nav-transition-fast);
+                        
+                        &:hover {
+                            background: rgba(255,255,255,0.1);
+                        }
+                    }
+                }
+                
+                & .menu-content {
+                    /* Por defecto, el contenido está oculto (mobile-first) */
+                    display: none;
+                    
+                    & .menu-section {
+                        padding: var(--nav-padding-lg);
+                        border-bottom: 1px solid var(--nav-border);
+                        
+                        &:last-child {
+                            border-bottom: none;
+                        }
+                        
+                        & .section-title {
+                            color: var(--nav-text-secondary);
+                            font-size: var(--nav-font-sm);
+                            font-weight: 600;
+                            text-transform: uppercase;
+                            letter-spacing: 0.05em;
+                            margin-bottom: var(--nav-padding-md);
+                        }
+                        
+                        & .menu-links {
+                            list-style: none;
+                            
+                            & .menu-link {
+                                margin-bottom: var(--nav-padding-sm);
+                                
+                                & a {
+                                    color: var(--nav-text-primary);
+                                    text-decoration: none;
+                                    font-size: var(--nav-font-md);
+                                    padding: var(--nav-padding-sm) 0;
+                                    display: flex;
+                                    align-items: center;
+                                    transition: color var(--nav-transition-fast);
+                                    
+                                    & .link-icon {
+                                        margin-right: var(--nav-padding-sm);
+                                        opacity: 0.7;
+                                        width: 20px;
+                                        text-align: center;
+                                    }
+                                    
+                                    & .link-description {
+                                        font-size: var(--nav-font-sm);
+                                        color: var(--nav-text-secondary);
+                                        margin-top: 0.125rem;
+                                        display: block;
+                                    }
+                                    
+                                    &:hover {
+                                        color: var(--nav-text-active);
+                                        
+                                        & .link-icon {
+                                            opacity: 1;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                        
+                        & .section-featured {
+                            background: rgba(59, 130, 246, 0.1);
+                            border: 1px solid rgba(59, 130, 246, 0.2);
+                            border-radius: 0.5rem;
+                            padding: var(--nav-padding-md);
+                            margin-top: var(--nav-padding-lg);
+                            
+                            & .featured-title {
+                                color: var(--nav-text-active);
+                                font-weight: 600;
+                                margin-bottom: var(--nav-padding-sm);
+                            }
+                            
+                            & .featured-description {
+                                color: var(--nav-text-secondary);
+                                font-size: var(--nav-font-sm);
+                                line-height: 1.5;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           COMPORTAMIENTO ADAPTATIVO CON CONTAINER QUERIES
+           ================================================================= */
+        
+        @layer adaptive-behavior {
+            /* Estado Móvil Extremo: < 400px - Solo header visible */
+            @container mega-menu (max-width: 399px) {
+                .mega-menu {
+                    & .menu-header {
+                        & .menu-brand {
+                            & .brand-text {
+                                display: none; /* Ocultar texto del brand en espacios muy limitados */
+                            }
+                        }
+                    }
+                    
+                    /* El contenido se muestra solo cuando se activa el toggle */
+                    &.menu-open .menu-content {
+                        display: block;
+                        position: absolute;
+                        top: 100%;
+                        left: 0;
+                        right: 0;
+                        background: var(--nav-bg-primary);
+                        z-index: var(--nav-z-dropdown);
+                        box-shadow: var(--nav-shadow-lg);
+                        border-radius: 0 0 0.75rem 0.75rem;
+                    }
+                }
+            }
+            
+            /* Estado Móvil: 400px - 599px - Menu colapsable */
+            @container mega-menu (min-width: 400px) and (max-width: 599px) {
+                .mega-menu {
+                    & .menu-content {
+                        display: block; /* El contenido se vuelve visible */
+                        
+                        & .menu-section {
+                            /* En este estado, mantenemos el layout vertical pero más espacioso */
+                            & .menu-links {
+                                display: grid;
+                                grid-template-columns: 1fr;
+                                gap: var(--nav-padding-sm);
+                            }
+                        }
+                    }
+                    
+                    & .menu-toggle {
+                        display: none; /* No necesitamos toggle en este estado */
+                    }
+                }
+            }
+            
+            /* Estado Tablet: 600px - 899px - Layout híbrido */
+            @container mega-menu (min-width: 600px) and (max-width: 899px) {
+                .mega-menu {
+                    & .menu-content {
+                        display: grid;
+                        grid-template-columns: 1fr 1fr; /* Dos columnas para mejor uso del espacio */
+                        
+                        & .menu-section {
+                            & .menu-links {
+                                & .menu-link {
+                                    & a {
+                                        & .link-description {
+                                            display: none; /* Ocultamos descripciones para ahorrar espacio */
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    & .menu-toggle {
+                        display: none;
+                    }
+                }
+            }
+            
+            /* Estado Desktop: 900px - 1199px - Layout de mega menú clásico */
+            @container mega-menu (min-width: 900px) and (max-width: 1199px) {
+                .mega-menu {
+                    & .menu-content {
+                        display: grid;
+                        grid-template-columns: repeat(3, 1fr); /* Tres columnas para layout clásico */
+                        gap: var(--nav-padding-xl);
+                        padding: var(--nav-padding-xl);
+                        
+                        & .menu-section {
+                            padding: 0;
+                            border-bottom: none;
+                            
+                            & .menu-links {
+                                & .menu-link {
+                                    & a {
+                                        padding: var(--nav-padding-sm);
+                                        border-radius: 0.375rem;
+                                        transition: background-color var(--nav-transition-fast);
+                                        
+                                        &:hover {
+                                            background: rgba(255,255,255,0.05);
+                                        }
+                                        
+                                        & .link-description {
+                                            display: block; /* Restauramos descripciones */
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                    & .menu-toggle {
+                        display: none;
+                    }
+                }
+            }
+            
+            /* Estado Desktop Premium: 1200px+ - Layout expandido con características premium */
+            @container mega-menu (min-width: 1200px) {
+                .mega-menu {
+                    & .menu-content {
+                        display: grid;
+                        grid-template-columns: repeat(4, 1fr); /* Cuatro columnas para máximo aprovechamiento */
+                        gap: var(--nav-padding-xl);
+                        padding: var(--nav-padding-xl);
+                        
+                        & .menu-section {
+                            padding: 0;
+                            border-bottom: none;
+                            
+                            /* Agregamos iconos más prominentes en el estado premium */
+                            & .section-title {
+                                display: flex;
+                                align-items: center;
+                                font-size: var(--nav-font-md);
+                                
+                                &::before {
+                                    content: '▶';
+                                    margin-right: var(--nav-padding-sm);
+                                    color: var(--nav-text-active);
+                                    font-size: 0.75rem;
+                                }
+                            }
+                            
+                            & .menu-links {
+                                & .menu-link {
+                                    & a {
+                                        padding: var(--nav-padding-md);
+                                        border-radius: 0.5rem;
+                                        
+                                        & .link-icon {
+                                            width: 24px;
+                                            height: 24px;
+                                            font-size: 1.125rem;
+                                        }
+                                        
+                                        & .link-description {
+                                            margin-top: var(--nav-padding-sm);
+                                            line-height: 1.4;
+                                        }
+                                    }
+                                }
+                            }
+                            
+                            /* En el estado premium, las secciones destacadas tienen más prominencia */
+                            & .section-featured {
+                                padding: var(--nav-padding-lg);
+                                
+                                & .featured-title {
+                                    font-size: var(--nav-font-lg);
+                                }
+                                
+                                & .featured-description {
+                                    font-size: var(--nav-font-md);
+                                }
+                                
+                                /* Agregamos un botón de acción en el estado premium */
+                                & .featured-action {
+                                    margin-top: var(--nav-padding-md);
+                                    
+                                    & .btn {
+                                        background: var(--nav-text-active);
+                                        color: white;
+                                        padding: var(--nav-padding-sm) var(--nav-padding-md);
+                                        border-radius: 0.375rem;
+                                        text-decoration: none;
+                                        font-size: var(--nav-font-sm);
+                                        font-weight: 600;
+                                        display: inline-block;
+                                        transition: background-color var(--nav-transition-fast);
+                                        
+                                        &:hover {
+                                            background: #2563eb;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        /* =================================================================
+           UTILIDADES Y ESTADOS INTERACTIVOS
+           ================================================================= */
+        
+        @layer utilities {
+            .info-panel {
+                background: linear-gradient(135deg, #dbeafe 0%, #e0e7ff 100%);
+                border: 1px solid #3b82f6;
+                border-radius: 0.75rem;
+                padding: var(--nav-padding-xl);
+                margin-bottom: var(--nav-padding-xl);
+                
+                & h3 {
+                    color: #1e40af;
+                    margin-bottom: var(--nav-padding-lg);
+                    font-weight: 600;
+                }
+                
+                & p {
+                    margin-bottom: var(--nav-padding-md);
+                    line-height: 1.6;
+                }
+                
+                & code {
+                    background: rgba(59, 130, 246, 0.1);
+                    padding: 0.125rem 0.375rem;
+                    border-radius: 0.25rem;
+                    font-family: 'Courier New', monospace;
+                    font-size: 0.875rem;
+                }
+            }
+            
+            .controls-panel {
+                background: white;
+                border: 1px solid #e2e8f0;
+                border-radius: 0.75rem;
+                padding: var(--nav-padding-lg);
+                margin-bottom: var(--nav-padding-xl);
+                
+                & label {
+                    display: block;
+                    margin-bottom: var(--nav-padding-sm);
+                    font-weight: 600;
+                    color: #374151;
+                }
+                
+                & input[type="range"] {
+                    width: 100%;
+                    margin-bottom: var(--nav-padding-md);
+                }
+                
+                & .current-width {
+                    font-family: 'Courier New', monospace;
+                    background: #f3f4f6;
+                    padding: 0.25rem 0.5rem;
+                    border-radius: 0.25rem;
+                    font-size: 0.875rem;
+                    color: #374151;
+                }
+            }
+        }
+    </style>
+</head>
+<body>
+    <div style="max-width: 1400px; margin: 0 auto; padding: 2rem;">
+        <h1 style="text-align: center; margin-bottom: 2rem; color: #1e293b;">🧭 Mega Menú Adaptativo: Cinco Estados, Una Experiencia</h1>
+        
+        <div class="info-panel">
+            <h3>🎯 Concepto Fundamental: Navegación Contextual Inteligente</h3>
+            <p>Este mega menú demuestra el poder de las container queries aplicadas a uno de los patrones de navegación más complejos. En lugar de crear múltiples versiones del mismo menú, tenemos un solo componente que se transforma inteligentemente según el espacio disponible.</p>
+            
+            <p><strong>Los cinco estados adaptativos del mega menú:</strong></p>
+            <p>📱 <strong>Móvil Extremo (&lt; 400px):</strong> Solo header visible, contenido en overlay desplegable</p>
+            <p>📱 <strong>Móvil Estándar (400px-599px):</strong> Menú vertical expandido, navegación simplificada</p>
+            <p>💻 <strong>Tablet (600px-899px):</strong> Layout de dos columnas, descripiones ocultas para eficiencia</p>
+            <p>🖥️ <strong>Desktop (900px-1199px):</strong> Mega menú clásico de tres columnas con descripciones</p>
+            <p>🎯 <strong>Desktop Premium (1200px+):</strong> Layout de cuatro columnas con características avanzadas</p>
+        </div>
+        
+        <div class="controls-panel">
+            <label for="menu-width">Ancho del Contenedor: <span class="current-width" id="width-display">800px</span></label>
+            <input type="range" id="menu-width" min="320" max="1400" value="800" step="20">
+            <p style="color: #6b7280; font-size: 0.875rem; margin: 0;">Mueve el deslizador para ver cómo el mega menú se transforma según el espacio disponible.</p>
+        </div>
+        
+        <!-- Demostración Interactiva -->
+        <div class="demo-container" id="menu-container">
+            <div class="demo-label">Mega Menú Adaptativo en Acción</div>
+            <div class="mega-menu" id="adaptive-menu">
+                <div class="menu-header">
+                    <a href="#" class="menu-brand">
+                        <span class="brand-icon">🚀</span>
+                        <span class="brand-text">TechCorp</span>
+                    </a>
+                    <button class="menu-toggle" onclick="toggleMenu()">☰</button>
+                </div>
+                
+                <div class="menu-content">
+                    <div class="menu-section">
+                        <h3 class="section-title">Productos</h3>
+                        <ul class="menu-links">
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">💼</span>
+                                    <div>
+                                        <span>Soluciones Empresariales</span>
+                                        <span class="link-description">Herramientas profesionales para equipos grandes</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">👥</span>
+                                    <div>
+                                        <span>Colaboración en Equipo</span>
+                                        <span class="link-description">Plataformas integradas para trabajo remoto</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">📊</span>
+                                    <div>
+                                        <span>Analytics Avanzado</span>
+                                        <span class="link-description">Insights en tiempo real para toma de decisiones</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">🔒</span>
+                                    <div>
+                                        <span>Seguridad Empresarial</span>
+                                        <span class="link-description">Protección integral de datos y sistemas</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                        
+                        <div class="section-featured">
+                            <div class="featured-title">🆕 Producto Destacado</div>
+                            <div class="featured-description">Descubre nuestra nueva plataforma de inteligencia artificial para automatización empresarial.</div>
+                            <div class="featured-action">
+                                <a href="#" class="btn">Explorar Ahora</a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="menu-section">
+                        <h3 class="section-title">Servicios</h3>
+                        <ul class="menu-links">
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">🎓</span>
+                                    <div>
+                                        <span>Capacitación Técnica</span>
+                                        <span class="link-description">Programas de entrenamiento personalizados</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">🔧</span>
+                                    <div>
+                                        <span>Consultoría Especializada</span>
+                                        <span class="link-description">Expertos en transformación digital</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">🚀</span>
+                                    <div>
+                                        <span>Implementación Rápida</span>
+                                        <span class="link-description">Despliegue en menos de 30 días</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">📞</span>
+                                    <div>
+                                        <span>Soporte 24/7</span>
+                                        <span class="link-description">Asistencia técnica ininterrumpida</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="menu-section">
+                        <h3 class="section-title">Recursos</h3>
+                        <ul class="menu-links">
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">📚</span>
+                                    <div>
+                                        <span>Documentación</span>
+                                        <span class="link-description">Guías completas y referencias API</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">🎥</span>
+                                    <div>
+                                        <span>Video Tutoriales</span>
+                                        <span class="link-description">Aprende con ejemplos paso a paso</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">💬</span>
+                                    <div>
+                                        <span>Comunidad</span>
+                                        <span class="link-description">Conecta con otros desarrolladores</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">📝</span>
+                                    <div>
+                                        <span>Blog Técnico</span>
+                                        <span class="link-description">Artículos y mejores prácticas</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    <div class="menu-section">
+                        <h3 class="section-title">Empresa</h3>
+                        <ul class="menu-links">
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">🏢</span>
+                                    <div>
+                                        <span>Acerca de Nosotros</span>
+                                        <span class="link-description">Historia y valores de la empresa</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">💼</span>
+                                    <div>
+                                        <span>Carreras</span>
+                                        <span class="link-description">Únete a nuestro equipo innovador</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">📰</span>
+                                    <div>
+                                        <span>Noticias</span>
+                                        <span class="link-description">Últimas actualizaciones y anuncios</span>
+                                    </div>
+                                </a>
+                            </li>
+                            <li class="menu-link">
+                                <a href="#">
+                                    <span class="link-icon">📧</span>
+                                    <div>
+                                        <span>Contacto</span>
+                                        <span class="link-description">Conecta directamente con nosotros</span>
+                                    </div>
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="info-panel">
+            <h3>🔍 Análisis Técnico: Cómo Funciona la Magia</h3>
+            <p>El componente utiliza <code>container-type: inline-size</code> y <code>container-name: mega-menu</code> para crear un contexto de consulta. Cada uno de los cinco estados se define con reglas <code>@container mega-menu (condiciones de ancho)</code> que activan diferentes layouts y comportamientos.</p>
+            
+            <p><strong>Técnicas clave implementadas:</strong></p>
+            <p>🎨 <strong>CSS Nesting:</strong> Organización jerárquica que refleja la estructura del HTML</p>
+            <p>📊 <strong>CSS Grid Adaptativo:</strong> De 1 columna a 4 columnas según el espacio disponible</p>
+            <p>🎭 <strong>Revelación Progresiva:</strong> Elementos se muestran/ocultan según el contexto</p>
+            <p>⚡ <strong>Performance Optimizado:</strong> Una sola estructura HTML, múltiples presentaciones</p>
+            
+            <p>La belleza de este enfoque es que el mismo componente funciona perfectamente en un header principal, en una barra lateral, en un modal, o incluso embebido en otro sitio web, sin necesidad de modificaciones o JavaScript complejo.</p>
+        </div>
+    </div>
+    
+    <script>
+        // Control interactivo del ancho del contenedor
+        const menuWidthSlider = document.getElementById('menu-width');
+        const menuContainer = document.getElementById('menu-container');
+        const widthDisplay = document.getElementById('width-display');
+        const adaptiveMenu = document.getElementById('adaptive-menu');
+        
+        // Función para actualizar el ancho del contenedor
+        function updateMenuWidth() {
+            const width = menuWidthSlider.value + 'px';
+            menuContainer.style.width = width;
+            widthDisplay.textContent = width;
+        }
+        
+        // Event listener para el slider
+        menuWidthSlider.addEventListener('input', updateMenuWidth);
+        
+        // Configuración inicial
+        updateMenuWidth();
+        
+        // Función para toggle del menú en estado móvil
+        function toggleMenu() {
+            adaptiveMenu.classList.toggle('menu-open');
+        }
+        
+        // Observador para debugging y feedback visual
+        const observer = new ResizeObserver(entries => {
+            for (let entry of entries) {
+                const width = Math.round(entry.contentRect.width);
+                
+                // Determinar qué estado está activo
+                let estado;
+                if (width < 400) {
+                    estado = '📱 Móvil Extremo';
+                } else if (width < 600) {
+                    estado = '📱 Móvil Estándar';
+                } else if (width < 900) {
+                    estado = '💻 Tablet';
+                } else if (width < 1200) {
+                    estado = '🖥️ Desktop';
+                } else {
+                    estado = '🎯 Desktop Premium';
+                }
+                
+                console.log(`Ancho: ${width}px - Estado activo: ${estado}`);
+                
+                // Agregar clase CSS para debugging visual (opcional)
+                adaptiveMenu.className = adaptiveMenu.className.replace(/state-\w+/g, '');
+                
+                if (width < 400) adaptiveMenu.classList.add('state-mobile-extreme');
+                else if (width < 600) adaptiveMenu.classList.add('state-mobile');
+                else if (width < 900) adaptiveMenu.classList.add('state-tablet');
+                else if (width < 1200) adaptiveMenu.classList.add('state-desktop');
+                else adaptiveMenu.classList.add('state-premium');
+            }
+        });
+        
+        observer.observe(adaptiveMenu);
+        
+        // Cerrar el menú móvil cuando se hace clic fuera de él
+        document.addEventListener('click', function(event) {
+            if (!adaptiveMenu.contains(event.target)) {
+                adaptiveMenu.classList.remove('menu-open');
+            }
+        });
+    </script>
+</body>
+</html>
