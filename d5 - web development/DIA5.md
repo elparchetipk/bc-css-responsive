@@ -190,3 +190,214 @@ Acabas de construir una página web profesional que demuestra dominio completo d
 - **Imágenes Adaptables:** Picture element cambia composiciones (cuadradas en móvil, panorámicas en desktop)
 - **Layout Inteligente:** Grid se reorganiza automáticamente según el espacio disponible
 - **Performance Optimizado:** Lazy loading, compresión de imágenes, y carga diferida
+
+#### 🔍 Experimenta con el Proyecto:
+
+1. Redimensiona gradualmente la ventana del navegador
+2. Observa cómo el grid de artículos se reorganiza (1 columna → 2 columnas → 3 columnas)
+3. Nota que las imágenes en móvil son cuadradas (mejor para scroll vertical)
+4. En desktop, las imágenes se vuelven panorámicas (aprovechan el espacio horizontal)
+
+---
+
+## HORA 8: Optimización de Performance y Accesibilidad
+
+*Llevando la calidad web al siguiente nivel*
+
+Esta hora final es donde transformamos una página "que funciona" en una experiencia web excepcional. Es la diferencia entre un amateur y un profesional.
+
+### Comprendiendo las Métricas de Performance
+
+Las Core Web Vitals son como los "signos vitales" de un paciente en medicina. Google las usa para evaluar la salud de tu sitio web:
+
+```css
+/* === OPTIMIZACIONES DE PERFORMANCE CRÍTICAS === */
+
+/* 1. LARGEST CONTENTFUL PAINT (LCP) - Meta: < 2.5s */
+.hero-title {
+    /* Font display swap evita FOIT (Flash of Invisible Text) */
+    font-display: swap;
+    
+    /* Contenido crítico sin lazy loading */
+    content-visibility: auto;
+}
+
+/* 2. FIRST INPUT DELAY (FID) - Meta: < 100ms */
+.interactive-element {
+    /* Evita transformaciones complejas en hover */
+    will-change: transform; /* Solo cuando sea necesario */
+    transform: translateZ(0); /* Fuerza hardware acceleration */
+}
+
+/* 3. CUMULATIVE LAYOUT SHIFT (CLS) - Meta: < 0.1 */
+.responsive-image {
+    /* Reserva espacio para evitar saltos de layout */
+    aspect-ratio: 16/9;
+    width: 100%;
+    height: auto;
+}
+```
+
+### Sistema de Auditoría de Accesibilidad
+
+La accesibilidad no es una "característica extra", es un requisito fundamental. Como construir una rampa de acceso: beneficia a todos, no solo a quienes la necesitan específicamente.
+
+#### *VER 4-auditoria_accesibilidad.html*
+
+---
+
+## 🎯 Cierre del Día 5: Consolidación y Preparación
+
+¡Excelente trabajo! Has completado uno de los días más técnicamente desafiantes del bootcamp. Hoy has transformado tu comprensión del contenido responsive de básico a profesional.
+
+---
+
+### 📋 Resumen de Competencias Adquiridas
+
+#### Tipografía Fluida Dominada
+
+- **Función clamp():** Tu nueva herramienta favorita para escalado inteligente
+- **Unidades viewport:** vw, vh, dvh, lvh, svh para adaptación perfecta
+- **Variables CSS:** Sistema escalable y mantenible
+- **Jerarquía visual:** Proporciones que se mantienen en todos los dispositivos
+
+### Imágenes Responsive Profesionales
+
+- **Srcset con descriptores w:** Optimización automática de resolución
+- **Picture element:** Art direction para diferentes composiciones
+- **Background images CSS:** Técnicas avanzadas para elementos decorativos
+- **Performance optimization:** Lazy loading, formatos modernos, fallbacks
+
+### Integración Práctica
+
+- **Proyecto completo:** Revista digital con contenido rich media
+- **Auditoría profesional:** Core Web Vitals y accesibilidad WCAG 2.1
+- **Herramientas de testing:** Arsenal completo para validación
+
+---
+
+### 🏋️ Ejercicios de Consolidación
+
+#### Ejercicio 1: Desafío de Tipografía Fluida (15 minutos)
+
+Crea un sistema tipográfico para una startup de fintech que debe funcionar desde smartwatches (280px) hasta pantallas ultrawide (3440px):
+
+#### *VER 5-ejercicio_tipografia_fintech.html*
+
+#### Ejercicio 2: Maestría en Imágenes Responsive (20 minutos)
+
+Optimiza una galería de productos e-commerce que debe funcionar perfectamente desde móvil hasta desktop:
+
+#### *VER 6-ejercicio_galeria_ecommerce.html*
+
+---
+
+## ✅ Checklist de Competencias Día 5
+
+Marca cada competencia que sientes que has dominado hoy:
+
+### Tipografía Fluida - Nivel Profesional
+
+ [ ] **clamp() Mastery:** Puedo crear escalas tipográficas que funcionan desde 280px hasta 4K
+ [ ] **Variables CSS:** Construyo sistemas de design tokens escalables y mantenibles
+ [ ] **Unidades Viewport:** Domino vw, vh, dvh, lvh, svh para diferentes contextos
+ [ ] **Jerarquía Visual:** Mantengo proporciones armoniosas en todos los dispositivos
+ [ ] **Line Height Fluido:** Adapto espaciado entre líneas para óptima legibilidad
+
+ ### Imágenes Responsive - Optimización Avanzada
+
+[ ] **Srcset con Descriptores W:** Implemento carga inteligente basada en ancho de pantalla
+[ ] **Picture Element:** Uso art direction para diferentes composiciones por dispositivo
+[ ] **Background Images CSS:** Optimizo imágenes decorativas con media queries
+[ ] **Performance:** Implemento lazy loading, formatos modernos y fallbacks
+[ ] **Accesibilidad:** Alt text descriptivo y aspect-ratio para evitar layout shift
+
+### Integración y Optimización
+
+[ ] **Proyecto Completo:** Construyo páginas ricas en contenido completamente responsive
+[ ] **Core Web Vitals:** Optimizo LCP, FID y CLS para performance excepcional
+[ ] **Auditoría WCAG:** Implemento accesibilidad completa nivel AA
+[ ] **Cross-Device Testing:** Valido experiencias desde mobile hasta ultrawide
+
+--- 
+
+## 🔮 Preparándote para el Día 6: Bootstrap 5+
+
+Mañana daremos un salto cuántico en velocidad de desarrollo. Bootstrap nos permitirá crear interfaces profesionales en tiempo récord, pero sin perder la profundidad técnica que has adquirido.
+
+### Mentalidad para Mañana
+
+**Piensa en Bootstrap como un "superpoder"**, no como una "muleta". Los fundamentos que dominaste hoy te permitirán:
+
+- Personalizar Bootstrap más allá de plantillas genéricas
+- Entender qué hace cada clase y por qué
+- Combinar Bootstrap con CSS custom cuando sea necesario
+- Optimizar el bundle para production
+
+### Preview del Día 6: Lo que Construirás
+
+- **Dashboard Profesional:** Panel de control como los de Slack o GitHub
+- **Modo Oscuro Nativo:** Implementación con las nuevas características de Bootstrap 5.3+
+- **Breakpoint XXL:** Optimización para pantallas ultra-wide (1400px+)
+- **Sistema de Componentes:** Biblioteca reutilizable de componentes personalizados
+
+### Preparación Mental Recomendada
+
+1. **Relaja tu mente:** Mañana será menos "cerebral" y más "constructivo"
+2. **Mantén curiosidad:** Pregúntate "¿cómo funciona esto por debajo?"
+3. **Piensa en eficiencia:** Velocidad + calidad es el objetivo
+
+---
+
+## 📚 Recursos para Práctica Nocturna (Opcional)
+
+### Desafíos Rápidos (15-30 min cada uno)
+
+**Desafío 1: Tipografía Extrema**
+Crea un sistema tipográfico que funcione desde smartwatch (240px) hasta billboard digital (7680px). ¿Puede tu clamp() manejar este rango extremo?
+**Desafío 2: Galería de Arte Responsive**
+Implementa una galería donde las imágenes cambien de orientación portrait en móvil a landscape en desktop, simulando cómo se exhiben obras en un museo.
+**Desafío 3: Newspaper Layout**
+Crea un layout de periódico digital donde la misma noticia se muestre como:
+
+- Móvil: Stack vertical con imagen arriba
+- Tablet: 2 columnas
+- Desktop: 3 columnas con imagen lateral
+
+**Lecturas Recomendadas (10 min)**
+
+- Modern CSS Layouts - Web.dev
+- Responsive Images - MDN
+- Core Web Vitals - Google
+
+---
+
+## 🎯 Autoevaluación del Día
+
+Tómate 5 minutos para reflexionar:
+**¿Qué fue lo más desafiante?**
+Probablemente entender cuándo usar cada técnica de imágenes. Es normal - la experiencia viene con la práctica.
+
+**¿Qué te emocionó más?**
+Muchos estudiantes se sorprenden por lo fluid que puede ser la tipografía moderna. ¡Es casi mágico!
+
+**¿Qué aplicarías inmediatamente en un proyecto real?**
+El sistema de variables CSS y clamp() son upgrade inmediatos que puedes hacer en cualquier proyecto existente.
+
+**Preparación Mental para Mañana:**
+Bootstrap será un cambio de ritmo. Pasarás de "construir desde cero" a "componer rápidamente". Ambas habilidades son igualmente valiosas en el mundo profesional.
+
+--- 
+
+## 🚀 Mensaje de Motivación
+
+**¡Felicitaciones!** Hoy completaste uno de los días más técnicamente exigentes del bootcamp. Muchos desarrolladores con años de experiencia no dominan las técnicas que acabas de aprender.
+
+**Lo que lograste hoy:**
+
+- Creaste sistemas tipográficos que rivalizan con los de Netflix o Spotify
+- Implementaste optimizaciones de imágenes al nivel de Amazon o Google
+- Construiste auditorías de performance como las que usan las mejores agencias
+
+Mañana será diferente: Menos "ingeniería pura", más "construcción rápida". Pero los fundamentos de hoy te harán destacar entre los desarrolladores que solo saben usar frameworks sin entender qué hacen por debajo.
+¡Descansa bien y prepárate para volar con Bootstrap! 🎨⚡
